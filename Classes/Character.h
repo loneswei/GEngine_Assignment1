@@ -4,29 +4,24 @@
 #include "cocos2d.h"
 using namespace cocos2d;
 
-enum EAction {
+enum EDirection {
 	eLeft = -1,
-	eStop,
-	eRight,
+	eRight = 1,
 };
 
 class GameChar
 {
 private:
 	cocos2d::Sprite* mainSprite;
-	EAction eDir;
-	float fSpeed;
+	EDirection eDir;
 
 public:
 	GameChar();
 	~GameChar();
 	void init(const char *, Vec2, float, float, const char *);
-	// Relative movement
-	void MoveChar(EAction);
-	// Absolute movement
-	void MoveCharByCoord(float, float);
 	void Update(float);
-	void Stop();
+	
+	void Run();
 
 	cocos2d::Sprite* getSprite(void) { return mainSprite; }
 };
