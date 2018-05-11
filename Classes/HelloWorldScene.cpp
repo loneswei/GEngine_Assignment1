@@ -3,6 +3,8 @@
 #include "Character.h"
 USING_NS_CC;
 
+#define WALL_MOVESPEED 250
+
 Scene* HelloWorld::createScene()
 {
 	// return scene
@@ -29,22 +31,58 @@ bool HelloWorld::init()
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	auto playingSize = Size(visibleSize.width, visibleSize.height - (visibleSize.height / 8));
+	playingSize = Size(visibleSize.width, visibleSize.height);
 
-	auto nodeItems = Node::create();
-	nodeItems->setName("nodeItems");
+	//Create the walls that player runs on
+	wallObjects = Node::create();
+	wallObjects->setName("WallObjects");
 
-	// Practical 01
-	auto sprite = Sprite::create("ZigzagGrass_Mud_Round.png");
+	auto wallSprite_LEFT = Sprite::create("woodwall.jpg");
+	auto wallSprite_LEFT02 = Sprite::createWithTexture(wallSprite_LEFT->getTexture());
+	auto wallSprite_RIGHT = Sprite::createWithTexture(wallSprite_LEFT->getTexture());
+	auto wallSprite_RIGHT02 = Sprite::createWithTexture(wallSprite_LEFT->getTexture());
 
-	sprite->setAnchorPoint(Vec2::ZERO);
-	sprite->setPosition(0, (visibleSize.height / 2) - (sprite->getContentSize().height / 2));
+	wallSprite_LEFT->setContentSize(Size(50, playingSize.height));
+	wallSprite_LEFT02->setContentSize(Size(50, playingSize.height + playingSize.height * 0.25f));
+	wallSprite_RIGHT->setContentSize(Size(50, playingSize.height));
+	wallSprite_RIGHT02->setContentSize(Size(50, playingSize.height + playingSize.height * 0.25f));
+
+	wallSprite_LEFT->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	wallSprite_LEFT->setPosition(Vec2(0.f, playingSize.height * 0.5f));
+
+	wallSprite_LEFT02->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	wallSprite_LEFT02->setPosition(Vec2(0, (playingSize.height * 0.5f) + playingSize.height));
+
+	wallSprite_RIGHT->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	wallSprite_RIGHT->setPosition(Vec2(playingSize.width, playingSize.height * 0.5f));
+
+	wallSprite_RIGHT02->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	wallSprite_RIGHT02->setPosition(Vec2(playingSize.width, (playingSize.height * 0.5f) + playingSize.height));
 	
-	nodeItems->addChild(sprite, 0);
-	this->addChild(nodeItems, 1);
+	wallObjects->addChild(wallSprite_LEFT, 0);
+	wallObjects->addChild(wallSprite_LEFT02, 0);
+	wallObjects->addChild(wallSprite_RIGHT, 0);
+	wallObjects->addChild(wallSprite_RIGHT02, 0);
+	this->addChild(wallObjects, 1);
+
+	/*wallSprite_LEFT->runAction(RepeatForever::create(MoveTo::create(8, Vec2(0, -playingSize.height))));
+	wallSprite_LEFT02->runAction(RepeatForever::create(MoveTo::create(14, Vec2(0, -playingSize.height))));*/
+	/*wallSprite_RIGHT->runAction(wallMovementRight);
+	wallSprite_RIGHT02->runAction(wallMovementRight);*/
+
+	//wallObjects->runAction(wallMovement);
+
+	//// Practical 01
+	//auto sprite = Sprite::create("ZigzagGrass_Mud_Round.png");
+
+	//sprite->setAnchorPoint(Vec2::ZERO);
+	//sprite->setPosition(0, (visibleSize.height / 2) - (sprite->getContentSize().height / 2));
+	//
+	//nodeItems->addChild(sprite, 0);
+	//this->addChild(nodeItems, 1);
 
 	// Platform
-	int limit = std::ceil(visibleSize.width / sprite->getContentSize().width);
+	/*int limit = std::ceil(visibleSize.width / sprite->getContentSize().width);
 
 	for (int i = 1; i < limit; i++)
 	{
@@ -54,15 +92,15 @@ bool HelloWorld::init()
 		spriteT->setPosition(i * spriteT->getContentSize().width, (visibleSize.height / 2) - (spriteT->getContentSize().height / 2));
 
 		nodeItems->addChild(spriteT, 0);
-	}
+	}*/
 
 	// Character
-	auto spriteNode = Node::create();
-	spriteNode->setName("spriteNode");
+	/*auto spriteNode = Node::create();
+	spriteNode->setName("spriteNode");*/
 
-	mainChar.init("Blue_Front1.png", Vec2::ZERO, 0, (visibleSize.height / 2) + (sprite->getContentSize().height / 2), "mainSprite");
+	/*mainChar.init("Blue_Front1.png", Vec2::ZERO, 0, (visibleSize.height / 2) + (sprite->getContentSize().height / 2), "mainSprite");
 	spriteNode->addChild(mainChar.getSprite(), 1);
-	this->addChild(spriteNode, 1);
+	this->addChild(spriteNode, 1);*/
 
 	//// auto move to x:200
 	//auto moveEvent = MoveBy::create(1, Vec2(200, 0));
@@ -107,12 +145,12 @@ bool HelloWorld::init()
 	Animate* animateIdle = Animate::create(animation);
 
 	// Run Animation and repeat it forever
-	mainChar.getSprite()->runAction(RepeatForever::create(animateIdle));
+	//mainChar.getSprite()->runAction(RepeatForever::create(animateIdle));
 
 	// Loading Sprite Sheet
-	SpriteBatchNode* spritebatch = SpriteBatchNode::create("sprite.png");
+	/*SpriteBatchNode* spritebatch = SpriteBatchNode::create("sprite.png");
 	SpriteFrameCache* cache = SpriteFrameCache::getInstance();
-	cache->addSpriteFramesWithFile("sprite.plist");
+	cache->addSpriteFramesWithFile("sprite.plist");*/
 
 	// Loading sprite from Sprite Sheet
 	//auto Sprite1 = Sprite::createWithSpriteFrameName("Blue_Back1.png");
@@ -255,7 +293,20 @@ void HelloWorld::onMouseUp(Event * event)
 
 void HelloWorld::update(float delta)
 {
-	mainChar.Update(delta);
+	//mainChar.Update(delta);
+	static auto wallObjectsArray = wallObjects->getChildren();
+	
+	for (auto wallSprite : wallObjectsArray)
+	{
+		if (wallSprite->getPositionY() < -playingSize.height * 0.5f)
+		{
+			wallSprite->setPosition(Vec2(wallSprite->getPositionX(), (playingSize.height * 0.5f) + playingSize.height));
+		}
+		else
+		{
+			wallSprite->setPosition(Vec2(wallSprite->getPositionX(), wallSprite->getPositionY() - WALL_MOVESPEED * delta));
+		}
+	}
 }
 
 GameChar* HelloWorld::getChar()

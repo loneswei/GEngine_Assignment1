@@ -29,6 +29,8 @@ public:
     CREATE_FUNC(HelloWorld);
 private:
 	GameChar mainChar;
+	Node *wallObjects;
+	Size playingSize;
 };
 
 #endif // __HELLOWORLD_SCENE_H__
