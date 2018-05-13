@@ -4,6 +4,7 @@
 USING_NS_CC;
 
 #define WALL_MOVESPEED 250
+#define WALL_CONTENTSIZE_X 50
 
 Scene* HelloWorld::createScene()
 {
@@ -42,10 +43,10 @@ bool HelloWorld::init()
 	auto wallSprite_RIGHT = Sprite::createWithTexture(wallSprite_LEFT->getTexture());
 	auto wallSprite_RIGHT02 = Sprite::createWithTexture(wallSprite_LEFT->getTexture());
 
-	wallSprite_LEFT->setContentSize(Size(50, playingSize.height));
-	wallSprite_LEFT02->setContentSize(Size(50, playingSize.height + playingSize.height * 0.25f));
-	wallSprite_RIGHT->setContentSize(Size(50, playingSize.height));
-	wallSprite_RIGHT02->setContentSize(Size(50, playingSize.height + playingSize.height * 0.25f));
+	wallSprite_LEFT->setContentSize(Size(WALL_CONTENTSIZE_X, playingSize.height));
+	wallSprite_LEFT02->setContentSize(Size(WALL_CONTENTSIZE_X, playingSize.height + playingSize.height * 0.25f));
+	wallSprite_RIGHT->setContentSize(Size(WALL_CONTENTSIZE_X, playingSize.height));
+	wallSprite_RIGHT02->setContentSize(Size(WALL_CONTENTSIZE_X, playingSize.height + playingSize.height * 0.25f));
 
 	wallSprite_LEFT->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
 	wallSprite_LEFT->setPosition(Vec2(0.f, playingSize.height * 0.5f));
@@ -82,7 +83,7 @@ bool HelloWorld::init()
 
 	auto playerSprite = Sprite::create("run_right_01.png");
 
-	mainChar.init("run_right_01.png", Vec2::ANCHOR_MIDDLE, (playingSize.width - (wallSprite_RIGHT->getContentSize().width * 1.3f)), (playerSprite->getContentSize().width / 2), "Player");
+	mainChar.init("run_right_01.png", Vec2::ANCHOR_MIDDLE_BOTTOM, (playingSize.width - (WALL_CONTENTSIZE_X * 0.5f)), (playerSprite->getContentSize().width * 2), "Player");
 	playerObject->addChild(mainChar.getSprite(), 1);
 	this->addChild(playerObject, 1);
 
@@ -294,6 +295,15 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event)
 void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 {
 	//mainChar.MoveChar(eStop);
+
+	// Jump to the opposite side
+	if (keyCode == EventKeyboard::KeyCode::KEY_SPACE)
+	{
+		float LTarget = WALL_CONTENTSIZE_X * 0.5f;
+		float RTarget = playingSize.width - (WALL_CONTENTSIZE_X * 0.5f);
+		
+		mainChar.Jump(LTarget, RTarget, playingSize.height / 2);
+	}
 }
 
 void HelloWorld::onMouseUp(Event * event)

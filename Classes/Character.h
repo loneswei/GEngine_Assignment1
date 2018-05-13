@@ -14,6 +14,7 @@ class GameChar
 private:
 	cocos2d::Sprite* mainSprite;
 	EDirection eDir;
+	float fSpeed;
 
 public:
 	GameChar();
@@ -22,8 +23,10 @@ public:
 	void Update(float delta);
 	
 	void Run();
+	void Jump(float LTargetX, float RTargetX, float height);
 
 	cocos2d::Sprite* getSprite(void) { return mainSprite; }
+	EDirection getDirection(void) { return eDir; }
 };
 
 #endif // __CHAR_SCENE_H__
