@@ -20,7 +20,7 @@ public:
 	virtual void onMouseUp(Event* event);
 
 	// Update funciton that cals every frame
-	virtual void update(float);
+	virtual void update(float delta);
 
 	// Get Char
 	GameChar* getChar();

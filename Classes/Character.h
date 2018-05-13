@@ -18,8 +18,8 @@ private:
 public:
 	GameChar();
 	~GameChar();
-	void init(const char *, Vec2, float, float, const char *);
-	void Update(float);
+	void init(const char * filename, Vec2 anchor, float x, float y, const char * name);
+	void Update(float delta);
 	
 	void Run();
 

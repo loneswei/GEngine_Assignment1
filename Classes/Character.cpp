@@ -16,6 +16,9 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 	mainSprite->setAnchorPoint(anchor);
 	mainSprite->setPosition(x, y);
 	mainSprite->setName(name);
+
+	// Rotate anti-clockwise by 90(For Right side)
+	mainSprite->setRotation(-90);
 	eDir = eRight;
 	
 	Run();
@@ -111,7 +114,7 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 //	mainSprite->runAction(animateMove);
 //}
 
-void GameChar::Update(float){}
+void GameChar::Update(float delta){}
 
 void GameChar::Run()
 {

@@ -72,6 +72,20 @@ bool HelloWorld::init()
 
 	//wallObjects->runAction(wallMovement);
 
+	/*
+	***********************
+	***** Player Init *****
+	***********************
+	*/
+	auto playerObject = Node::create();
+	playerObject->setName("PlayerObject");
+
+	auto playerSprite = Sprite::create("run_right_01.png");
+
+	mainChar.init("run_right_01.png", Vec2::ANCHOR_MIDDLE, (playingSize.width - (wallSprite_RIGHT->getContentSize().width * 1.3f)), (playerSprite->getContentSize().width / 2), "Player");
+	playerObject->addChild(mainChar.getSprite(), 1);
+	this->addChild(playerObject, 1);
+
 	//// Practical 01
 	//auto sprite = Sprite::create("ZigzagGrass_Mud_Round.png");
 
@@ -133,16 +147,16 @@ bool HelloWorld::init()
 
 	// Practical 03
 	// Load Idle animation frames
-	Vector<SpriteFrame*> animFrames;
-	animFrames.reserve(4);
-	animFrames.pushBack(SpriteFrame::create("Blue_Front2.png", Rect(0, 0, 65, 81)));
-	animFrames.pushBack(SpriteFrame::create("Blue_Front1.png", Rect(0, 0, 65, 81)));
-	animFrames.pushBack(SpriteFrame::create("Blue_Front3.png", Rect(0, 0, 65, 81)));
-	animFrames.pushBack(SpriteFrame::create("Blue_Front1.png", Rect(0, 0, 65, 81)));
+	//Vector<SpriteFrame*> animFrames;
+	//animFrames.reserve(4);
+	//animFrames.pushBack(SpriteFrame::create("Blue_Front2.png", Rect(0, 0, 65, 81)));
+	//animFrames.pushBack(SpriteFrame::create("Blue_Front1.png", Rect(0, 0, 65, 81)));
+	//animFrames.pushBack(SpriteFrame::create("Blue_Front3.png", Rect(0, 0, 65, 81)));
+	//animFrames.pushBack(SpriteFrame::create("Blue_Front1.png", Rect(0, 0, 65, 81)));
 
-	// Create animation out of the frames
-	Animation* animation = Animation::createWithSpriteFrames(animFrames, 0.1f);
-	Animate* animateIdle = Animate::create(animation);
+	//// Create animation out of the frames
+	//Animation* animation = Animation::createWithSpriteFrames(animFrames, 0.1f);
+	//Animate* animateIdle = Animate::create(animation);
 
 	// Run Animation and repeat it forever
 	//mainChar.getSprite()->runAction(RepeatForever::create(animateIdle));
@@ -265,30 +279,30 @@ void HelloWorld::menuCloseCallback(Ref* pSender)
 
 void HelloWorld::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event)
 {
-	// Move to the right
-	if (keyCode == EventKeyboard::KeyCode::KEY_RIGHT_ARROW)
-	{
-		mainChar.MoveChar(eRight);
-	}
-	// Move to the left
-	if (keyCode == EventKeyboard::KeyCode::KEY_LEFT_ARROW)
-	{
-		mainChar.MoveChar(eLeft);
-	}
+	//// Move to the right
+	//if (keyCode == EventKeyboard::KeyCode::KEY_RIGHT_ARROW)
+	//{
+	//	mainChar.MoveChar(eRight);
+	//}
+	//// Move to the left
+	//if (keyCode == EventKeyboard::KeyCode::KEY_LEFT_ARROW)
+	//{
+	//	mainChar.MoveChar(eLeft);
+	//}
 }
 
 void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 {
-	mainChar.MoveChar(eStop);
+	//mainChar.MoveChar(eStop);
 }
 
 void HelloWorld::onMouseUp(Event * event)
 {
-	EventMouse* e = (EventMouse*)event;
-	float x = e->getCursorX();
-	float y = e->getCursorY();
+	//EventMouse* e = (EventMouse*)event;
+	//float x = e->getCursorX();
+	//float y = e->getCursorY();
 
-	mainChar.MoveCharByCoord(x, y);
+	//mainChar.MoveCharByCoord(x, y);
 }
 
 void HelloWorld::update(float delta)
