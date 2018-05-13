@@ -296,6 +296,12 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 {
 	//mainChar.MoveChar(eStop);
 
+	// Debug Code - Exit application
+	if (keyCode == EventKeyboard::KeyCode::KEY_ESCAPE)
+	{
+		Director::getInstance()->end();
+	}
+
 	// Jump to the opposite side
 	if (keyCode == EventKeyboard::KeyCode::KEY_SPACE)
 	{
