@@ -3,6 +3,7 @@
 
 #include "cocos2d.h"
 #include "Character.h"
+#include "TrapObjects.h"
 
 using namespace cocos2d;
 class HelloWorld : public cocos2d::Scene
@@ -33,6 +34,8 @@ private:
 	Size playingSize;
 	Label* scoreLabel;
 	Label* distanceLabel;
+
+	std::vector<TrapObject*> trapObjectList;
 };
 
 #endif // __HELLOWORLD_SCENE_H__
