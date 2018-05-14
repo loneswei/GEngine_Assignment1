@@ -6,6 +6,7 @@
 #include "TrapObjects.h"
 
 using namespace cocos2d;
+
 class HelloWorld : public cocos2d::Scene
 {
 public:
@@ -23,6 +24,9 @@ public:
 	// Update funciton that cals every frame
 	virtual void update(float delta);
 
+	//Fetch a free trap
+	TrapObject* FetchTrapObject(TrapObject::TRAP_TYPE trapType = TrapObject::TRAP_RANDOM);
+
 	// Get Char
 	GameChar* getChar();
 
@@ -31,11 +35,11 @@ public:
 private:
 	GameChar mainChar;
 	Node *wallObjects;
-	Size playingSize;
 	Label* scoreLabel;
 	Label* distanceLabel;
 
+	Size playingSize;
 	std::vector<TrapObject*> trapObjectList;
 };
 
-#endif // __HELLOWORLD_SCENE_H__
+#endif // __HELLOWORLD_SCENE_H_

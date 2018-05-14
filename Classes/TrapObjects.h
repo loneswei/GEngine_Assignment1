@@ -2,9 +2,8 @@
 #define ____TRAPOBJECT_SCENE_H__
 
 #include "cocos2d.h"
-using namespace cocos2d;
 
-const auto SprikeTrapSprite = Sprite::create("spiketrap.png");
+using namespace cocos2d;
 
 class TrapObject
 {
@@ -18,6 +17,7 @@ public:
 		TRAPS_TOTAL
 	};
 
+	TrapObject();
 	TrapObject(TRAP_TYPE trapType);
     ~TrapObject();
 
@@ -25,7 +25,7 @@ public:
 
 	TRAP_TYPE trapType;
 	bool isActive;
-	Vec2 position, scale;
+	Vec2 scale;
 	Sprite *trapSprite;
 };
 

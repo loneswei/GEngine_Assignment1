@@ -80,7 +80,7 @@ bool HelloWorld::init()
 	*/
 	auto playerObject = Node::create();
 	playerObject->setName("PlayerObject");
-
+	
 	auto playerSprite = Sprite::create("run_right_01.png");
 
 	mainChar.init("run_right_01.png", Vec2::ANCHOR_MIDDLE_BOTTOM, (playingSize.width - (WALL_CONTENTSIZE_X * 0.5f)), (playerSprite->getContentSize().width * 2), "Player");
@@ -265,6 +265,9 @@ bool HelloWorld::init()
     //    // add the sprite as a child to this layer
     //    this->addChild(sprite, 0);
     //}
+
+//TrapObject* test = FetchTrapObject(TrapObject::TRAP_SPIKES);
+//test->isActive = true;
     return true;
 }
 
@@ -340,8 +343,10 @@ void HelloWorld::update(float delta)
 	distanceLabel->setString("Distance Travelled: " + std::to_string(mainChar.getDistanceTravelled()));
 	mainChar.Update(delta);
 
+	//Get the array of walls from wallObjects node
 	static auto wallObjectsArray = wallObjects->getChildren();
 	
+	//Move each wall sprite downwards
 	for (auto wallSprite : wallObjectsArray)
 	{
 		if (wallSprite->getPositionY() < -playingSize.height * 0.5f)
@@ -353,6 +358,39 @@ void HelloWorld::update(float delta)
 			wallSprite->setPosition(Vec2(wallSprite->getPositionX(), wallSprite->getPositionY() - WALL_MOVESPEED * delta));
 		}
 	}
+
+	//Update each trap in trap list
+	for (auto trapObj : trapObjectList)
+	{
+		if (trapObj->isActive)
+		{
+			trapObj->TrapUpdate(delta);
+		}
+	}
+}
+
+TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)
+{
+	//Find an inactive trap, return it if one is found
+	for (auto trapObj : trapObjectList)
+	{
+		if (!trapObj->isActive)
+		{
+			trapObj->trapType = trapType;
+			return trapObj;
+		}
+	}
+
+	//If no available trap is found, push 10 new ones into list
+	for (size_t i = 0; i < 10; ++i)
+	{
+		TrapObject *newTrapObj = new TrapObject(trapType);
+		newTrapObj->isActive = false;
+
+		trapObjectList.push_back(newTrapObj);
+	}
+
+	return FetchTrapObject(trapType);
 }
 
 GameChar* HelloWorld::getChar()
