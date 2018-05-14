@@ -9,12 +9,19 @@ enum EDirection {
 	eRight = 1,
 };
 
+enum EStatus {
+	eRun,
+	eJump,
+};
+
 class GameChar
 {
 private:
 	cocos2d::Sprite* mainSprite;
 	EDirection eDir;
+	EStatus eStat;
 	float fSpeed;
+	int score;
 
 public:
 	GameChar();
@@ -27,6 +34,10 @@ public:
 
 	cocos2d::Sprite* getSprite(void) { return mainSprite; }
 	EDirection getDirection(void) { return eDir; }
+	int getScore(void) { return score; }
+	EStatus getStatus(void) { return eStat; }
+
+	void setStatus(EStatus status) { eStat = status; }
 };
 
 #endif // __CHAR_SCENE_H__

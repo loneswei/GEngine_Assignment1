@@ -87,6 +87,10 @@ bool HelloWorld::init()
 	playerObject->addChild(mainChar.getSprite(), 1);
 	this->addChild(playerObject, 1);
 
+	scoreLabel = Label::createWithTTF("Score: " + std::to_string(mainChar.getScore()), "fonts/Marker Felt.ttf", 24);
+	scoreLabel->setPosition(Vec2(playingSize.width * 0.5f, 0 + scoreLabel->getContentSize().height));
+	this->addChild(scoreLabel, 1);
+
 	//// Practical 01
 	//auto sprite = Sprite::create("ZigzagGrass_Mud_Round.png");
 
@@ -305,10 +309,15 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 	// Jump to the opposite side
 	if (keyCode == EventKeyboard::KeyCode::KEY_SPACE)
 	{
-		float LTarget = WALL_CONTENTSIZE_X * 0.5f;
-		float RTarget = playingSize.width - (WALL_CONTENTSIZE_X * 0.5f);
-		
-		mainChar.Jump(LTarget, RTarget, playingSize.height / 2);
+		// Only allow Jumping when Status is eRun
+		if (mainChar.getStatus() == eRun)
+		{
+			mainChar.setStatus(eJump);
+			float LTarget = WALL_CONTENTSIZE_X * 0.5f;
+			float RTarget = playingSize.width - (WALL_CONTENTSIZE_X * 0.5f);
+
+			mainChar.Jump(LTarget, RTarget, playingSize.height / 2);
+		}
 	}
 }
 
@@ -323,7 +332,9 @@ void HelloWorld::onMouseUp(Event * event)
 
 void HelloWorld::update(float delta)
 {
-	//mainChar.Update(delta);
+	scoreLabel->setString("Score: " + std::to_string(mainChar.getScore()));
+	mainChar.Update(delta);
+
 	static auto wallObjectsArray = wallObjects->getChildren();
 	
 	for (auto wallSprite : wallObjectsArray)

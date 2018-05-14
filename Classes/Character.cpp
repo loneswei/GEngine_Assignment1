@@ -21,7 +21,8 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 	Run();
 	// speed for mouse click movement - smaller faster, bigger slower
 	fSpeed = 0.001f;
-
+	score = 0;
+	eStat = eRun;
 }
 
 // MoveChar
@@ -111,7 +112,10 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 //	mainSprite->runAction(animateMove);
 //}
 
-void GameChar::Update(float delta){}
+void GameChar::Update(float delta)
+{
+	score += 60 * delta;
+}
 
 void GameChar::Run()
 {
@@ -216,7 +220,10 @@ void GameChar::Jump(float LTargetX, float RTargetX, float height)
 		auto scene = Director::getInstance()->getRunningScene();
 		HelloWorld* HWScene = dynamic_cast<HelloWorld*>(scene);
 		if (HWScene != NULL)
+		{
 			HWScene->getChar()->Run(); // Call run function to change animation back to run
+			HWScene->getChar()->setStatus(eRun);
+		}
 	});
 
 	// Setting sequence of actions to jump

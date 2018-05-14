@@ -31,6 +31,7 @@ private:
 	GameChar mainChar;
 	Node *wallObjects;
 	Size playingSize;
+	Label* scoreLabel;
 };
 
 #endif // __HELLOWORLD_SCENE_H__
