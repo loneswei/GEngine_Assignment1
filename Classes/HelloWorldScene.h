@@ -32,6 +32,7 @@ private:
 	Node *wallObjects;
 	Size playingSize;
 	Label* scoreLabel;
+	Label* distanceLabel;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

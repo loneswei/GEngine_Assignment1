@@ -87,8 +87,12 @@ bool HelloWorld::init()
 	playerObject->addChild(mainChar.getSprite(), 1);
 	this->addChild(playerObject, 1);
 
+	distanceLabel = Label::createWithTTF("Distance Travelled: " + std::to_string(mainChar.getDistanceTravelled()), "fonts/Marker Felt.ttf", 24);
+	distanceLabel->setPosition(Vec2(playingSize.width * 0.5f, 0 + distanceLabel->getContentSize().height));
+	this->addChild(distanceLabel, 1);
+
 	scoreLabel = Label::createWithTTF("Score: " + std::to_string(mainChar.getScore()), "fonts/Marker Felt.ttf", 24);
-	scoreLabel->setPosition(Vec2(playingSize.width * 0.5f, 0 + scoreLabel->getContentSize().height));
+	scoreLabel->setPosition(Vec2(playingSize.width * 0.5f, 0 + scoreLabel->getContentSize().height + distanceLabel->getContentSize().height));
 	this->addChild(scoreLabel, 1);
 
 	//// Practical 01
@@ -333,6 +337,7 @@ void HelloWorld::onMouseUp(Event * event)
 void HelloWorld::update(float delta)
 {
 	scoreLabel->setString("Score: " + std::to_string(mainChar.getScore()));
+	distanceLabel->setString("Distance Travelled: " + std::to_string(mainChar.getDistanceTravelled()));
 	mainChar.Update(delta);
 
 	static auto wallObjectsArray = wallObjects->getChildren();

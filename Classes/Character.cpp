@@ -21,7 +21,7 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 	Run();
 	// speed for mouse click movement - smaller faster, bigger slower
 	fSpeed = 0.001f;
-	score = 0;
+	fScore = 0;
 	eStat = eRun;
 }
 
@@ -114,7 +114,8 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 
 void GameChar::Update(float delta)
 {
-	score += 60 * delta;
+	fScore += 1;
+	dDistance += 1;
 }
 
 void GameChar::Run()

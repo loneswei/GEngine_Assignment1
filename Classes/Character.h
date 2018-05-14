@@ -21,7 +21,8 @@ private:
 	EDirection eDir;
 	EStatus eStat;
 	float fSpeed;
-	int score;
+	int fScore;
+	int dDistance;
 
 public:
 	GameChar();
@@ -34,8 +35,9 @@ public:
 
 	cocos2d::Sprite* getSprite(void) { return mainSprite; }
 	EDirection getDirection(void) { return eDir; }
-	int getScore(void) { return score; }
+	int getScore(void) { return fScore; }
 	EStatus getStatus(void) { return eStat; }
+	int getDistanceTravelled(void) { return dDistance; }
 
 	void setStatus(EStatus status) { eStat = status; }
 };
