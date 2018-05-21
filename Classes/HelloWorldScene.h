@@ -35,6 +35,9 @@ public:
 private:
 	GameChar mainChar;
 	Node *wallObjects;
+	Node *trapObjects;
+	Node *trapObjects;
+
 	Label* scoreLabel;
 	Label* distanceLabel;
 

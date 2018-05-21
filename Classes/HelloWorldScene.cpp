@@ -266,8 +266,16 @@ bool HelloWorld::init()
     //    this->addChild(sprite, 0);
     //}
 
-//TrapObject* test = FetchTrapObject(TrapObject::TRAP_SPIKES);
-//test->isActive = true;
+trapObjects = Node::create();
+trapObjects->setName("TrapObjects");
+this->addChild(trapObjects);
+
+TrapObject* test = FetchTrapObject(TrapObject::TRAP_SPIKES);
+test->isActive = true;
+
+//Set the position of sprite
+test->trapSprite->setPosition(Vec2(50, playingSize.height * 2));
+
     return true;
 }
 
@@ -351,11 +359,11 @@ void HelloWorld::update(float delta)
 	{
 		if (wallSprite->getPositionY() < -playingSize.height * 0.5f)
 		{
-			wallSprite->setPosition(Vec2(wallSprite->getPositionX(), (playingSize.height * 0.5f) + playingSize.height));
+			wallSprite->setPositionY((playingSize.height * 0.5f) + playingSize.height);
 		}
 		else
 		{
-			wallSprite->setPosition(Vec2(wallSprite->getPositionX(), wallSprite->getPositionY() - WALL_MOVESPEED * delta));
+			wallSprite->setPositionY(wallSprite->getPositionY() - WALL_MOVESPEED * delta);
 		}
 	}
 
@@ -372,6 +380,7 @@ void HelloWorld::update(float delta)
 TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)
 {
 	//Find an inactive trap, return it if one is found
+	
 	for (auto trapObj : trapObjectList)
 	{
 		if (!trapObj->isActive)
@@ -386,6 +395,7 @@ TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)
 	{
 		TrapObject *newTrapObj = new TrapObject(trapType);
 		newTrapObj->isActive = false;
+		trapObjects->addChild(newTrapObj->trapSprite);
 
 		trapObjectList.push_back(newTrapObj);
 	}
