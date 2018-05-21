@@ -270,15 +270,21 @@ trapObjects = Node::create();
 trapObjects->setName("TrapObjects");
 this->addChild(trapObjects);
 
-itemObjects = Node::create();
-itemObjects->setName("ItemObjects");
-this->addChild(itemObjects);
-
 TrapObject* test = FetchTrapObject(TrapObject::TRAP_SPIKES);
 test->isActive = true;
 
 //Set the position of sprite
 test->trapSprite->setPosition(Vec2(50, playingSize.height * 2));
+
+	enemies = Node::create();
+	enemies->setName("Enemies");
+	this->addChild(enemies);
+
+	Enemy* testEnemy = FetchEnemyObject(Enemy::ENEMY_SAMURAI);
+	testEnemy->isActive = true;
+
+	//Set the position of sprite
+	testEnemy->enemySprite->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.5f)), playingSize.height * 2));
 
     return true;
 }
@@ -379,6 +385,15 @@ void HelloWorld::update(float delta)
 			trapObj->TrapUpdate(delta);
 		}
 	}
+
+	//Update each enemy in enemy list
+	for (auto enemy : enemyList)
+	{
+		if (enemy->isActive)
+		{
+			enemy->EnemyUpdate(delta);
+		}
+	}
 }
 
 TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)
@@ -405,6 +420,32 @@ TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)
 	}
 
 	return FetchTrapObject(trapType);
+}
+
+Enemy * HelloWorld::FetchEnemyObject(Enemy::ENEMY_TYPE enemyType)
+{
+	//Find an inactive enemy, return it if one is found
+
+	for (auto enemy : enemyList)
+	{
+		if (!enemy->isActive)
+		{
+			enemy->enemyType = enemyType;
+			return enemy;
+		}
+	}
+
+	//If no available enemy is found, push 10 new ones into list
+	for (size_t i = 0; i < 10; ++i)
+	{
+		Enemy *newEnemy = new Enemy(enemyType, Vec2::ANCHOR_MIDDLE_BOTTOM);
+		newEnemy->isActive = false;
+		enemies->addChild(newEnemy->enemySprite);
+
+		enemyList.push_back(newEnemy);
+	}
+
+	return FetchEnemyObject(enemyType);
 }
 
 GameChar* HelloWorld::getChar()

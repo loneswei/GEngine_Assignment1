@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include "Character.h"
 #include "TrapObjects.h"
+#include "Enemy.h"
 #include "ItemObjects.h"
 
 using namespace cocos2d;
@@ -25,8 +26,9 @@ public:
 	// Update funciton that cals every frame
 	virtual void update(float delta);
 
-	//Fetch a free trap
+	//Fetchers
 	TrapObject* FetchTrapObject(TrapObject::TRAP_TYPE trapType = TrapObject::TRAP_RANDOM);
+	Enemy* FetchEnemyObject(Enemy::ENEMY_TYPE enemyType = Enemy::ENEMY_RANDOM);
 
 	// Get Char
 	GameChar* getChar();
@@ -37,6 +39,7 @@ private:
 	GameChar mainChar;
 	Node *wallObjects;
 	Node *trapObjects;
+	Node *enemies;
 	Node *itemObjects;
 
 	Label* scoreLabel;
@@ -44,6 +47,7 @@ private:
 
 	Size playingSize;
 	std::vector<TrapObject*> trapObjectList;
+	std::vector<Enemy*> enemyList;
 	std::vector<ItemObject*> itemObjectList;
 };
 
