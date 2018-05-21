@@ -1,11 +1,11 @@
-#ifndef __TRAPOBJECT_SCENE_H__
-#define ____TRAPOBJECT_SCENE_H__
+#ifndef __ItemObject_SCENE_H__
+#define ____ItemObject_SCENE_H__
 
 #include "cocos2d.h"
 
 using namespace cocos2d;
 
-class TrapObject
+class ItemObject
 {
 public:
 	enum TRAP_TYPE
@@ -16,9 +16,9 @@ public:
 		TRAPS_TOTAL
 	};
 
-	TrapObject();
-	TrapObject(TRAP_TYPE trapType);
-    ~TrapObject();
+	ItemObject();
+	ItemObject(TRAP_TYPE trapType);
+    ~ItemObject();
 
 	void TrapUpdate(float dt);
 
@@ -27,4 +27,4 @@ public:
 	Sprite *trapSprite;
 };
 
-#endif // ____TRAPOBJECT_SCENE_H__
+#endif // ____ItemObject_SCENE_H__

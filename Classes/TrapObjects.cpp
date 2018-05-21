@@ -21,13 +21,10 @@ TrapObject::TrapObject(TRAP_TYPE trapType) :
 	if (this->trapType == TRAP_SPIKES)
 	{
 		trapSprite = Sprite::create("spiketrap.png");
-		trapSprite->retain();
 		trapSprite->setRotation(90);
 	}
-	else if (this->trapType == TRAP_HOLES)
-	{
 
-	}
+	trapSprite->retain();
 }
 
 TrapObject::~TrapObject()

@@ -270,6 +270,10 @@ trapObjects = Node::create();
 trapObjects->setName("TrapObjects");
 this->addChild(trapObjects);
 
+itemObjects = Node::create();
+itemObjects->setName("ItemObjects");
+this->addChild(itemObjects);
+
 TrapObject* test = FetchTrapObject(TrapObject::TRAP_SPIKES);
 test->isActive = true;
 

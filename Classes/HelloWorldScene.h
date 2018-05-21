@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include "Character.h"
 #include "TrapObjects.h"
+#include "ItemObjects.h"
 
 using namespace cocos2d;
 
@@ -36,13 +37,14 @@ private:
 	GameChar mainChar;
 	Node *wallObjects;
 	Node *trapObjects;
-	Node *trapObjects;
+	Node *itemObjects;
 
 	Label* scoreLabel;
 	Label* distanceLabel;
 
 	Size playingSize;
 	std::vector<TrapObject*> trapObjectList;
+	std::vector<ItemObject*> itemObjectList;
 };
 
 #endif // __HELLOWORLD_SCENE_H_

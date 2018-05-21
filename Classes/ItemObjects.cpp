@@ -1,13 +1,13 @@
-#include "TrapObjects.h"
+#include "ItemObjects.h"
 
 static const float TRAP_SPEED = 200;
 
-TrapObject::TrapObject() :
+ItemObject::ItemObject() :
 	isActive(true)
 {
 }
 
-TrapObject::TrapObject(TRAP_TYPE trapType) :
+ItemObject::ItemObject(TRAP_TYPE trapType) :
 	isActive(true),
 	trapType(trapType)
 
@@ -21,21 +21,18 @@ TrapObject::TrapObject(TRAP_TYPE trapType) :
 	if (this->trapType == TRAP_SPIKES)
 	{
 		trapSprite = Sprite::create("spiketrap.png");
-		trapSprite->retain();
 		trapSprite->setRotation(90);
 	}
-	else if (this->trapType == TRAP_HOLES)
-	{
 
-	}
+	trapSprite->retain();
 }
 
-TrapObject::~TrapObject()
+ItemObject::~ItemObject()
 {
 	trapSprite->release();
 }
 
-void TrapObject::TrapUpdate(float dt)
+void ItemObject::TrapUpdate(float dt)
 {
 	//Update position of trap
 	trapSprite->setPositionY(trapSprite->getPositionY() - TRAP_SPEED * dt);
