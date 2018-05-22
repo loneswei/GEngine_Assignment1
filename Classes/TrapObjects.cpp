@@ -21,6 +21,8 @@ TrapObject::TrapObject(TRAP_TYPE trapType) :
 	if (this->trapType == TRAP_SPIKES)
 	{
 		trapSprite = Sprite::create("spiketrap.png");
+		// Hide the remaining 9 traps that are not used
+		trapSprite->setPosition(Vec2(-trapSprite->getContentSize().width, -trapSprite->getContentSize().height));
 		trapSprite->setRotation(90);
 	}
 

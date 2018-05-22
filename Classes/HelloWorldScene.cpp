@@ -5,6 +5,7 @@ USING_NS_CC;
 
 #define WALL_MOVESPEED 250
 #define WALL_CONTENTSIZE_X 50
+#define SAMURAI_SPAWN_TIMING 3
 
 Scene* HelloWorld::createScene()
 {
@@ -22,15 +23,15 @@ static void problemLoading(const char* filename)
 // on "init" you need to initialize your instance
 bool HelloWorld::init()
 {
-    //////////////////////////////
-    // 1. super init first
-    if ( !Scene::init() )
-    {
-        return false;
-    }
+	//////////////////////////////
+	// 1. super init first
+	if (!Scene::init())
+	{
+		return false;
+	}
 
-    auto visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	playingSize = Size(visibleSize.width, visibleSize.height);
 
@@ -59,7 +60,7 @@ bool HelloWorld::init()
 
 	wallSprite_RIGHT02->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
 	wallSprite_RIGHT02->setPosition(Vec2(playingSize.width, (playingSize.height * 0.5f) + playingSize.height));
-	
+
 	wallObjects->addChild(wallSprite_LEFT, 0);
 	wallObjects->addChild(wallSprite_LEFT02, 0);
 	wallObjects->addChild(wallSprite_RIGHT, 0);
@@ -80,7 +81,7 @@ bool HelloWorld::init()
 	*/
 	auto playerObject = Node::create();
 	playerObject->setName("PlayerObject");
-	
+
 	auto playerSprite = Sprite::create("run_right_01.png");
 
 	mainChar.init("run_right_01.png", Vec2::ANCHOR_MIDDLE_BOTTOM, (playingSize.width - (WALL_CONTENTSIZE_X * 0.5f)), (playerSprite->getContentSize().width * 2), "Player");
@@ -202,91 +203,87 @@ bool HelloWorld::init()
 	//auto animate = Animate::create(animation);
 	//mainChar.getSprite()->runAction(animate);
 
-    /////////////////////////////
-    // 2. add a menu item with "X" image, which is clicked to quit the program
-    //    you may modify it.
+	/////////////////////////////
+	// 2. add a menu item with "X" image, which is clicked to quit the program
+	//    you may modify it.
 
-    // add a "close" icon to exit the progress. it's an autorelease object
-    //auto closeItem = MenuItemImage::create(
-    //                                       "CloseNormal.png",
-    //                                       "CloseSelected.png",
-    //                                       CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
+	// add a "close" icon to exit the progress. it's an autorelease object
+	//auto closeItem = MenuItemImage::create(
+	//                                       "CloseNormal.png",
+	//                                       "CloseSelected.png",
+	//                                       CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
 
-    //if (closeItem == nullptr ||
-    //    closeItem->getContentSize().width <= 0 ||
-    //    closeItem->getContentSize().height <= 0)
-    //{
-    //    problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
-    //}
-    //else
-    //{
-    //    float x = origin.x + visibleSize.width - closeItem->getContentSize().width/2;
-    //    float y = origin.y + closeItem->getContentSize().height/2;
-    //    closeItem->setPosition(Vec2(x,y));
-    //}
+	//if (closeItem == nullptr ||
+	//    closeItem->getContentSize().width <= 0 ||
+	//    closeItem->getContentSize().height <= 0)
+	//{
+	//    problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
+	//}
+	//else
+	//{
+	//    float x = origin.x + visibleSize.width - closeItem->getContentSize().width/2;
+	//    float y = origin.y + closeItem->getContentSize().height/2;
+	//    closeItem->setPosition(Vec2(x,y));
+	//}
 
-    // create menu, it's an autorelease object
-    //auto menu = Menu::create(closeItem, NULL);
-    //menu->setPosition(Vec2::ZERO);
-    //this->addChild(menu, 1);
+	// create menu, it's an autorelease object
+	//auto menu = Menu::create(closeItem, NULL);
+	//menu->setPosition(Vec2::ZERO);
+	//this->addChild(menu, 1);
 
-    /////////////////////////////
-    // 3. add your codes below...
+	/////////////////////////////
+	// 3. add your codes below...
 
-    // add a label shows "Hello World"
-    // create and initialize a label
+	// add a label shows "Hello World"
+	// create and initialize a label
 
-    //auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
-    //if (label == nullptr)
-    //{
-    //    problemLoading("'fonts/Marker Felt.ttf'");
-    //}
-    //else
-    //{
-    //    // position the label on the center of the screen
-    //    label->setPosition(Vec2(origin.x + visibleSize.width/2,
-    //                            origin.y + visibleSize.height - label->getContentSize().height));
+	//auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
+	//if (label == nullptr)
+	//{
+	//    problemLoading("'fonts/Marker Felt.ttf'");
+	//}
+	//else
+	//{
+	//    // position the label on the center of the screen
+	//    label->setPosition(Vec2(origin.x + visibleSize.width/2,
+	//                            origin.y + visibleSize.height - label->getContentSize().height));
 
-    //    // add the label as a child to this layer
-    //    this->addChild(label, 1);
-    //}
+	//    // add the label as a child to this layer
+	//    this->addChild(label, 1);
+	//}
 
-    // add "HelloWorld" splash screen"
-    //auto sprite = Sprite::create("HelloWorld.png");
-    //if (sprite == nullptr)
-    //{
-    //    problemLoading("'HelloWorld.png'");
-    //}
-    //else
-    //{
-    //    // position the sprite on the center of the screen
-    //    sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+	// add "HelloWorld" splash screen"
+	//auto sprite = Sprite::create("HelloWorld.png");
+	//if (sprite == nullptr)
+	//{
+	//    problemLoading("'HelloWorld.png'");
+	//}
+	//else
+	//{
+	//    // position the sprite on the center of the screen
+	//    sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
 
-    //    // add the sprite as a child to this layer
-    //    this->addChild(sprite, 0);
-    //}
+	//    // add the sprite as a child to this layer
+	//    this->addChild(sprite, 0);
+	//}
 
-trapObjects = Node::create();
-trapObjects->setName("TrapObjects");
-this->addChild(trapObjects);
+	trapObjects = Node::create();
+	trapObjects->setName("TrapObjects");
+	this->addChild(trapObjects);
 
-TrapObject* test = FetchTrapObject(TrapObject::TRAP_SPIKES);
-test->isActive = true;
-
-//Set the position of sprite
-test->trapSprite->setPosition(Vec2(50, playingSize.height * 2));
-
-	enemies = Node::create();
-	enemies->setName("Enemies");
-	this->addChild(enemies);
-
-	Enemy* testEnemy = FetchEnemyObject(Enemy::ENEMY_SAMURAI);
-	testEnemy->isActive = true;
+	TrapObject* test = FetchTrapObject(TrapObject::TRAP_SPIKES);
+	test->isActive = true;
 
 	//Set the position of sprite
-	testEnemy->enemySprite->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.5f)), playingSize.height * 2));
+	test->trapSprite->setPosition(Vec2(50, playingSize.height * 2));
 
-    return true;
+	// Init Enemy
+	enemyObjects = Node::create();
+	enemyObjects->setName("EnemyObjects");
+	this->addChild(enemyObjects);
+	samuraiSpawnTimer = 0.0f;
+
+	return true;
 }
 
 
@@ -344,6 +341,12 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 			mainChar.Jump(LTarget, RTarget, playingSize.height / 2);
 		}
 	}
+
+	// Spawn Samurai enemy
+	if (keyCode == EventKeyboard::KeyCode::KEY_S)
+	{
+		SpawnSamuraiEnemy();
+	}
 }
 
 void HelloWorld::onMouseUp(Event * event)
@@ -357,10 +360,12 @@ void HelloWorld::onMouseUp(Event * event)
 
 void HelloWorld::update(float delta)
 {
+	// Update Character
 	scoreLabel->setString("Score: " + std::to_string(mainChar.getScore()));
 	distanceLabel->setString("Distance Travelled: " + std::to_string(mainChar.getDistanceTravelled()));
 	mainChar.Update(delta);
 
+	// Update Wall
 	//Get the array of walls from wallObjects node
 	static auto wallObjectsArray = wallObjects->getChildren();
 	
@@ -377,6 +382,14 @@ void HelloWorld::update(float delta)
 		}
 	}
 
+	// Spawn Samurai Enemy
+	samuraiSpawnTimer += 1 * delta;
+	if (samuraiSpawnTimer >= SAMURAI_SPAWN_TIMING)
+	{
+		SpawnSamuraiEnemy();
+		samuraiSpawnTimer = 0.0f;
+	}
+
 	//Update each trap in trap list
 	for (auto trapObj : trapObjectList)
 	{
@@ -386,14 +399,42 @@ void HelloWorld::update(float delta)
 		}
 	}
 
-	//Update each enemy in enemy list
-	for (auto enemy : enemyList)
+	// Update each enemy in enemy list
+	for (auto enemy : enemyObjectList)
 	{
-		if (enemy->isActive)
+		if (enemy->getIsActive())
 		{
 			enemy->EnemyUpdate(delta);
 		}
 	}
+}
+
+void HelloWorld::SpawnSamuraiEnemy()
+{
+	Enemy* testEnemy = FetchEnemyObject(Enemy::ENEMY_SAMURAI);
+	testEnemy->setIsActive(true);
+	testEnemy->getEnemySprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
+
+	// Random choose to spawn at left side or right side
+	int random_dir = RandomHelper::random_int(0, 9);
+	if(random_dir >= 5)
+		testEnemy->setEnemyDirection(Enemy::ENEMY_RIGHT);
+	else
+		testEnemy->setEnemyDirection(Enemy::ENEMY_LEFT);
+
+	// Set position according to Enemy direction
+	switch (testEnemy->getEnemyDirection())
+	{
+	case Enemy::ENEMY_RIGHT:
+		testEnemy->getEnemySprite()->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.4f)), playingSize.height * 2));
+		break;
+	case Enemy::ENEMY_LEFT:
+		testEnemy->getEnemySprite()->setPosition(Vec2(WALL_CONTENTSIZE_X * 0.4f, playingSize.height * 2));
+		break;
+	}
+
+	// Call Run animating Function
+	testEnemy->Run();
 }
 
 TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)
@@ -422,30 +463,27 @@ TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)
 	return FetchTrapObject(trapType);
 }
 
-Enemy * HelloWorld::FetchEnemyObject(Enemy::ENEMY_TYPE enemyType)
+Enemy * HelloWorld::FetchEnemyObject(Enemy::ENEMY_TYPE _enemyType)
 {
-	//Find an inactive enemy, return it if one is found
-
-	for (auto enemy : enemyList)
+	// Find an inactive enemy, return it if one is found
+	for (auto enemy : enemyObjectList)
 	{
-		if (!enemy->isActive)
+		if (!enemy->getIsActive())
 		{
-			enemy->enemyType = enemyType;
+			enemy->setEnemyType(_enemyType);
 			return enemy;
 		}
 	}
 
-	//If no available enemy is found, push 10 new ones into list
+	// If no available enemy is found, create and push 10 new ones into list
 	for (size_t i = 0; i < 10; ++i)
 	{
-		Enemy *newEnemy = new Enemy(enemyType, Vec2::ANCHOR_MIDDLE_BOTTOM);
-		newEnemy->isActive = false;
-		enemies->addChild(newEnemy->enemySprite);
-
-		enemyList.push_back(newEnemy);
+		Enemy *newEnemy = new Enemy(_enemyType);
+		enemyObjects->addChild(newEnemy->getEnemySprite());
+		enemyObjectList.push_back(newEnemy);
 	}
 
-	return FetchEnemyObject(enemyType);
+	return FetchEnemyObject(_enemyType);
 }
 
 GameChar* HelloWorld::getChar()

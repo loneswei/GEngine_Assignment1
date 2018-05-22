@@ -15,16 +15,38 @@ public:
 
 		ENEMY_TOTAL
 	};
+	enum ENEMY_DIRECTION
+	{
+		ENEMY_LEFT,
+		ENEMY_RIGHT,
+	};
 
+	// Constructors, Destructor
 	Enemy();
-	Enemy(ENEMY_TYPE trapType, Vec2 anchor);
+	Enemy(ENEMY_TYPE enemyType);
     ~Enemy();
 
+	// Functions
 	void EnemyUpdate(float dt);
+	void Run();
 
+	// Getters
+	ENEMY_TYPE getEnemyType() { return enemyType; }
+	bool getIsActive() { return isActive; }
+	Sprite* getEnemySprite() { return enemySprite; }
+	ENEMY_DIRECTION getEnemyDirection() { return enemyDir; }
+
+	// Setters
+	void setEnemyType(ENEMY_TYPE _enemyType) { enemyType = _enemyType; }
+	void setIsActive(bool _isActive) { isActive = _isActive; }
+	void setEnemySprite(Sprite* _enemySprite) { enemySprite = _enemySprite; }
+	void setEnemyDirection(ENEMY_DIRECTION _enemyDir) { enemyDir = _enemyDir; }
+
+private:
 	ENEMY_TYPE enemyType;
 	bool isActive;
 	Sprite *enemySprite;
+	ENEMY_DIRECTION enemyDir;
 };
 
 #endif // ____ENEMY_SCENE_H__

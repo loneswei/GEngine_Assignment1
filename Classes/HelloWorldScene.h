@@ -4,8 +4,8 @@
 #include "cocos2d.h"
 #include "Character.h"
 #include "TrapObjects.h"
-#include "Enemy.h"
 #include "ItemObjects.h"
+#include "Enemy.h"
 
 using namespace cocos2d;
 
@@ -19,12 +19,16 @@ public:
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
     
+	// Controls functions
 	virtual void onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event);
 	virtual void onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event);
 	virtual void onMouseUp(Event* event);
 
 	// Update funciton that cals every frame
 	virtual void update(float delta);
+
+	// Functions
+	void SpawnSamuraiEnemy();
 
 	//Fetchers
 	TrapObject* FetchTrapObject(TrapObject::TRAP_TYPE trapType = TrapObject::TRAP_RANDOM);
@@ -39,16 +43,18 @@ private:
 	GameChar mainChar;
 	Node *wallObjects;
 	Node *trapObjects;
-	Node *enemies;
 	Node *itemObjects;
+	Node *enemyObjects;
 
 	Label* scoreLabel;
 	Label* distanceLabel;
 
+	float samuraiSpawnTimer;
+
 	Size playingSize;
 	std::vector<TrapObject*> trapObjectList;
-	std::vector<Enemy*> enemyList;
 	std::vector<ItemObject*> itemObjectList;
+	std::vector<Enemy*> enemyObjectList;
 };
 
 #endif // __HELLOWORLD_SCENE_H_
