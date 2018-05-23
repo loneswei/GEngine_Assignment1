@@ -8,23 +8,25 @@ using namespace cocos2d;
 class ItemObject
 {
 public:
-	enum TRAP_TYPE
+	enum ITEM_TYPE
 	{
-		TRAP_RANDOM = -1,
-		TRAP_SPIKES,
+		ITEM_RANDOM = -1,
+		ITEM_COIN,
+		ITEM_SHIELD,
+		ITEM_MAGNET,
 
-		TRAPS_TOTAL
+		ITEM_TOTAL
 	};
 
 	ItemObject();
-	ItemObject(TRAP_TYPE trapType);
+	ItemObject(ITEM_TYPE itemType);
     ~ItemObject();
 
-	void TrapUpdate(float dt);
+	void ItemUpdate(float dt);
 
-	TRAP_TYPE trapType;
+	ITEM_TYPE itemType;
 	bool isActive;
-	Sprite *trapSprite;
+	Sprite *itemSprite;
 };
 
 #endif // ____ItemObject_SCENE_H__

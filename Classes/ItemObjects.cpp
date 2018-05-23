@@ -1,39 +1,48 @@
 #include "ItemObjects.h"
 
-static const float TRAP_SPEED = 200;
+static const float ITEM_SPEED = 200;
 
 ItemObject::ItemObject() :
 	isActive(true)
 {
 }
 
-ItemObject::ItemObject(TRAP_TYPE trapType) :
+ItemObject::ItemObject(ITEM_TYPE itemType) :
 	isActive(true),
-	trapType(trapType)
+	itemType(itemType)
 
 {
-	if (trapType == TRAP_RANDOM)
+	if (itemType == ITEM_RANDOM)
 	{
-		this->trapType = static_cast<TRAP_TYPE>(RandomHelper::random_int(0, (int)TRAPS_TOTAL - 1));
+		this->itemType = static_cast<ITEM_TYPE>(RandomHelper::random_int(0, (int)ITEM_TOTAL - 1));
 	}
 
 	//Assign the sprite texture
-	if (this->trapType == TRAP_SPIKES)
+	if (this->itemType == ITEM_COIN)
 	{
-		trapSprite = Sprite::create("spiketrap.png");
-		trapSprite->setRotation(90);
+		itemSprite = Sprite::create("coin.png");
+		itemSprite->setRotation(90);
+	}
+	else if (this->itemType == ITEM_SHIELD)
+	{
+		itemSprite = Sprite::create("shield.png");
+	}
+	else if (this->itemType == ITEM_MAGNET)
+	{
+		itemSprite = Sprite::create("magnet.png");
+		itemSprite->setRotation(90);
 	}
 
-	trapSprite->retain();
+	itemSprite->retain();
 }
 
 ItemObject::~ItemObject()
 {
-	trapSprite->release();
+	itemSprite->release();
 }
 
-void ItemObject::TrapUpdate(float dt)
+void ItemObject::ItemUpdate(float dt)
 {
-	//Update position of trap
-	trapSprite->setPositionY(trapSprite->getPositionY() - TRAP_SPEED * dt);
+	//Update position of item
+	itemSprite->setPositionY(itemSprite->getPositionY() - ITEM_SPEED * dt);
 }

@@ -67,12 +67,27 @@ bool HelloWorld::init()
 	wallObjects->addChild(wallSprite_RIGHT02, 0);
 	this->addChild(wallObjects, 1);
 
-	/*wallSprite_LEFT->runAction(RepeatForever::create(MoveTo::create(8, Vec2(0, -playingSize.height))));
-	wallSprite_LEFT02->runAction(RepeatForever::create(MoveTo::create(14, Vec2(0, -playingSize.height))));*/
-	/*wallSprite_RIGHT->runAction(wallMovementRight);
-	wallSprite_RIGHT02->runAction(wallMovementRight);*/
+	//Create Traps
+	trapObjects = Node::create();
+	trapObjects->setName("TrapObjects");
+	this->addChild(trapObjects);
 
-	//wallObjects->runAction(wallMovement);
+	TrapObject* test = FetchTrapObject(TrapObject::TRAP_SPIKES);
+	test->isActive = true;
+
+	//Set the position of reap
+	//test->trapSprite->setPosition(Vec2(50, playingSize.height * 2));
+
+	//Create items
+	itemObjects = Node::create();
+	itemObjects->setName("ItemObjects");
+	this->addChild(itemObjects);
+
+	// Init Enemy
+	enemyObjects = Node::create();
+	enemyObjects->setName("EnemyObjects");
+	this->addChild(enemyObjects);
+	samuraiSpawnTimer = 0.0f;
 
 	/*
 	***********************
@@ -96,47 +111,6 @@ bool HelloWorld::init()
 	scoreLabel->setPosition(Vec2(playingSize.width * 0.5f, 0 + scoreLabel->getContentSize().height + distanceLabel->getContentSize().height));
 	this->addChild(scoreLabel, 1);
 
-	//// Practical 01
-	//auto sprite = Sprite::create("ZigzagGrass_Mud_Round.png");
-
-	//sprite->setAnchorPoint(Vec2::ZERO);
-	//sprite->setPosition(0, (visibleSize.height / 2) - (sprite->getContentSize().height / 2));
-	//
-	//nodeItems->addChild(sprite, 0);
-	//this->addChild(nodeItems, 1);
-
-	// Platform
-	/*int limit = std::ceil(visibleSize.width / sprite->getContentSize().width);
-
-	for (int i = 1; i < limit; i++)
-	{
-		auto spriteT = Sprite::createWithTexture(sprite->getTexture());
-
-		spriteT->setAnchorPoint(Vec2::ZERO);
-		spriteT->setPosition(i * spriteT->getContentSize().width, (visibleSize.height / 2) - (spriteT->getContentSize().height / 2));
-
-		nodeItems->addChild(spriteT, 0);
-	}*/
-
-	// Character
-	/*auto spriteNode = Node::create();
-	spriteNode->setName("spriteNode");*/
-
-	/*mainChar.init("Blue_Front1.png", Vec2::ZERO, 0, (visibleSize.height / 2) + (sprite->getContentSize().height / 2), "mainSprite");
-	spriteNode->addChild(mainChar.getSprite(), 1);
-	this->addChild(spriteNode, 1);*/
-
-	//// auto move to x:200
-	//auto moveEvent = MoveBy::create(1, Vec2(200, 0));
-	//mainSprite->runAction(moveEvent);
-
-	//// auto reverse back to x:0
-	//auto delay = DelayTime::create(5.0f);
-	//auto delaySequence = Sequence::create(delay, delay->clone(), nullptr);
-	//auto sequence = Sequence::create(moveEvent, moveEvent->reverse(), delaySequence, nullptr);
-	//mainSprite->runAction(sequence);
-
-	// Practical 02
 	// Key Pressed movement
 	auto listener = EventListenerKeyboard::create();
 	listener->onKeyPressed = CC_CALLBACK_2(HelloWorld::onKeyPressed, this);
@@ -154,134 +128,6 @@ bool HelloWorld::init()
 
 	// Call Update function
 	this->scheduleUpdate();
-
-	// Practical 03
-	// Load Idle animation frames
-	//Vector<SpriteFrame*> animFrames;
-	//animFrames.reserve(4);
-	//animFrames.pushBack(SpriteFrame::create("Blue_Front2.png", Rect(0, 0, 65, 81)));
-	//animFrames.pushBack(SpriteFrame::create("Blue_Front1.png", Rect(0, 0, 65, 81)));
-	//animFrames.pushBack(SpriteFrame::create("Blue_Front3.png", Rect(0, 0, 65, 81)));
-	//animFrames.pushBack(SpriteFrame::create("Blue_Front1.png", Rect(0, 0, 65, 81)));
-
-	//// Create animation out of the frames
-	//Animation* animation = Animation::createWithSpriteFrames(animFrames, 0.1f);
-	//Animate* animateIdle = Animate::create(animation);
-
-	// Run Animation and repeat it forever
-	//mainChar.getSprite()->runAction(RepeatForever::create(animateIdle));
-
-	// Loading Sprite Sheet
-	/*SpriteBatchNode* spritebatch = SpriteBatchNode::create("sprite.png");
-	SpriteFrameCache* cache = SpriteFrameCache::getInstance();
-	cache->addSpriteFramesWithFile("sprite.plist");*/
-
-	// Loading sprite from Sprite Sheet
-	//auto Sprite1 = Sprite::createWithSpriteFrameName("Blue_Back1.png");
-	//spritebatch->addChild(Sprite1);
-	//addChild(spritebatch);
-
-	// Loading animation from Sprite Sheet
-	//Vector<SpriteFrame*> animFrames(3);
-
-	//char str[100] = { 0 };
-	//for (int i = 1; i < 3; i++)
-	//{
-	//	sprintf(str, "Blue_Back%d.png", i);
-	//	SpriteFrame* frame = cache->getSpriteFrameByName(str);
-	//	animFrames.pushBack(frame);
-	//}
-
-	//// "caches" are always singletons in cocos2d
-	//auto anim_cache = AnimationCache::getInstance();
-	//anim_cache->addAnimationsWithFile("sprite_ani.plist");
-
-	//// should be getAnimationByName(..) in future versions
-	//auto animation = anim_cache->animationByName("walk_right");
-
-	//// Don't confused between Animation and Animate
-	//auto animate = Animate::create(animation);
-	//mainChar.getSprite()->runAction(animate);
-
-	/////////////////////////////
-	// 2. add a menu item with "X" image, which is clicked to quit the program
-	//    you may modify it.
-
-	// add a "close" icon to exit the progress. it's an autorelease object
-	//auto closeItem = MenuItemImage::create(
-	//                                       "CloseNormal.png",
-	//                                       "CloseSelected.png",
-	//                                       CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
-
-	//if (closeItem == nullptr ||
-	//    closeItem->getContentSize().width <= 0 ||
-	//    closeItem->getContentSize().height <= 0)
-	//{
-	//    problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
-	//}
-	//else
-	//{
-	//    float x = origin.x + visibleSize.width - closeItem->getContentSize().width/2;
-	//    float y = origin.y + closeItem->getContentSize().height/2;
-	//    closeItem->setPosition(Vec2(x,y));
-	//}
-
-	// create menu, it's an autorelease object
-	//auto menu = Menu::create(closeItem, NULL);
-	//menu->setPosition(Vec2::ZERO);
-	//this->addChild(menu, 1);
-
-	/////////////////////////////
-	// 3. add your codes below...
-
-	// add a label shows "Hello World"
-	// create and initialize a label
-
-	//auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
-	//if (label == nullptr)
-	//{
-	//    problemLoading("'fonts/Marker Felt.ttf'");
-	//}
-	//else
-	//{
-	//    // position the label on the center of the screen
-	//    label->setPosition(Vec2(origin.x + visibleSize.width/2,
-	//                            origin.y + visibleSize.height - label->getContentSize().height));
-
-	//    // add the label as a child to this layer
-	//    this->addChild(label, 1);
-	//}
-
-	// add "HelloWorld" splash screen"
-	//auto sprite = Sprite::create("HelloWorld.png");
-	//if (sprite == nullptr)
-	//{
-	//    problemLoading("'HelloWorld.png'");
-	//}
-	//else
-	//{
-	//    // position the sprite on the center of the screen
-	//    sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-
-	//    // add the sprite as a child to this layer
-	//    this->addChild(sprite, 0);
-	//}
-
-	trapObjects = Node::create();
-	trapObjects->setName("TrapObjects");
-	this->addChild(trapObjects);
-
-	TrapObject* test = FetchTrapObject(TrapObject::TRAP_SPIKES);
-	test->isActive = true;
-
-	//Set the position of sprite
-	test->trapSprite->setPosition(Vec2(50, playingSize.height * 2));
-
-	// Init Enemy
-	enemyObjects = Node::create();
-	enemyObjects->setName("EnemyObjects");
-	this->addChild(enemyObjects);
-	samuraiSpawnTimer = 0.0f;
 
 	return true;
 }
@@ -390,21 +236,105 @@ void HelloWorld::update(float delta)
 		samuraiSpawnTimer = 0.0f;
 	}
 
-	//Update each trap in trap list
+	static const float characterSpriteWidth = mainChar.getSprite()->getContentSize().width * mainChar.getSprite()->getScaleX();
+
+	//Update each trap in trap list & collision check
 	for (auto trapObj : trapObjectList)
 	{
-		if (trapObj->isActive)
+		if (!trapObj->isActive)
 		{
-			trapObj->TrapUpdate(delta);
+			continue;
+		}
+
+		//Update trap
+		trapObj->TrapUpdate(delta);
+		
+		const float spriteGameWidth = trapObj->trapSprite->getContentSize().width * trapObj->trapSprite->getScaleX();
+
+		//Disable trap if it goes below the screen
+		if (trapObj->trapSprite->getPositionY() + spriteGameWidth < 0)
+		{
+			trapObj->isActive = false;
+			trapObj->trapSprite->pause();
+			trapObj->trapSprite->setVisible(false);
+		}
+		//Collision
+		if ((trapObj->trapSprite->getPosition() - mainChar.getSprite()->getPosition()).length() <= spriteGameWidth + characterSpriteWidth)
+		{
+			//Lose a life here
+		}
+	}
+
+	//Update each item in item list & collision check
+	for (auto itemObj : itemObjectList)
+	{
+		if (!itemObj->isActive)
+		{
+			continue;
+		}
+
+		//Update item
+		itemObj->ItemUpdate(delta);
+
+		const float spriteGameWidth = itemObj->itemSprite->getContentSize().width * itemObj->itemSprite->getScaleX();
+
+		//Disable trap if it goes below the screen
+		if (itemObj->itemSprite->getPositionY() + spriteGameWidth < 0)
+		{
+			itemObj->isActive = false;
+			itemObj->itemSprite->pause();
+			itemObj->itemSprite->setVisible(false);
+		}
+		//Player Collision
+		else if ((itemObj->itemSprite->getPosition() - mainChar.getSprite()->getPosition()).length() <= spriteGameWidth + characterSpriteWidth)
+		{
+			switch (itemObj->itemType)
+			{
+			case ItemObject::ITEM_COIN:
+			{
+				
+				break;
+			}
+			case ItemObject::ITEM_SHIELD:
+			{
+				break;
+			}
+			case ItemObject::ITEM_MAGNET:
+			{
+				break;
+			}
+			default:
+				break;
+			}
+
+			itemObj->isActive = false;
+			itemObj->itemSprite = nullptr;
 		}
 	}
 
 	// Update each enemy in enemy list
 	for (auto enemy : enemyObjectList)
 	{
-		if (enemy->getIsActive())
+		if (!enemy->getIsActive())
 		{
-			enemy->EnemyUpdate(delta);
+			continue;
+		}
+		//Update enemy
+		enemy->EnemyUpdate(delta);
+		
+		const float spriteGameWidth = enemy->getEnemySprite()->getContentSize().width * enemy->getEnemySprite()->getScaleX();
+
+		//Disable trap if it goes below the screen
+		if (enemy->getEnemySprite()->getPositionY() + spriteGameWidth < 0)
+		{
+			enemy->setIsActive(false);
+			enemy->getEnemySprite()->pause();
+			enemy->getEnemySprite()->setVisible(false);
+		}
+		//Player Collision
+		else if ((enemy->getEnemySprite()->getPosition() - mainChar.getSprite()->getPosition()).length() <= spriteGameWidth + characterSpriteWidth)
+		{
+			//Lose a life here
 		}
 	}
 }
@@ -446,6 +376,9 @@ TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)
 		if (!trapObj->isActive)
 		{
 			trapObj->trapType = trapType;
+			trapObj->trapSprite->resume();
+			trapObj->trapSprite->setVisible(true);
+			
 			return trapObj;
 		}
 	}
@@ -454,13 +387,47 @@ TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)
 	for (size_t i = 0; i < 10; ++i)
 	{
 		TrapObject *newTrapObj = new TrapObject(trapType);
+		
 		newTrapObj->isActive = false;
 		trapObjects->addChild(newTrapObj->trapSprite);
+		newTrapObj->trapSprite->pause();
+		newTrapObj->trapSprite->setVisible(false);
 
 		trapObjectList.push_back(newTrapObj);
 	}
 
 	return FetchTrapObject(trapType);
+}
+
+ItemObject * HelloWorld::FetchItemObject(ItemObject::ITEM_TYPE itemType)
+{
+	//Find an inactive item, return it if one is found
+	for (auto itemObj : itemObjectList)
+	{
+		if (!itemObj->isActive)
+		{
+			itemObj->itemType = itemType;
+			itemObj->itemSprite->resume();
+			itemObj->itemSprite->setVisible(true);
+			
+			return itemObj;
+		}
+	}
+
+	//If no available trap is found, push 10 new ones into list
+	for (size_t i = 0; i < 10; ++i)
+	{
+		ItemObject *newItemObj = new ItemObject(itemType);
+		
+		newItemObj->isActive = false;
+		itemObjects->addChild(newItemObj->itemSprite);
+		newItemObj->itemSprite->pause();
+		newItemObj->itemSprite->setVisible(false);
+
+		itemObjectList.push_back(newItemObj);
+	}
+
+	return FetchItemObject(itemType);
 }
 
 Enemy * HelloWorld::FetchEnemyObject(Enemy::ENEMY_TYPE _enemyType)
@@ -471,6 +438,9 @@ Enemy * HelloWorld::FetchEnemyObject(Enemy::ENEMY_TYPE _enemyType)
 		if (!enemy->getIsActive())
 		{
 			enemy->setEnemyType(_enemyType);
+			enemy->getEnemySprite()->resume();
+			enemy->getEnemySprite()->setVisible(true);
+
 			return enemy;
 		}
 	}
@@ -479,7 +449,11 @@ Enemy * HelloWorld::FetchEnemyObject(Enemy::ENEMY_TYPE _enemyType)
 	for (size_t i = 0; i < 10; ++i)
 	{
 		Enemy *newEnemy = new Enemy(_enemyType);
+		
 		enemyObjects->addChild(newEnemy->getEnemySprite());
+		newEnemy->getEnemySprite()->pause();
+		newEnemy->getEnemySprite()->setVisible(false);
+
 		enemyObjectList.push_back(newEnemy);
 	}
 

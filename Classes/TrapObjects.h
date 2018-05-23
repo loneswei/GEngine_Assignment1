@@ -12,6 +12,7 @@ public:
 	{
 		TRAP_RANDOM = -1,
 		TRAP_SPIKES,
+		TRAP_SHURIKEN,
 
 		TRAPS_TOTAL
 	};
