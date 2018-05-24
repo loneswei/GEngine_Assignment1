@@ -3,9 +3,10 @@
 #include "Character.h"
 USING_NS_CC;
 
-#define WALL_MOVESPEED 250
-#define WALL_CONTENTSIZE_X 50
-#define SAMURAI_SPAWN_TIMING 3
+#define WALL_MOVESPEED 250.0f
+#define WALL_CONTENTSIZE_X 50.0f
+#define SAMURAI_SPAWN_TIMING 3.0f
+#define COIN_SCORE 100.0f
 
 Scene* HelloWorld::createScene()
 {
@@ -166,8 +167,6 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event)
 
 void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 {
-	//mainChar.MoveChar(eStop);
-
 	// Debug Code - Exit application
 	if (keyCode == EventKeyboard::KeyCode::KEY_ESCAPE)
 	{
@@ -178,9 +177,9 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 	if (keyCode == EventKeyboard::KeyCode::KEY_SPACE)
 	{
 		// Only allow Jumping when Status is eRun
-		if (mainChar.getStatus() == eRun)
+		if (mainChar.getStatus() == mainChar.eRun)
 		{
-			mainChar.setStatus(eJump);
+			mainChar.setStatus(mainChar.eJump);
 			float LTarget = WALL_CONTENTSIZE_X * 0.5f;
 			float RTarget = playingSize.width - (WALL_CONTENTSIZE_X * 0.5f);
 
@@ -191,7 +190,8 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 	// Spawn Samurai enemy
 	if (keyCode == EventKeyboard::KeyCode::KEY_S)
 	{
-		SpawnSamuraiEnemy();
+		//SpawnSamuraiEnemy();
+		SpawnCoin();
 	}
 }
 
@@ -207,8 +207,8 @@ void HelloWorld::onMouseUp(Event * event)
 void HelloWorld::update(float delta)
 {
 	// Update Character
-	scoreLabel->setString("Score: " + std::to_string(mainChar.getScore()));
-	distanceLabel->setString("Distance Travelled: " + std::to_string(mainChar.getDistanceTravelled()));
+	scoreLabel->setString("Score: " + std::to_string((int)mainChar.getScore()));
+	distanceLabel->setString("Distance Travelled: " + std::to_string((int)mainChar.getDistanceTravelled()));
 	mainChar.Update(delta);
 
 	// Update Wall
@@ -268,7 +268,7 @@ void HelloWorld::update(float delta)
 	//Update each item in item list & collision check
 	for (auto itemObj : itemObjectList)
 	{
-		if (!itemObj->isActive)
+		if (!itemObj->getIsActive())
 		{
 			continue;
 		}
@@ -276,23 +276,23 @@ void HelloWorld::update(float delta)
 		//Update item
 		itemObj->ItemUpdate(delta);
 
-		const float spriteGameWidth = itemObj->itemSprite->getContentSize().width * itemObj->itemSprite->getScaleX();
+		const float spriteGameWidth = itemObj->getItemSprite()->getContentSize().width * itemObj->getItemSprite()->getScaleX();
 
-		//Disable trap if it goes below the screen
-		if (itemObj->itemSprite->getPositionY() + spriteGameWidth < 0)
+		//Disable item if it goes below the screen
+		if (itemObj->getItemSprite()->getPositionY() + spriteGameWidth < 0)
 		{
-			itemObj->isActive = false;
-			itemObj->itemSprite->pause();
-			itemObj->itemSprite->setVisible(false);
+			itemObj->setIsActive(false);
+			itemObj->getItemSprite()->pause();
+			itemObj->getItemSprite()->setVisible(false);
 		}
 		//Player Collision
-		else if ((itemObj->itemSprite->getPosition() - mainChar.getSprite()->getPosition()).length() <= spriteGameWidth + characterSpriteWidth)
+		else if ((itemObj->getItemSprite()->getPosition() - mainChar.getSprite()->getPosition()).length() <= spriteGameWidth + characterSpriteWidth)
 		{
-			switch (itemObj->itemType)
+			switch (itemObj->getItemType())
 			{
 			case ItemObject::ITEM_COIN:
 			{
-				
+				mainChar.setScore(mainChar.getScore() + itemObj->getCoinScore());
 				break;
 			}
 			case ItemObject::ITEM_SHIELD:
@@ -307,8 +307,9 @@ void HelloWorld::update(float delta)
 				break;
 			}
 
-			itemObj->isActive = false;
-			itemObj->itemSprite = nullptr;
+			itemObj->setIsActive(false);
+			itemObj->getItemSprite()->pause();
+			itemObj->getItemSprite()->setVisible(false);
 		}
 	}
 
@@ -341,30 +342,58 @@ void HelloWorld::update(float delta)
 
 void HelloWorld::SpawnSamuraiEnemy()
 {
-	Enemy* testEnemy = FetchEnemyObject(Enemy::ENEMY_SAMURAI);
-	testEnemy->setIsActive(true);
-	testEnemy->getEnemySprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
+	Enemy* Enemy = FetchEnemyObject(Enemy::ENEMY_SAMURAI);
+	Enemy->setIsActive(true);
+	Enemy->getEnemySprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
 
 	// Random choose to spawn at left side or right side
 	int random_dir = RandomHelper::random_int(0, 9);
 	if(random_dir >= 5)
-		testEnemy->setEnemyDirection(Enemy::ENEMY_RIGHT);
+		Enemy->setEnemyDirection(Enemy::ENEMY_RIGHT);
 	else
-		testEnemy->setEnemyDirection(Enemy::ENEMY_LEFT);
+		Enemy->setEnemyDirection(Enemy::ENEMY_LEFT);
 
 	// Set position according to Enemy direction
-	switch (testEnemy->getEnemyDirection())
+	switch (Enemy->getEnemyDirection())
 	{
 	case Enemy::ENEMY_RIGHT:
-		testEnemy->getEnemySprite()->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.4f)), playingSize.height * 2));
+		Enemy->getEnemySprite()->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.4f)), playingSize.height * 2));
 		break;
 	case Enemy::ENEMY_LEFT:
-		testEnemy->getEnemySprite()->setPosition(Vec2(WALL_CONTENTSIZE_X * 0.4f, playingSize.height * 2));
+		Enemy->getEnemySprite()->setPosition(Vec2(WALL_CONTENTSIZE_X * 0.4f, playingSize.height * 2));
 		break;
 	}
 
 	// Call Run animating Function
-	testEnemy->Run();
+	Enemy->Run();
+}
+
+void HelloWorld::SpawnCoin()
+{
+	ItemObject* Coin = FetchItemObject(ItemObject::ITEM_COIN);
+	Coin->setIsActive(true);
+	Coin->getItemSprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
+	Coin->setCoinScore(COIN_SCORE);
+
+	// Random choose to spawn at left side or right side
+	int random_dir = RandomHelper::random_int(0, 9);
+	if (random_dir >= 5)
+		Coin->setItemDirection(ItemObject::ITEM_RIGHT);
+	else
+		Coin->setItemDirection(ItemObject::ITEM_LEFT);
+
+	// Set position according to Enemy direction
+	switch (Coin->getItemDirection())
+	{
+	case ItemObject::ITEM_RIGHT:
+		Coin->getItemSprite()->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.4f)), playingSize.height));
+		Coin->getItemSprite()->setRotation(-90);
+		break;
+	case ItemObject::ITEM_LEFT:
+		Coin->getItemSprite()->setPosition(Vec2(WALL_CONTENTSIZE_X * 0.4f, playingSize.height));
+		Coin->getItemSprite()->setRotation(90);
+		break;
+	}
 }
 
 TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)
@@ -404,11 +433,11 @@ ItemObject * HelloWorld::FetchItemObject(ItemObject::ITEM_TYPE itemType)
 	//Find an inactive item, return it if one is found
 	for (auto itemObj : itemObjectList)
 	{
-		if (!itemObj->isActive)
+		if (!itemObj->getIsActive())
 		{
-			itemObj->itemType = itemType;
-			itemObj->itemSprite->resume();
-			itemObj->itemSprite->setVisible(true);
+			itemObj->setItemType(itemType);
+			itemObj->getItemSprite()->resume();
+			itemObj->getItemSprite()->setVisible(true);
 			
 			return itemObj;
 		}
@@ -419,10 +448,10 @@ ItemObject * HelloWorld::FetchItemObject(ItemObject::ITEM_TYPE itemType)
 	{
 		ItemObject *newItemObj = new ItemObject(itemType);
 		
-		newItemObj->isActive = false;
-		itemObjects->addChild(newItemObj->itemSprite);
-		newItemObj->itemSprite->pause();
-		newItemObj->itemSprite->setVisible(false);
+		newItemObj->setIsActive(false);
+		itemObjects->addChild(newItemObj->getItemSprite());
+		newItemObj->getItemSprite()->pause();
+		newItemObj->getItemSprite()->setVisible(false);
 
 		itemObjectList.push_back(newItemObj);
 	}

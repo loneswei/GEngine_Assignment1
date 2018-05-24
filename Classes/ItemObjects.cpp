@@ -21,7 +21,6 @@ ItemObject::ItemObject(ITEM_TYPE itemType) :
 	if (this->itemType == ITEM_COIN)
 	{
 		itemSprite = Sprite::create("coin.png");
-		itemSprite->setRotation(90);
 	}
 	else if (this->itemType == ITEM_SHIELD)
 	{
@@ -30,7 +29,6 @@ ItemObject::ItemObject(ITEM_TYPE itemType) :
 	else if (this->itemType == ITEM_MAGNET)
 	{
 		itemSprite = Sprite::create("magnet.png");
-		itemSprite->setRotation(90);
 	}
 
 	itemSprite->retain();

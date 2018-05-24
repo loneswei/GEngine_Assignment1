@@ -115,7 +115,7 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 void GameChar::Update(float delta)
 {
 	fScore += 1;
-	dDistance += 1;
+	fDistance += 1;
 }
 
 void GameChar::Run()

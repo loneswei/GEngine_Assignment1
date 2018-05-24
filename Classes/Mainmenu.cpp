@@ -1,11 +1,11 @@
 #include "MainMenu.h"
 #include "SimpleAudioEngine.h"
-#include "Character.h"
+//#include "Character.h"
 #include "HelloWorldScene.h"
 USING_NS_CC;
 
-#define WALL_MOVESPEED 250
-#define WALL_CONTENTSIZE_X 50
+//#define WALL_MOVESPEED 250
+//#define WALL_CONTENTSIZE_X 50
 #define PLAY_POSITION 0.5
 #define HIGHSCORE_POSITION 0.35
 #define TUTORIAL_POSITION 0.2
@@ -38,8 +38,8 @@ bool MainMenu::init()
 	playingSize = Size(visibleSize.width, visibleSize.height);
 
 	//Create the walls that player runs on
-	wallObjects = Node::create();
-	wallObjects->setName("WallObjects");
+	//wallObjects = Node::create();
+	//wallObjects->setName("WallObjects");
 
 	//auto wallSprite_LEFT = Sprite::create("woodwall.jpg");
 	//auto wallSprite_LEFT02 = Sprite::createWithTexture(wallSprite_LEFT->getTexture());
@@ -387,19 +387,19 @@ void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 		}
 	}
 
-	// Jump to the opposite side
-	if (keyCode == EventKeyboard::KeyCode::KEY_SPACE)
-	{
-		// Only allow Jumping when Status is eRun
-		if (mainChar.getStatus() == eRun)
-		{
-			mainChar.setStatus(eJump);
-			float LTarget = WALL_CONTENTSIZE_X * 0.5f;
-			float RTarget = playingSize.width - (WALL_CONTENTSIZE_X * 0.5f);
+	//// Jump to the opposite side
+	//if (keyCode == EventKeyboard::KeyCode::KEY_SPACE)
+	//{
+	//	// Only allow Jumping when Status is eRun
+	//	if (mainChar.getStatus() == eRun)
+	//	{
+	//		mainChar.setStatus(eJump);
+	//		float LTarget = WALL_CONTENTSIZE_X * 0.5f;
+	//		float RTarget = playingSize.width - (WALL_CONTENTSIZE_X * 0.5f);
 
-			mainChar.Jump(LTarget, RTarget, playingSize.height / 2);
-		}
-	}
+	//		mainChar.Jump(LTarget, RTarget, playingSize.height / 2);
+	//	}
+	//}
 }
 
 void MainMenu::onMouseUp(Event * event)
@@ -414,7 +414,7 @@ void MainMenu::onMouseUp(Event * event)
 void MainMenu::update(float delta)
 {
 	//scoreLabel->setString("Score: " + std::to_string(mainChar.getScore()));
-	mainChar.Update(delta);
+	//mainChar.Update(delta);
 
 	
 	/*static auto wallObjectsArray = wallObjects->getChildren();

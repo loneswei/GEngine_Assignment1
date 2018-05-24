@@ -29,6 +29,7 @@ public:
 
 	// Functions
 	void SpawnSamuraiEnemy();
+	void SpawnCoin();
 
 	//Fetchers
 	TrapObject* FetchTrapObject(TrapObject::TRAP_TYPE trapType = TrapObject::TRAP_RANDOM);
