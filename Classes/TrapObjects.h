@@ -23,6 +23,16 @@ public:
 
 	void TrapUpdate(float dt);
 
+	// Getters
+	TRAP_TYPE gettrapType(void) { return trapType; }
+	bool getIsActive(void) { return isActive; }
+	Sprite* gettrapSprite(void) { return trapSprite; }
+
+	// Setters
+	void settrapType(TRAP_TYPE _trapType) { trapType = _trapType; }
+	void setIsActive(bool _isActive) { isActive = _isActive; }
+	void settrapSprite(Sprite* _trapSprite) { trapSprite = _trapSprite; }
+
 	TRAP_TYPE trapType;
 	bool isActive;
 	Sprite *trapSprite;
