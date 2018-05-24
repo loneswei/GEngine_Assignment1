@@ -9,6 +9,7 @@ USING_NS_CC;
 #define SAMURAI_SPAWN_TIMING 3.0f
 #define COIN_SPAWN_TIMING 5.0f
 #define MAGNET_SPAWN_TIMING 7.0f
+#define SHIELD_SPAWN_TIMING 7.0f
 
 #define COIN_SCORE 100.0f
 #define COIN_SPEED 200.0f
@@ -79,8 +80,8 @@ bool HelloWorld::init()
 	trapObjects->setName("TrapObjects");
 	this->addChild(trapObjects);
 
-	TrapObject* test = FetchTrapObject(TrapObject::TRAP_SPIKES);
-	test->isActive = true;
+	//TrapObject* test = FetchTrapObject(TrapObject::TRAP_SPIKES);
+	//test->isActive = true;
 
 	//Set the position of reap
 	//test->trapSprite->setPosition(Vec2(50, playingSize.height * 2));
@@ -91,6 +92,7 @@ bool HelloWorld::init()
 	this->addChild(itemObjects);
 	coinSpawnTimer = 0.0f;
 	magnetSpawnTimer = 0.0f;
+	shieldSpawnTimer = 0.0f;
 
 	// Init Enemy
 	enemyObjects = Node::create();
@@ -112,6 +114,11 @@ bool HelloWorld::init()
 	playerObject->addChild(mainChar.getSprite(), 1);
 	this->addChild(playerObject, 1);
 
+	auto playerShieldObject = Node::create();
+	playerShieldObject->setName("PlayerShieldObject");
+	playerShieldObject->addChild(mainChar.getShieldSprite(), 1);
+	this->addChild(playerShieldObject, 1);
+
 	distanceLabel = Label::createWithTTF("Distance Travelled: " + std::to_string((int)mainChar.getDistanceTravelled()), "fonts/Marker Felt.ttf", 24);
 	distanceLabel->setPosition(Vec2(playingSize.width * 0.5f, distanceLabel->getContentSize().height));
 	this->addChild(distanceLabel, 1);
@@ -120,9 +127,27 @@ bool HelloWorld::init()
 	scoreLabel->setPosition(Vec2(playingSize.width * 0.5f, scoreLabel->getContentSize().height + distanceLabel->getContentSize().height));
 	this->addChild(scoreLabel, 1);
 
-	magnetLabel = Label::createWithTTF("magnet: " + std::to_string((int)(mainChar.getMagnetDuration() - mainChar.getMagnetTimer())), "fonts/Marker Felt.ttf", 24);
-	magnetLabel->setPosition(Vec2(playingSize.width * 0.5f, magnetLabel->getContentSize().height + distanceLabel->getContentSize().height + scoreLabel->getContentSize().height));
+	lifeLabel = Label::createWithTTF("Life: " + std::to_string(mainChar.getLifeCount()), "fonts/Marker Felt.ttf", 24);
+	lifeLabel->setPosition(Vec2(playingSize.width * 0.5f, lifeLabel->getContentSize().height + distanceLabel->getContentSize().height + scoreLabel->getContentSize().height));
+	this->addChild(lifeLabel, 1);
+
+	shieldLabel = Label::createWithTTF("Shield: " + std::to_string((int)(mainChar.getShieldDuration() - mainChar.getShieldTimer())), "fonts/Marker Felt.ttf", 24);
+	shieldLabel->setPosition(Vec2(playingSize.width * 0.5f, shieldLabel->getContentSize().height + distanceLabel->getContentSize().height + scoreLabel->getContentSize().height + lifeLabel->getContentSize().height));
+	this->addChild(shieldLabel, 1);
+
+	magnetLabel = Label::createWithTTF("Magnet: " + std::to_string((int)(mainChar.getMagnetDuration() - mainChar.getMagnetTimer())), "fonts/Marker Felt.ttf", 24);
+	magnetLabel->setPosition(Vec2(playingSize.width * 0.5f, magnetLabel->getContentSize().height + distanceLabel->getContentSize().height + scoreLabel->getContentSize().height + lifeLabel->getContentSize().height + shieldLabel->getContentSize().height));
 	this->addChild(magnetLabel, 1);
+
+	invulLabel = Label::createWithTTF("Invul: " + std::to_string((int)(mainChar.getInvulDuration() - mainChar.getInvulTimer())), "fonts/Marker Felt.ttf", 24);
+	invulLabel->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height - invulLabel->getContentSize().height));
+	this->addChild(invulLabel, 1);
+
+	deadLabel = Label::createWithTTF("DEAD", "fonts/Marker Felt.ttf", 100, Size::ZERO, TextHAlignment::CENTER, TextVAlignment::CENTER);
+	deadLabel->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height * 0.5f));
+	this->addChild(deadLabel, 1);
+	deadLabel->setVisible(false);
+
 
 	// Key Pressed movement
 	auto listener = EventListenerKeyboard::create();
@@ -229,13 +254,40 @@ void HelloWorld::onMouseUp(Event * event)
 
 void HelloWorld::update(float delta)
 {
-	// Update Character
+	// Update Labels
 	scoreLabel->setString("Score: " + std::to_string((int)mainChar.getScore()));
 	distanceLabel->setString("Distance Travelled: " + std::to_string((int)mainChar.getDistanceTravelled()));
+	lifeLabel->setString("Life: " + std::to_string(mainChar.getLifeCount()));
+	if (mainChar.getShieldActive())
+	{
+		shieldLabel->setString("Shield Left: " + std::to_string((int)(mainChar.getShieldDuration() - mainChar.getShieldTimer())));
+		mainChar.getShieldSprite()->setPosition(mainChar.getSprite()->getPosition());
+	}
+	else
+		shieldLabel->setString("");
 	if (mainChar.getMagnetActive())
+	{
 		magnetLabel->setString("Magnet Left: " + std::to_string((int)(mainChar.getMagnetDuration() - mainChar.getMagnetTimer())));
+		if (!mainChar.getShieldActive())
+			magnetLabel->setPosition(Vec2(magnetLabel->getPositionX(), magnetLabel->getPositionY() - shieldLabel->getContentSize().height));
+		else
+			magnetLabel->setPosition(Vec2(playingSize.width * 0.5f, magnetLabel->getContentSize().height + distanceLabel->getContentSize().height + scoreLabel->getContentSize().height + lifeLabel->getContentSize().height + shieldLabel->getContentSize().height));
+	}
 	else
 		magnetLabel->setString("");
+	if (mainChar.getInvulActive())
+		invulLabel->setString("invul Left: " + std::to_string((int)(mainChar.getInvulDuration() - mainChar.getInvulTimer())));
+	else
+		invulLabel->setString("");
+
+	// DEAD - GAME OVER
+	if (mainChar.getLifeCount() <= 0)
+	{
+		deadLabel->setVisible(true);
+		mainChar.getSprite()->pause();
+	}
+
+	// Update Character
 	mainChar.Update(delta);
 
 	// Update Wall
@@ -279,6 +331,14 @@ void HelloWorld::update(float delta)
 		magnetSpawnTimer = 0.0f;
 	}
 
+	// Spawn Shield
+	shieldSpawnTimer += 1 * delta;
+	if (shieldSpawnTimer >= SHIELD_SPAWN_TIMING)
+	{
+		SpawnShield();
+		shieldSpawnTimer = 0.0f;
+	}
+
 	static const float characterSpriteWidth = mainChar.getSprite()->getContentSize().width * mainChar.getSprite()->getScaleX();
 
 	//Update each trap in trap list & collision check
@@ -305,6 +365,14 @@ void HelloWorld::update(float delta)
 		if ((trapObj->trapSprite->getPosition() - mainChar.getSprite()->getPosition()).length() <= spriteGameWidth + characterSpriteWidth)
 		{
 			//Lose a life here
+			if (!mainChar.getShieldActive() && !mainChar.getInvulActive())
+			{
+				if (mainChar.getLifeCount() > 0)
+				{
+					mainChar.setLifeCount(mainChar.getLifeCount() - 1);
+					mainChar.setInvulActive(true);
+				}
+			}
 		}
 	}
 
@@ -362,11 +430,17 @@ void HelloWorld::update(float delta)
 			}
 			case ItemObject::ITEM_SHIELD:
 			{
+				if (!mainChar.getShieldActive())
+				{
+					mainChar.setShieldActive(true);
+					mainChar.getShieldSprite()->setVisible(true);
+				}
 				break;
 			}
 			case ItemObject::ITEM_MAGNET:
 			{
-				mainChar.setMagnetActive(true);
+				if (!mainChar.getMagnetActive())
+					mainChar.setMagnetActive(true);
 				break;
 			}
 			default:
@@ -402,6 +476,14 @@ void HelloWorld::update(float delta)
 		else if ((enemy->getEnemySprite()->getPosition() - mainChar.getSprite()->getPosition()).length() <= spriteGameWidth + characterSpriteWidth)
 		{
 			//Lose a life here
+			if (!mainChar.getShieldActive() && !mainChar.getInvulActive())
+			{
+				if (mainChar.getLifeCount() > 0)
+				{
+					mainChar.setLifeCount(mainChar.getLifeCount() - 1);
+					mainChar.setInvulActive(true);
+				}
+			}
 		}
 	}
 }
@@ -521,6 +603,38 @@ void HelloWorld::SpawnMagnet()
 		break;
 	}
 	itemObjects->addChild(Magnet->getItemSprite());
+}
+
+void HelloWorld::SpawnShield()
+{
+	ItemObject* Shield = FetchItemObject(ItemObject::ITEM_SHIELD);
+	Shield->setItemSprite(Sprite::create("shield.png"));
+	Shield->setIsActive(true);
+	Shield->getItemSprite()->resume();
+	if (!Shield->getItemSprite()->isVisible())
+		Shield->getItemSprite()->setVisible(true);
+	Shield->getItemSprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
+
+	// Random choose to spawn at left side or right side
+	int random_dir = RandomHelper::random_int(0, 9);
+	if (random_dir >= 5)
+		Shield->setItemDirection(ItemObject::ITEM_RIGHT);
+	else
+		Shield->setItemDirection(ItemObject::ITEM_LEFT);
+
+	// Set position according to Enemy direction
+	switch (Shield->getItemDirection())
+	{
+	case ItemObject::ITEM_RIGHT:
+		Shield->getItemSprite()->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.4f)), playingSize.height));
+		Shield->getItemSprite()->setRotation(-90);
+		break;
+	case ItemObject::ITEM_LEFT:
+		Shield->getItemSprite()->setPosition(Vec2(WALL_CONTENTSIZE_X * 0.4f, playingSize.height));
+		Shield->getItemSprite()->setRotation(90);
+		break;
+	}
+	itemObjects->addChild(Shield->getItemSprite());
 }
 
 TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)

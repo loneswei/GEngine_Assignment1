@@ -1,7 +1,9 @@
 #include "HelloWorldScene.h"
 #include "Character.h"
 
-#define MAGNET_DURATION 5.0f
+#define MAGNET_DURATION 15.0f
+#define SHIELD_DURATION 10.0f
+#define INVUL_DURATION 3.0f
 
 GameChar::GameChar()
 {
@@ -18,17 +20,35 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 	mainSprite->setAnchorPoint(anchor);
 	mainSprite->setPosition(x, y);
 	mainSprite->setName(name);
+
+	shieldSprite = Sprite::create("shield.png");
+	shieldSprite->setAnchorPoint(anchor);
+	shieldSprite->setPosition(x, y);
+	shieldSprite->setName("Player_Shield");
+	shieldSprite->setOpacity(150);
+	shieldSprite->setRotation(-90);
+	shieldSprite->setVisible(false);
+
 	eDir = eRight;
 	
 	Run();
-	// speed for mouse click movement - smaller faster, bigger slower
+
+	// speed for jump movement - smaller faster, bigger slower
 	fSpeed = 0.001f;
+
 	fScore = 0.0f;
 	fDistance = 0.0f;
 	eStat = eRun;
 	magnetActive = false;
 	magnetTimer = 0.0f;
 	magnetDuration = MAGNET_DURATION;
+	lifeCount = 3;
+	shieldActive = false;
+	shieldTimer = 0.0f;
+	shieldDuration = SHIELD_DURATION;
+	invulActive = false;
+	invulTimer = 0.0f;
+	invulDuration = INVUL_DURATION;
 }
 
 // MoveChar
@@ -120,6 +140,9 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 
 void GameChar::Update(float delta)
 {
+	if (lifeCount < 0)
+		return;
+
 	fScore += 1;
 	fDistance += 1;
 
@@ -132,6 +155,27 @@ void GameChar::Update(float delta)
 		{
 			magnetActive = false;
 			magnetTimer = 0.0f;
+		}
+	}
+	if (shieldActive)
+	{
+		shieldTimer += 1 * delta;
+		// Deactivate shield & reset its timer
+		if (shieldTimer >= shieldDuration)
+		{
+			shieldActive = false;
+			shieldTimer = 0.0f;
+			shieldSprite->setVisible(false);
+		}
+	}
+	if (invulActive)
+	{
+		invulTimer += 1 * delta;
+		// Deactivate invulnability & reset its timer
+		if (invulTimer >= invulDuration)
+		{
+			invulActive = false;
+			invulTimer = 0.0f;
 		}
 	}
 }
@@ -148,6 +192,8 @@ void GameChar::Run()
 	{
 		// Rotate anti-clockwise by 90(For Right side)
 		mainSprite->setRotation(-90);
+		if (shieldActive)
+			shieldSprite->setRotation(-90);
 		animFrames.pushBack(SpriteFrame::create("run_right_01.png", Rect(0, 0, 57, 85)));
 		animFrames.pushBack(SpriteFrame::create("run_right_02.png", Rect(0, 0, 57, 85)));
 		animFrames.pushBack(SpriteFrame::create("run_right_03.png", Rect(0, 0, 57, 85)));
@@ -160,6 +206,8 @@ void GameChar::Run()
 	{
 		// Rotate clockwise by 90(For Left side)
 		mainSprite->setRotation(90);
+		if (shieldActive)
+			shieldSprite->setRotation(90);
 		animFrames.pushBack(SpriteFrame::create("run_left_01.png", Rect(0, 0, 57, 85)));
 		animFrames.pushBack(SpriteFrame::create("run_left_02.png", Rect(0, 0, 57, 85)));
 		animFrames.pushBack(SpriteFrame::create("run_left_03.png", Rect(0, 0, 57, 85)));
@@ -229,6 +277,7 @@ void GameChar::Jump(float LTargetX, float RTargetX, float height)
 	
 	// Run Animation
 	mainSprite->runAction(animateJump);
+	shieldSprite->setRotation(0);
 
 	// Set Direction to the opposite side after jumping
 	eDir = (eDir > 0) ? eLeft : eRight;
