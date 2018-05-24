@@ -31,6 +31,7 @@ public:
 	void SpawnSamuraiEnemy();
 	void SpawnCoin();
 	void SpawnMagnet();
+	void SpawnShield();
 
 	//Fetchers
 	TrapObject* FetchTrapObject(TrapObject::TRAP_TYPE trapType = TrapObject::TRAP_RANDOM);
@@ -52,10 +53,15 @@ private:
 	Label* scoreLabel;
 	Label* distanceLabel;
 	Label* magnetLabel;
+	Label* lifeLabel;
+	Label* shieldLabel;
+	Label* invulLabel;
+	Label* deadLabel;
 
 	float samuraiSpawnTimer;
 	float coinSpawnTimer;
 	float magnetSpawnTimer;
+	float shieldSpawnTimer;
 
 	Size playingSize;
 	std::vector<TrapObject*> trapObjectList;
