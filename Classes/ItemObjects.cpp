@@ -10,37 +10,22 @@ ItemObject::ItemObject() :
 ItemObject::ItemObject(ITEM_TYPE itemType) :
 	isActive(true),
 	itemType(itemType)
-
 {
-	if (itemType == ITEM_RANDOM)
-	{
-		this->itemType = static_cast<ITEM_TYPE>(RandomHelper::random_int(0, (int)ITEM_TOTAL - 1));
-	}
-
-	//Assign the sprite texture
-	if (this->itemType == ITEM_COIN)
-	{
-		itemSprite = Sprite::create("coin.png");
-	}
-	else if (this->itemType == ITEM_SHIELD)
-	{
-		itemSprite = Sprite::create("shield.png");
-	}
-	else if (this->itemType == ITEM_MAGNET)
-	{
-		itemSprite = Sprite::create("magnet.png");
-	}
-
-	itemSprite->retain();
+	//if (itemType == ITEM_RANDOM)
+	//{
+	//	this->itemType = static_cast<ITEM_TYPE>(RandomHelper::random_int(0, (int)ITEM_TOTAL - 1));
+	//}
 }
 
 ItemObject::~ItemObject()
 {
-	itemSprite->release();
 }
 
 void ItemObject::ItemUpdate(float dt)
 {
-	//Update position of item
-	itemSprite->setPositionY(itemSprite->getPositionY() - ITEM_SPEED * dt);
+	if (itemType != ITEM_COIN)
+	{
+		//Update position of item
+		itemSprite->setPositionY(itemSprite->getPositionY() - ITEM_SPEED * dt);
+	}
 }

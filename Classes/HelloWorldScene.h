@@ -30,6 +30,7 @@ public:
 	// Functions
 	void SpawnSamuraiEnemy();
 	void SpawnCoin();
+	void SpawnMagnet();
 
 	//Fetchers
 	TrapObject* FetchTrapObject(TrapObject::TRAP_TYPE trapType = TrapObject::TRAP_RANDOM);
@@ -37,7 +38,7 @@ public:
 	Enemy* FetchEnemyObject(Enemy::ENEMY_TYPE enemyType = Enemy::ENEMY_RANDOM);
 
 	// Get Char
-	GameChar* getChar();
+	GameChar* getChar(void);
 
     // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);
@@ -50,8 +51,11 @@ private:
 
 	Label* scoreLabel;
 	Label* distanceLabel;
+	Label* magnetLabel;
 
 	float samuraiSpawnTimer;
+	float coinSpawnTimer;
+	float magnetSpawnTimer;
 
 	Size playingSize;
 	std::vector<TrapObject*> trapObjectList;

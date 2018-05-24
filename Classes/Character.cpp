@@ -1,6 +1,8 @@
 #include "HelloWorldScene.h"
 #include "Character.h"
 
+#define MAGNET_DURATION 5.0f
+
 GameChar::GameChar()
 {
 	mainSprite = nullptr;
@@ -21,8 +23,12 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 	Run();
 	// speed for mouse click movement - smaller faster, bigger slower
 	fSpeed = 0.001f;
-	fScore = 0;
+	fScore = 0.0f;
+	fDistance = 0.0f;
 	eStat = eRun;
+	magnetActive = false;
+	magnetTimer = 0.0f;
+	magnetDuration = MAGNET_DURATION;
 }
 
 // MoveChar
@@ -116,6 +122,18 @@ void GameChar::Update(float delta)
 {
 	fScore += 1;
 	fDistance += 1;
+
+	// Update Power-ups
+	if (magnetActive)
+	{
+		magnetTimer += 1 * delta;
+		// Deactivate magnet & reset its timer
+		if (magnetTimer >= magnetDuration)
+		{
+			magnetActive = false;
+			magnetTimer = 0.0f;
+		}
+	}
 }
 
 void GameChar::Run()

@@ -5,8 +5,14 @@ USING_NS_CC;
 
 #define WALL_MOVESPEED 250.0f
 #define WALL_CONTENTSIZE_X 50.0f
+
 #define SAMURAI_SPAWN_TIMING 3.0f
+#define COIN_SPAWN_TIMING 5.0f
+#define MAGNET_SPAWN_TIMING 7.0f
+
 #define COIN_SCORE 100.0f
+#define COIN_SPEED 200.0f
+#define MAGNET_STRENGTH 1050.0f
 
 Scene* HelloWorld::createScene()
 {
@@ -83,6 +89,8 @@ bool HelloWorld::init()
 	itemObjects = Node::create();
 	itemObjects->setName("ItemObjects");
 	this->addChild(itemObjects);
+	coinSpawnTimer = 0.0f;
+	magnetSpawnTimer = 0.0f;
 
 	// Init Enemy
 	enemyObjects = Node::create();
@@ -104,13 +112,17 @@ bool HelloWorld::init()
 	playerObject->addChild(mainChar.getSprite(), 1);
 	this->addChild(playerObject, 1);
 
-	distanceLabel = Label::createWithTTF("Distance Travelled: " + std::to_string(mainChar.getDistanceTravelled()), "fonts/Marker Felt.ttf", 24);
-	distanceLabel->setPosition(Vec2(playingSize.width * 0.5f, 0 + distanceLabel->getContentSize().height));
+	distanceLabel = Label::createWithTTF("Distance Travelled: " + std::to_string((int)mainChar.getDistanceTravelled()), "fonts/Marker Felt.ttf", 24);
+	distanceLabel->setPosition(Vec2(playingSize.width * 0.5f, distanceLabel->getContentSize().height));
 	this->addChild(distanceLabel, 1);
 
-	scoreLabel = Label::createWithTTF("Score: " + std::to_string(mainChar.getScore()), "fonts/Marker Felt.ttf", 24);
-	scoreLabel->setPosition(Vec2(playingSize.width * 0.5f, 0 + scoreLabel->getContentSize().height + distanceLabel->getContentSize().height));
+	scoreLabel = Label::createWithTTF("Score: " + std::to_string((int)mainChar.getScore()), "fonts/Marker Felt.ttf", 24);
+	scoreLabel->setPosition(Vec2(playingSize.width * 0.5f, scoreLabel->getContentSize().height + distanceLabel->getContentSize().height));
 	this->addChild(scoreLabel, 1);
+
+	magnetLabel = Label::createWithTTF("magnet: " + std::to_string((int)(mainChar.getMagnetDuration() - mainChar.getMagnetTimer())), "fonts/Marker Felt.ttf", 24);
+	magnetLabel->setPosition(Vec2(playingSize.width * 0.5f, magnetLabel->getContentSize().height + distanceLabel->getContentSize().height + scoreLabel->getContentSize().height));
+	this->addChild(magnetLabel, 1);
 
 	// Key Pressed movement
 	auto listener = EventListenerKeyboard::create();
@@ -173,6 +185,24 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 		Director::getInstance()->end();
 	}
 
+	// Debug Code - Spawn Samurai Enemy
+	if (keyCode == EventKeyboard::KeyCode::KEY_S)
+	{
+		SpawnSamuraiEnemy();
+	}
+
+	// Debug Code - Spawn Coin
+	if (keyCode == EventKeyboard::KeyCode::KEY_C)
+	{
+		SpawnCoin();
+	}
+
+	// Debug Code - Spawn Magnet
+	if (keyCode == EventKeyboard::KeyCode::KEY_M)
+	{
+		SpawnMagnet();
+	}
+
 	// Jump to the opposite side
 	if (keyCode == EventKeyboard::KeyCode::KEY_SPACE)
 	{
@@ -185,13 +215,6 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 
 			mainChar.Jump(LTarget, RTarget, playingSize.height / 2);
 		}
-	}
-
-	// Spawn Samurai enemy
-	if (keyCode == EventKeyboard::KeyCode::KEY_S)
-	{
-		//SpawnSamuraiEnemy();
-		SpawnCoin();
 	}
 }
 
@@ -209,6 +232,10 @@ void HelloWorld::update(float delta)
 	// Update Character
 	scoreLabel->setString("Score: " + std::to_string((int)mainChar.getScore()));
 	distanceLabel->setString("Distance Travelled: " + std::to_string((int)mainChar.getDistanceTravelled()));
+	if (mainChar.getMagnetActive())
+		magnetLabel->setString("Magnet Left: " + std::to_string((int)(mainChar.getMagnetDuration() - mainChar.getMagnetTimer())));
+	else
+		magnetLabel->setString("");
 	mainChar.Update(delta);
 
 	// Update Wall
@@ -234,6 +261,22 @@ void HelloWorld::update(float delta)
 	{
 		SpawnSamuraiEnemy();
 		samuraiSpawnTimer = 0.0f;
+	}
+
+	// Spawn Coin
+	coinSpawnTimer += 1 * delta;
+	if (coinSpawnTimer >= COIN_SPAWN_TIMING)
+	{
+		SpawnCoin();
+		coinSpawnTimer = 0.0f;
+	}
+
+	// Spawn Magnet
+	magnetSpawnTimer += 1 * delta;
+	if (magnetSpawnTimer >= MAGNET_SPAWN_TIMING)
+	{
+		SpawnMagnet();
+		magnetSpawnTimer = 0.0f;
 	}
 
 	static const float characterSpriteWidth = mainChar.getSprite()->getContentSize().width * mainChar.getSprite()->getScaleX();
@@ -276,6 +319,28 @@ void HelloWorld::update(float delta)
 		//Update item
 		itemObj->ItemUpdate(delta);
 
+		// Update Coin
+		if (itemObj->getItemType() == ItemObject::ITEM_COIN)
+		{
+			if (mainChar.getMagnetActive())
+			{
+				// Magnet sucks coins to character
+				if (itemObj->getItemSprite()->isVisible() &&
+					(itemObj->getItemSprite()->getPosition() - mainChar.getSprite()->getPosition()).length() <= MAGNET_STRENGTH)
+				{
+					Vec2 dir = (mainChar.getSprite()->getPosition() - itemObj->getItemSprite()->getPosition()).getNormalized();
+					dir *= MAGNET_STRENGTH * delta;
+					
+					itemObj->getItemSprite()->setPosition(itemObj->getItemSprite()->getPosition() + dir);
+				}
+				else
+					itemObj->getItemSprite()->setPositionY(itemObj->getItemSprite()->getPositionY() - COIN_SPEED * delta);
+			}
+			else
+			{
+				itemObj->getItemSprite()->setPositionY(itemObj->getItemSprite()->getPositionY() - COIN_SPEED * delta);
+			}
+		}
 		const float spriteGameWidth = itemObj->getItemSprite()->getContentSize().width * itemObj->getItemSprite()->getScaleX();
 
 		//Disable item if it goes below the screen
@@ -301,6 +366,7 @@ void HelloWorld::update(float delta)
 			}
 			case ItemObject::ITEM_MAGNET:
 			{
+				mainChar.setMagnetActive(true);
 				break;
 			}
 			default:
@@ -370,30 +436,91 @@ void HelloWorld::SpawnSamuraiEnemy()
 
 void HelloWorld::SpawnCoin()
 {
-	ItemObject* Coin = FetchItemObject(ItemObject::ITEM_COIN);
-	Coin->setIsActive(true);
-	Coin->getItemSprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
-	Coin->setCoinScore(COIN_SCORE);
+	// Random choose to spawn at left side or right side
+	int random_dir = RandomHelper::random_int(0, 9);
+	// Random choose to spawn how many coins at one go
+	int random_spawnAmount = RandomHelper::random_int(1, 5);
+	// For recording position of previous coin so can spawn in a string
+	float prevCoinPosY = 0.0f;
+
+	for (random_spawnAmount; random_spawnAmount > 0; --random_spawnAmount)
+	{
+		ItemObject* Coin = FetchItemObject(ItemObject::ITEM_COIN);
+		Coin->setItemSprite(Sprite::create("coin.png"));
+		Coin->setIsActive(true);
+		Coin->getItemSprite()->resume();
+		if(!Coin->getItemSprite()->isVisible())
+			Coin->getItemSprite()->setVisible(true);
+		Coin->getItemSprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
+		Coin->setCoinScore(COIN_SCORE);
+
+		if (random_dir >= 5)
+			Coin->setItemDirection(ItemObject::ITEM_RIGHT);
+		else
+			Coin->setItemDirection(ItemObject::ITEM_LEFT);
+
+		// Set position according to Enemy direction
+		switch (Coin->getItemDirection())
+		{
+		case ItemObject::ITEM_RIGHT:
+			if (prevCoinPosY == 0.0f)
+			{
+				Coin->getItemSprite()->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.4f)), playingSize.height));
+			}
+			else
+			{
+				Coin->getItemSprite()->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.4f)), prevCoinPosY + Coin->getItemSprite()->getContentSize().height * 2));
+			}
+			Coin->getItemSprite()->setRotation(-90);
+			prevCoinPosY = Coin->getItemSprite()->getPositionY();
+			break;
+		case ItemObject::ITEM_LEFT:
+			if (prevCoinPosY == 0.0f)
+			{
+				Coin->getItemSprite()->setPosition(Vec2(WALL_CONTENTSIZE_X * 0.4f, playingSize.height));
+			}
+			else
+			{
+				Coin->getItemSprite()->setPosition(Vec2(WALL_CONTENTSIZE_X * 0.4f, prevCoinPosY + Coin->getItemSprite()->getContentSize().height * 2));
+			}
+			Coin->getItemSprite()->setRotation(90);
+			prevCoinPosY = Coin->getItemSprite()->getPositionY();
+			break;
+		}
+		itemObjects->addChild(Coin->getItemSprite());
+	}
+}
+
+void HelloWorld::SpawnMagnet()
+{
+	ItemObject* Magnet = FetchItemObject(ItemObject::ITEM_MAGNET);
+	Magnet->setItemSprite(Sprite::create("magnet.png"));
+	Magnet->setIsActive(true);
+	Magnet->getItemSprite()->resume();
+	if (!Magnet->getItemSprite()->isVisible())
+		Magnet->getItemSprite()->setVisible(true);
+	Magnet->getItemSprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
 
 	// Random choose to spawn at left side or right side
 	int random_dir = RandomHelper::random_int(0, 9);
 	if (random_dir >= 5)
-		Coin->setItemDirection(ItemObject::ITEM_RIGHT);
+		Magnet->setItemDirection(ItemObject::ITEM_RIGHT);
 	else
-		Coin->setItemDirection(ItemObject::ITEM_LEFT);
+		Magnet->setItemDirection(ItemObject::ITEM_LEFT);
 
 	// Set position according to Enemy direction
-	switch (Coin->getItemDirection())
+	switch (Magnet->getItemDirection())
 	{
 	case ItemObject::ITEM_RIGHT:
-		Coin->getItemSprite()->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.4f)), playingSize.height));
-		Coin->getItemSprite()->setRotation(-90);
+		Magnet->getItemSprite()->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.4f)), playingSize.height));
+		Magnet->getItemSprite()->setRotation(-90);
 		break;
 	case ItemObject::ITEM_LEFT:
-		Coin->getItemSprite()->setPosition(Vec2(WALL_CONTENTSIZE_X * 0.4f, playingSize.height));
-		Coin->getItemSprite()->setRotation(90);
+		Magnet->getItemSprite()->setPosition(Vec2(WALL_CONTENTSIZE_X * 0.4f, playingSize.height));
+		Magnet->getItemSprite()->setRotation(90);
 		break;
 	}
+	itemObjects->addChild(Magnet->getItemSprite());
 }
 
 TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)
@@ -436,9 +563,6 @@ ItemObject * HelloWorld::FetchItemObject(ItemObject::ITEM_TYPE itemType)
 		if (!itemObj->getIsActive())
 		{
 			itemObj->setItemType(itemType);
-			itemObj->getItemSprite()->resume();
-			itemObj->getItemSprite()->setVisible(true);
-			
 			return itemObj;
 		}
 	}
@@ -447,12 +571,7 @@ ItemObject * HelloWorld::FetchItemObject(ItemObject::ITEM_TYPE itemType)
 	for (size_t i = 0; i < 10; ++i)
 	{
 		ItemObject *newItemObj = new ItemObject(itemType);
-		
 		newItemObj->setIsActive(false);
-		itemObjects->addChild(newItemObj->getItemSprite());
-		newItemObj->getItemSprite()->pause();
-		newItemObj->getItemSprite()->setVisible(false);
-
 		itemObjectList.push_back(newItemObj);
 	}
 

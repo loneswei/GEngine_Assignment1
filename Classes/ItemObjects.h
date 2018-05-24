@@ -2,6 +2,7 @@
 #define ____ItemObject_SCENE_H__
 
 #include "cocos2d.h"
+#include "Character.h"
 
 using namespace cocos2d;
 
@@ -30,11 +31,11 @@ public:
 	void ItemUpdate(float dt);
 
 	// Getters
-	ITEM_TYPE getItemType() { return itemType; }
-	ITEM_DIRECTION getItemDirection() { return itemDir; }
-	bool getIsActive() { return isActive; }
-	Sprite* getItemSprite() { return itemSprite; }
-	float getCoinScore() { return coinScore; }
+	ITEM_TYPE getItemType(void) { return itemType; }
+	ITEM_DIRECTION getItemDirection(void) { return itemDir; }
+	bool getIsActive(void) { return isActive; }
+	Sprite* getItemSprite(void) { return itemSprite; }
+	float getCoinScore(void) { return coinScore; }
 
 	// Setters
 	void setItemType(ITEM_TYPE _itemType) { itemType = _itemType; }

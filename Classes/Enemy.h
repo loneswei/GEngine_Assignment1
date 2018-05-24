@@ -31,10 +31,10 @@ public:
 	void Run();
 
 	// Getters
-	ENEMY_TYPE getEnemyType() { return enemyType; }
-	bool getIsActive() { return isActive; }
-	Sprite* getEnemySprite() { return enemySprite; }
-	ENEMY_DIRECTION getEnemyDirection() { return enemyDir; }
+	ENEMY_TYPE getEnemyType(void) { return enemyType; }
+	bool getIsActive(void) { return isActive; }
+	Sprite* getEnemySprite(void) { return enemySprite; }
+	ENEMY_DIRECTION getEnemyDirection(void) { return enemyDir; }
 
 	// Setters
 	void setEnemyType(ENEMY_TYPE _enemyType) { enemyType = _enemyType; }

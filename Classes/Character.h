@@ -32,10 +32,14 @@ public:
 	float getScore(void) { return fScore; }
 	EStatus getStatus(void) { return eStat; }
 	float getDistanceTravelled(void) { return fDistance; }
+	bool getMagnetActive(void) { return magnetActive; }
+	float getMagnetTimer(void) { return magnetTimer; }
+	float getMagnetDuration(void) { return magnetDuration; }
 
 	// Setters
 	void setStatus(EStatus status) { eStat = status; }
 	void setScore(float _score) { fScore = _score; }
+	void setMagnetActive(bool _magnetActive) { magnetActive = _magnetActive; }
 
 private:
 	cocos2d::Sprite* mainSprite;
@@ -44,7 +48,9 @@ private:
 	float fSpeed;
 	float fScore;
 	float fDistance;
-
+	float magnetTimer;
+	float magnetDuration;
+	bool magnetActive;
 };
 
 #endif // __CHAR_SCENE_H__
