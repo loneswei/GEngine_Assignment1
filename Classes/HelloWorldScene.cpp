@@ -80,7 +80,7 @@ bool HelloWorld::init()
 	this->addChild(trapObjects);
 
 	TrapObject* test = FetchTrapObject(TrapObject::TRAP_SPIKES);
-	test->isActive = true;
+	test->setIsActive(true);
 
 	//Set the position of reap
 	//test->trapSprite->setPosition(Vec2(50, playingSize.height * 2));
@@ -284,7 +284,7 @@ void HelloWorld::update(float delta)
 	//Update each trap in trap list & collision check
 	for (auto trapObj : trapObjectList)
 	{
-		if (!trapObj->isActive)
+		if (!trapObj->getIsActive())
 		{
 			continue;
 		}
@@ -292,17 +292,17 @@ void HelloWorld::update(float delta)
 		//Update trap
 		trapObj->TrapUpdate(delta);
 		
-		const float spriteGameWidth = trapObj->trapSprite->getContentSize().width * trapObj->trapSprite->getScaleX();
+		const float spriteGameWidth = (trapObj->gettrapSprite()->getContentSize().width) * (trapObj->gettrapSprite()->getScaleX());
 
 		//Disable trap if it goes below the screen
-		if (trapObj->trapSprite->getPositionY() + spriteGameWidth < 0)
+		if (trapObj->gettrapSprite()->getPositionY() + spriteGameWidth < 0)
 		{
-			trapObj->isActive = false;
-			trapObj->trapSprite->pause();
-			trapObj->trapSprite->setVisible(false);
+			trapObj->setIsActive(false);
+			trapObj->gettrapSprite()->pause();
+			trapObj->gettrapSprite()->setVisible(false);
 		}
 		//Collision
-		if ((trapObj->trapSprite->getPosition() - mainChar.getSprite()->getPosition()).length() <= spriteGameWidth + characterSpriteWidth)
+		if ((trapObj->gettrapSprite()->getPosition() - mainChar.getSprite()->getPosition()).length() <= spriteGameWidth + characterSpriteWidth)
 		{
 			//Lose a life here
 		}
@@ -529,11 +529,11 @@ TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)
 	
 	for (auto trapObj : trapObjectList)
 	{
-		if (!trapObj->isActive)
+		if (!trapObj->getIsActive())
 		{
-			trapObj->trapType = trapType;
-			trapObj->trapSprite->resume();
-			trapObj->trapSprite->setVisible(true);
+			trapObj->gettrapType = trapType;
+			trapObj->gettrapSprite()->resume();
+			trapObj->gettrapSprite()->setVisible(true);
 			
 			return trapObj;
 		}
@@ -544,10 +544,10 @@ TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)
 	{
 		TrapObject *newTrapObj = new TrapObject(trapType);
 		
-		newTrapObj->isActive = false;
-		trapObjects->addChild(newTrapObj->trapSprite);
-		newTrapObj->trapSprite->pause();
-		newTrapObj->trapSprite->setVisible(false);
+		newTrapObj->setIsActive(false);
+		trapObjects->addChild(newTrapObj->gettrapSprite());
+		newTrapObj->gettrapSprite()->pause();
+		newTrapObj->gettrapSprite()->setVisible(false);
 
 		trapObjectList.push_back(newTrapObj);
 	}

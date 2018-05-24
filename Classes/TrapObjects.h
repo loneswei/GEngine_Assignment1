@@ -33,6 +33,7 @@ public:
 	void setIsActive(bool _isActive) { isActive = _isActive; }
 	void settrapSprite(Sprite* _trapSprite) { trapSprite = _trapSprite; }
 
+private:
 	TRAP_TYPE trapType;
 	bool isActive;
 	Sprite *trapSprite;
