@@ -27,11 +27,21 @@ public:
 	// Update funciton that cals every frame
 	virtual void update(float delta);
 
-	// Functions
+	// Spawning Functions
 	void SpawnSamuraiEnemy();
 	void SpawnCoin();
 	void SpawnMagnet();
 	void SpawnShield();
+
+	// Code 'Cleaning' Functions
+	void GameObjectsInit();
+	void LabelInit();
+	void LabelUpdate();
+	void AutoSpawner(float delta);
+	void WallUpdate(float delta);
+	void TrapUpdate(float delta);
+	void ItemUpdate(float delta);
+	void EnemyUpdate(float delta);
 
 	//Fetchers
 	TrapObject* FetchTrapObject(TrapObject::TRAP_TYPE trapType = TrapObject::TRAP_RANDOM);
@@ -39,7 +49,7 @@ public:
 	Enemy* FetchEnemyObject(Enemy::ENEMY_TYPE enemyType = Enemy::ENEMY_RANDOM);
 
 	// Get Char
-	GameChar* getChar(void);
+	GameChar* getChar(void) { return &mainChar; }
 
     // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);
@@ -62,6 +72,7 @@ private:
 	float coinSpawnTimer;
 	float magnetSpawnTimer;
 	float shieldSpawnTimer;
+	float characterSpriteWidth;
 
 	Size playingSize;
 	std::vector<TrapObject*> trapObjectList;

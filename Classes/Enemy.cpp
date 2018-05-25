@@ -19,10 +19,7 @@ Enemy::Enemy(ENEMY_TYPE enemyType) :
 	//Assign the sprite texture
 	if (this->enemyType == ENEMY_SAMURAI)
 	{
-		//enemySprite = Sprite::create("samurai_run_right_01.png");
 		enemySprite = Sprite::create("samurai_run_left_01.png");
-		// Hide the remaining 9 enemies that are not used
-		enemySprite->setPosition(Vec2(-enemySprite->getContentSize().width, -enemySprite->getContentSize().height));
 	}
 }
 
