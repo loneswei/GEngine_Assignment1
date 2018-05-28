@@ -3,6 +3,8 @@
 #include "Character.h"
 USING_NS_CC;
 
+#define BACKGROUND_SCROLL_SPEED 5.f
+
 #define WALL_MOVESPEED 250.0f
 #define WALL_CONTENTSIZE_X 50.0f
 
@@ -18,14 +20,14 @@ USING_NS_CC;
 Scene* HelloWorld::createScene()
 {
 	// return scene
-    return HelloWorld::create();
+	return HelloWorld::create();
 }
 
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
 {
-    printf("Error while loading: %s\n", filename);
-    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
+	printf("Error while loading: %s\n", filename);
+	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
 }
 
 // on "init" you need to initialize your instance
@@ -73,17 +75,17 @@ bool HelloWorld::init()
 
 void HelloWorld::menuCloseCallback(Ref* pSender)
 {
-    //Close the cocos2d-x game scene and quit the application
-    Director::getInstance()->end();
+	//Close the cocos2d-x game scene and quit the application
+	Director::getInstance()->end();
 
-    #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-    exit(0);
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+	exit(0);
 #endif
 
-    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() and exit(0) as given above,instead trigger a custom event created in RootViewController.mm as below*/
+	/*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() and exit(0) as given above,instead trigger a custom event created in RootViewController.mm as below*/
 
-    //EventCustom customEndEvent("game_scene_close_event");
-    //_eventDispatcher->dispatchEvent(&customEndEvent);
+	//EventCustom customEndEvent("game_scene_close_event");
+	//_eventDispatcher->dispatchEvent(&customEndEvent);
 
 
 }
@@ -178,6 +180,14 @@ void HelloWorld::update(float delta)
 
 	// Update Enemies
 	EnemyUpdate(delta);
+
+	static auto theBackgroundImage = BackgroundNode->getChildByName("BackgroundSprite");
+	static auto DistanceBetweenPositions = (theBackgroundImage->getContentSize().height * theBackgroundImage->getScaleY() * 0.5f) - playingSize.height * 0.5f;
+
+	if (playingSize.height * 0.5f - theBackgroundImage->getPositionY() <= DistanceBetweenPositions)
+	{
+		theBackgroundImage->setPositionY(theBackgroundImage->getPositionY() - delta * 100);
+	}
 }
 
 void HelloWorld::SpawnSamuraiEnemy()
@@ -188,7 +198,7 @@ void HelloWorld::SpawnSamuraiEnemy()
 
 	// Random choose to spawn at left side or right side
 	int random_dir = RandomHelper::random_int(0, 9);
-	if(random_dir >= 5)
+	if (random_dir >= 5)
 		Enemy->setEnemyDirection(Enemy::ENEMY_RIGHT);
 	else
 		Enemy->setEnemyDirection(Enemy::ENEMY_LEFT);
@@ -223,7 +233,7 @@ void HelloWorld::SpawnCoin()
 		Coin->setItemSprite(Sprite::create("coin.png"));
 		Coin->setIsActive(true);
 		Coin->getItemSprite()->resume();
-		if(!Coin->getItemSprite()->isVisible())
+		if (!Coin->getItemSprite()->isVisible())
 			Coin->getItemSprite()->setVisible(true);
 		Coin->getItemSprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
 		Coin->setCoinScore(COIN_SCORE);
@@ -331,6 +341,17 @@ void HelloWorld::SpawnShield()
 
 void HelloWorld::GameObjectsInit()
 {
+	//Backgground Image
+	BackgroundNode = Node::create();
+	BackgroundNode->setName("BackgroundNode");
+	auto BackgroundSprite = Sprite::create("GameBackground.jpg");
+	BackgroundSprite->setName("BackgroundSprite");
+
+	auto DistanceBewtweenPos = (BackgroundSprite->getContentSize().height * 0.5f * BackgroundSprite->getScaleY()) - (playingSize.height * 0.5f);
+	BackgroundSprite->setPosition(playingSize.width * 0.5f, (playingSize.height * 0.5f) + DistanceBewtweenPos);
+	BackgroundNode->addChild(BackgroundSprite, 1);
+	this->addChild(BackgroundNode, 0);
+
 	// ------------------ Init Walls ----------------------
 	wallObjects = Node::create();
 	wallObjects->setName("WallObjects");
@@ -697,7 +718,7 @@ void HelloWorld::EnemyUpdate(float delta)
 TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)
 {
 	//Find an inactive trap, return it if one is found
-	
+
 	for (auto trapObj : trapObjectList)
 	{
 		if (!trapObj->getIsActive())
@@ -705,7 +726,7 @@ TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)
 			trapObj->settrapType(trapType);
 			trapObj->gettrapSprite()->resume();
 			trapObj->gettrapSprite()->setVisible(true);
-			
+
 			return trapObj;
 		}
 	}
@@ -714,7 +735,7 @@ TrapObject* HelloWorld::FetchTrapObject(const TrapObject::TRAP_TYPE trapType)
 	for (size_t i = 0; i < 10; ++i)
 	{
 		TrapObject *newTrapObj = new TrapObject(trapType);
-		
+
 		newTrapObj->setIsActive(false);
 		trapObjects->addChild(newTrapObj->gettrapSprite());
 		newTrapObj->gettrapSprite()->pause();
@@ -768,7 +789,7 @@ Enemy * HelloWorld::FetchEnemyObject(Enemy::ENEMY_TYPE _enemyType)
 	for (size_t i = 0; i < 10; ++i)
 	{
 		Enemy *newEnemy = new Enemy(_enemyType);
-		
+
 		enemyObjects->addChild(newEnemy->getEnemySprite());
 		newEnemy->getEnemySprite()->pause();
 		newEnemy->getEnemySprite()->setVisible(false);

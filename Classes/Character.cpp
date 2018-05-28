@@ -160,7 +160,6 @@ void GameChar::Update(float delta)
 	if (shieldActive)
 	{
 		shieldTimer += 1 * delta;
-		shieldSprite->setRotation(mainSprite->getRotation());
 		// Deactivate shield & reset its timer
 		if (shieldTimer >= shieldDuration)
 		{
@@ -193,6 +192,8 @@ void GameChar::Run()
 	{
 		// Rotate anti-clockwise by 90(For Right side)
 		mainSprite->setRotation(-90);
+		if (shieldActive)
+			shieldSprite->setRotation(-90);
 		animFrames.pushBack(SpriteFrame::create("run_right_01.png", Rect(0, 0, 57, 85)));
 		animFrames.pushBack(SpriteFrame::create("run_right_02.png", Rect(0, 0, 57, 85)));
 		animFrames.pushBack(SpriteFrame::create("run_right_03.png", Rect(0, 0, 57, 85)));
@@ -205,6 +206,8 @@ void GameChar::Run()
 	{
 		// Rotate clockwise by 90(For Left side)
 		mainSprite->setRotation(90);
+		if (shieldActive)
+			shieldSprite->setRotation(90);
 		animFrames.pushBack(SpriteFrame::create("run_left_01.png", Rect(0, 0, 57, 85)));
 		animFrames.pushBack(SpriteFrame::create("run_left_02.png", Rect(0, 0, 57, 85)));
 		animFrames.pushBack(SpriteFrame::create("run_left_03.png", Rect(0, 0, 57, 85)));
@@ -274,6 +277,7 @@ void GameChar::Jump(float LTargetX, float RTargetX, float height)
 	
 	// Run Animation
 	mainSprite->runAction(animateJump);
+	shieldSprite->setRotation(0);
 
 	// Set Direction to the opposite side after jumping
 	eDir = (eDir > 0) ? eLeft : eRight;
