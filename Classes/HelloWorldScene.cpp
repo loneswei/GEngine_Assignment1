@@ -186,7 +186,7 @@ void HelloWorld::update(float delta)
 
 	if (playingSize.height * 0.5f - theBackgroundImage->getPositionY() <= DistanceBetweenPositions)
 	{
-		theBackgroundImage->setPositionY(theBackgroundImage->getPositionY() - delta * 100);
+		theBackgroundImage->setPositionY(theBackgroundImage->getPositionY() - delta * BACKGROUND_SCROLL_SPEED);
 	}
 }
 
