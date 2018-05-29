@@ -157,7 +157,13 @@ void HelloWorld::onMouseUp(Event * event)
 void HelloWorld::update(float delta)
 {
 	LabelUpdate();
-	AutoSpawner(delta);
+
+	// ---------- Auto Spawning ---------- 
+	AutoSpawner(delta, samuraiSpawnTimer, SAMURAI_SPAWN_TIMING, eSamuraiEnemy);
+	AutoSpawner(delta, coinSpawnTimer, COIN_SPAWN_TIMING, eCoin);
+	AutoSpawner(delta, magnetSpawnTimer, MAGNET_SPAWN_TIMING, eMagnet);
+	AutoSpawner(delta, shieldSpawnTimer, SHIELD_SPAWN_TIMING, eShield);
+	// ---------- Auto Spawning ---------- 
 
 	// DEAD - GAME OVER
 	if (mainChar.getLifeCount() <= 0)
@@ -482,10 +488,7 @@ void HelloWorld::LabelUpdate()
 
 	// Shield Duration
 	if (mainChar.getShieldActive())
-	{
 		shieldLabel->setString("Shield Left: " + std::to_string((int)(mainChar.getShieldDuration() - mainChar.getShieldTimer())));
-		mainChar.getShieldSprite()->setPosition(mainChar.getSprite()->getPosition());
-	}
 	else
 		shieldLabel->setString("");
 
@@ -508,38 +511,28 @@ void HelloWorld::LabelUpdate()
 		invulLabel->setString("");
 }
 
-void HelloWorld::AutoSpawner(float delta)
+void HelloWorld::AutoSpawner(float delta, float &timer, float timing, ESpawner _eSpawn)
 {
-	// Spawn Samurai Enemy
-	samuraiSpawnTimer += 1 * delta;
-	if (samuraiSpawnTimer >= SAMURAI_SPAWN_TIMING)
+	timer += 1 * delta;
+	if (timer >= timing)
 	{
-		SpawnSamuraiEnemy();
-		samuraiSpawnTimer = 0.0f;
-	}
-
-	// Spawn Coin
-	coinSpawnTimer += 1 * delta;
-	if (coinSpawnTimer >= COIN_SPAWN_TIMING)
-	{
-		SpawnCoin();
-		coinSpawnTimer = 0.0f;
-	}
-
-	// Spawn Magnet
-	magnetSpawnTimer += 1 * delta;
-	if (magnetSpawnTimer >= MAGNET_SPAWN_TIMING)
-	{
-		SpawnMagnet();
-		magnetSpawnTimer = 0.0f;
-	}
-
-	// Spawn Shield
-	shieldSpawnTimer += 1 * delta;
-	if (shieldSpawnTimer >= SHIELD_SPAWN_TIMING)
-	{
-		SpawnShield();
-		shieldSpawnTimer = 0.0f;
+		// Call related Spawn function according to passed in spawner enum
+		switch (_eSpawn)
+		{
+		case eSamuraiEnemy:
+			SpawnSamuraiEnemy();
+			break;
+		case eCoin:
+			SpawnCoin();
+			break;
+		case eMagnet:
+			SpawnMagnet();
+			break;
+		case eShield:
+			SpawnShield();
+			break;
+		}
+		timer = 0.0f;
 	}
 }
 

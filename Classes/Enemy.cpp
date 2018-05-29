@@ -19,10 +19,7 @@ Enemy::Enemy(ENEMY_TYPE enemyType) :
 	//Assign the sprite texture
 	if (this->enemyType == ENEMY_SAMURAI)
 	{
-		//enemySprite = Sprite::create("samurai_run_right_01.png");
-		enemySprite = Sprite::create("samurai_run_left_01.png");
-		// Hide the remaining 9 enemies that are not used
-		enemySprite->setPosition(Vec2(-enemySprite->getContentSize().width, -enemySprite->getContentSize().height));
+		enemySprite = Sprite::create("samurai_run_right_01.png");
 	}
 }
 
@@ -45,37 +42,31 @@ void Enemy::Run()
 		Vector<SpriteFrame*> animFrames;
 		animFrames.reserve(10);
 
-		switch (enemyDir)
+		// Right
+		if (enemyDir == ENEMY_RIGHT)
 		{
-		case ENEMY_RIGHT:
+			enemySprite->setFlippedX(true);
 			// Rotate anti-clockwise by 90(For Enemy's right side)
 			enemySprite->setRotation(-90);
-			animFrames.pushBack(SpriteFrame::create("samurai_run_left_01.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_left_02.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_left_03.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_left_04.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_left_05.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_left_06.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_left_07.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_left_08.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_left_09.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_left_10.png", Rect(0, 0, 85, 96)));
-			break;
-		case ENEMY_LEFT:
+		}
+		// Left
+		else if (enemyDir == ENEMY_LEFT)
+		{
+			enemySprite->setFlippedX(false);
 			// Rotate clockwise by 90(For Enemy's left side)
 			enemySprite->setRotation(90);
-			animFrames.pushBack(SpriteFrame::create("samurai_run_right_01.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_right_02.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_right_03.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_right_04.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_right_05.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_right_06.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_right_07.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_right_08.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_right_09.png", Rect(0, 0, 85, 96)));
-			animFrames.pushBack(SpriteFrame::create("samurai_run_right_10.png", Rect(0, 0, 85, 96)));
-			break;
 		}
+
+		animFrames.pushBack(SpriteFrame::create("samurai_run_right_01.png", Rect(0, 0, 85, 96)));
+		animFrames.pushBack(SpriteFrame::create("samurai_run_right_02.png", Rect(0, 0, 85, 96)));
+		animFrames.pushBack(SpriteFrame::create("samurai_run_right_03.png", Rect(0, 0, 85, 96)));
+		animFrames.pushBack(SpriteFrame::create("samurai_run_right_04.png", Rect(0, 0, 85, 96)));
+		animFrames.pushBack(SpriteFrame::create("samurai_run_right_05.png", Rect(0, 0, 85, 96)));
+		animFrames.pushBack(SpriteFrame::create("samurai_run_right_06.png", Rect(0, 0, 85, 96)));
+		animFrames.pushBack(SpriteFrame::create("samurai_run_right_07.png", Rect(0, 0, 85, 96)));
+		animFrames.pushBack(SpriteFrame::create("samurai_run_right_08.png", Rect(0, 0, 85, 96)));
+		animFrames.pushBack(SpriteFrame::create("samurai_run_right_09.png", Rect(0, 0, 85, 96)));
+		animFrames.pushBack(SpriteFrame::create("samurai_run_right_10.png", Rect(0, 0, 85, 96)));
 
 		// Create animation out of the frames
 		Animation* animation = Animation::createWithSpriteFrames(animFrames, 0.1f);

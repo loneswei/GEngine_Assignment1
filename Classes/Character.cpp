@@ -51,93 +51,6 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 	invulDuration = INVUL_DURATION;
 }
 
-// MoveChar
-
-//void GameChar::MoveChar(EAction dir)
-//{
-//	eDir = dir;
-//	mainSprite->stopAllActions();
-//
-//	if (eDir != eStop)
-//	{
-//		Vector<SpriteFrame*> animFrames;
-//		animFrames.reserve(7);
-//
-//		// Right
-//		if (eDir > 0)
-//		{
-//			animFrames.pushBack(SpriteFrame::create("run_right_01.png", Rect(0, 0, 57, 85)));
-//			animFrames.pushBack(SpriteFrame::create("run_right_02.png", Rect(0, 0, 57, 85)));
-//			animFrames.pushBack(SpriteFrame::create("run_right_03.png", Rect(0, 0, 57, 85)));
-//			animFrames.pushBack(SpriteFrame::create("run_right_04.png", Rect(0, 0, 57, 85)));
-//			animFrames.pushBack(SpriteFrame::create("run_right_05.png", Rect(0, 0, 57, 85)));
-//			animFrames.pushBack(SpriteFrame::create("run_right_06.png", Rect(0, 0, 57, 85)));
-//			animFrames.pushBack(SpriteFrame::create("run_right_07.png", Rect(0, 0, 57, 85)));
-//		}
-//		else // Left
-//		{
-//			animFrames.pushBack(SpriteFrame::create("run_left_01.png", Rect(0, 0, 57, 85)));
-//			animFrames.pushBack(SpriteFrame::create("run_left_02.png", Rect(0, 0, 57, 85)));
-//			animFrames.pushBack(SpriteFrame::create("run_left_03.png", Rect(0, 0, 57, 85)));
-//			animFrames.pushBack(SpriteFrame::create("run_left_04.png", Rect(0, 0, 57, 85)));
-//			animFrames.pushBack(SpriteFrame::create("run_left_05.png", Rect(0, 0, 57, 85)));
-//			animFrames.pushBack(SpriteFrame::create("run_left_06.png", Rect(0, 0, 57, 85)));
-//			animFrames.pushBack(SpriteFrame::create("run_left_07.png", Rect(0, 0, 57, 85)));
-//		}
-//
-//		// Create animation out of the frames
-//		Animation* animation = Animation::createWithSpriteFrames(animFrames, 0.1f);
-//		Animate* animateMove = Animate::create(animation);
-//
-//		// Run Animation
-//		mainSprite->runAction(RepeatForever::create(animateMove));
-//	}
-//	else // Idle
-//	{
-//		Stop();
-//	}
-//}
-
-// MoveCharByCoord
-
-//void GameChar::MoveCharByCoord(float fX, float fY)
-//{
-//	mainSprite->stopAllActions();
-//	float diffX = fX - mainSprite->getPosition().x;
-//	float diffY = fY - mainSprite->getPosition().y;
-//	Vec2 vec = Vec2(diffX, diffY);
-//	auto moveEvent = MoveBy::create(vec.length() * fSpeed, vec);
-//
-//	// Function callback to stop Character moving animation
-//	auto callbackStop = CallFunc::create([]()
-//	{
-//		auto scene = Director::getInstance()->getRunningScene();
-//		HelloWorld* HWScene = dynamic_cast<HelloWorld*>(scene);
-//		if (HWScene != NULL)
-//			HWScene->getChar()->Stop(); // Call stop function to change animation back to idle
-//
-//	});
-//
-//	// Setting sequence of actions to run
-//	auto seq = Sequence::create(moveEvent, callbackStop, nullptr);
-//	mainSprite->runAction(seq);
-//
-//	// Animation frames
-//	Vector<SpriteFrame*> animFrames;
-//	animFrames.reserve(4);
-//	animFrames.pushBack(SpriteFrame::create("Blue_Back2.png", Rect(0, 0, 64, 81)));
-//	animFrames.pushBack(SpriteFrame::create("Blue_Back1.png", Rect(0, 0, 65, 82)));
-//	animFrames.pushBack(SpriteFrame::create("Blue_Back3.png", Rect(0, 0, 65, 81)));
-//	animFrames.pushBack(SpriteFrame::create("Blue_Back1.png", Rect(0, 0, 65, 82)));
-//
-//	// Create animation out of the frames
-//	Animation* animation = Animation::createWithSpriteFrames(animFrames, 0.1f);
-//	Animate* animateMove = Animate::create(animation);
-//
-//	// Run Animation
-//	mainSprite->runAction(animateMove);
-//}
-
 void GameChar::Update(float delta)
 {
 	if (lifeCount < 0)
@@ -160,6 +73,8 @@ void GameChar::Update(float delta)
 	if (shieldActive)
 	{
 		shieldTimer += 1 * delta;
+		shieldSprite->setPosition(mainSprite->getPosition());
+		shieldSprite->setRotation(mainSprite->getRotation());
 		// Deactivate shield & reset its timer
 		if (shieldTimer >= shieldDuration)
 		{
@@ -188,34 +103,27 @@ void GameChar::Run()
 	animFrames.reserve(7);
 
 	// Right
-	if (eDir > 0)
+	if (eDir == eRight)
 	{
+		mainSprite->setFlippedX(false);
 		// Rotate anti-clockwise by 90(For Right side)
 		mainSprite->setRotation(-90);
-		if (shieldActive)
-			shieldSprite->setRotation(-90);
-		animFrames.pushBack(SpriteFrame::create("run_right_01.png", Rect(0, 0, 57, 85)));
-		animFrames.pushBack(SpriteFrame::create("run_right_02.png", Rect(0, 0, 57, 85)));
-		animFrames.pushBack(SpriteFrame::create("run_right_03.png", Rect(0, 0, 57, 85)));
-		animFrames.pushBack(SpriteFrame::create("run_right_04.png", Rect(0, 0, 57, 85)));
-		animFrames.pushBack(SpriteFrame::create("run_right_05.png", Rect(0, 0, 57, 85)));
-		animFrames.pushBack(SpriteFrame::create("run_right_06.png", Rect(0, 0, 57, 85)));
-		animFrames.pushBack(SpriteFrame::create("run_right_07.png", Rect(0, 0, 57, 85)));
 	}
-	else // Left
+	// Left
+	else if(eDir == eLeft)
 	{
+		mainSprite->setFlippedX(true);
 		// Rotate clockwise by 90(For Left side)
 		mainSprite->setRotation(90);
-		if (shieldActive)
-			shieldSprite->setRotation(90);
-		animFrames.pushBack(SpriteFrame::create("run_left_01.png", Rect(0, 0, 57, 85)));
-		animFrames.pushBack(SpriteFrame::create("run_left_02.png", Rect(0, 0, 57, 85)));
-		animFrames.pushBack(SpriteFrame::create("run_left_03.png", Rect(0, 0, 57, 85)));
-		animFrames.pushBack(SpriteFrame::create("run_left_04.png", Rect(0, 0, 57, 85)));
-		animFrames.pushBack(SpriteFrame::create("run_left_05.png", Rect(0, 0, 57, 85)));
-		animFrames.pushBack(SpriteFrame::create("run_left_06.png", Rect(0, 0, 57, 85)));
-		animFrames.pushBack(SpriteFrame::create("run_left_07.png", Rect(0, 0, 57, 85)));
 	}
+
+	animFrames.pushBack(SpriteFrame::create("run_right_01.png", Rect(0, 0, 57, 85)));
+	animFrames.pushBack(SpriteFrame::create("run_right_02.png", Rect(0, 0, 57, 85)));
+	animFrames.pushBack(SpriteFrame::create("run_right_03.png", Rect(0, 0, 57, 85)));
+	animFrames.pushBack(SpriteFrame::create("run_right_04.png", Rect(0, 0, 57, 85)));
+	animFrames.pushBack(SpriteFrame::create("run_right_05.png", Rect(0, 0, 57, 85)));
+	animFrames.pushBack(SpriteFrame::create("run_right_06.png", Rect(0, 0, 57, 85)));
+	animFrames.pushBack(SpriteFrame::create("run_right_07.png", Rect(0, 0, 57, 85)));
 
 	// Create animation out of the frames
 	Animation* animation = Animation::createWithSpriteFrames(animFrames, 0.1f);
@@ -237,50 +145,37 @@ void GameChar::Jump(float LTargetX, float RTargetX, float height)
 	float duration = Vec2(RTargetX, TargetY).length() * fSpeed;
 
 	// Currently on Right side, Target Left side
-	if (eDir > 0)
+	if (eDir == eRight)
 	{
 		vec.x = LTargetX;
+		mainSprite->setFlippedX(true);
+		eDir = eLeft;
 	}
 	// Currently on Left side, Target Right side
-	else
+	else if(eDir == eLeft)
 	{
 		vec.x = RTargetX;
+		mainSprite->setFlippedX(false);
+		eDir = eRight;
 	}
 	auto jumpEvent = JumpTo::create(duration, vec, height, 1);
 
 	// Animation frames
 	Vector<SpriteFrame*> animFrames;
 	animFrames.reserve(5);
-
-	// Right
-	if (eDir > 0)
-	{
-		animFrames.pushBack(SpriteFrame::create("jump_left_01.png", Rect(0, 0, 59, 88)));
-		animFrames.pushBack(SpriteFrame::create("jump_left_02.png", Rect(0, 0, 59, 88)));
-		animFrames.pushBack(SpriteFrame::create("jump_left_03.png", Rect(0, 0, 59, 88)));
-		animFrames.pushBack(SpriteFrame::create("jump_left_04.png", Rect(0, 0, 59, 88)));
-		animFrames.pushBack(SpriteFrame::create("jump_left_05.png", Rect(0, 0, 59, 88)));
-	}
-	// Left
-	else
-	{
-		animFrames.pushBack(SpriteFrame::create("jump_right_01.png", Rect(0, 0, 59, 88)));
-		animFrames.pushBack(SpriteFrame::create("jump_right_02.png", Rect(0, 0, 59, 88)));
-		animFrames.pushBack(SpriteFrame::create("jump_right_03.png", Rect(0, 0, 59, 88)));
-		animFrames.pushBack(SpriteFrame::create("jump_right_04.png", Rect(0, 0, 59, 88)));
-		animFrames.pushBack(SpriteFrame::create("jump_right_05.png", Rect(0, 0, 59, 88)));
-	}
 	
+	animFrames.pushBack(SpriteFrame::create("jump_right_01.png", Rect(0, 0, 59, 88)));
+	animFrames.pushBack(SpriteFrame::create("jump_right_02.png", Rect(0, 0, 59, 88)));
+	animFrames.pushBack(SpriteFrame::create("jump_right_03.png", Rect(0, 0, 59, 88)));
+	animFrames.pushBack(SpriteFrame::create("jump_right_04.png", Rect(0, 0, 59, 88)));
+	animFrames.pushBack(SpriteFrame::create("jump_right_05.png", Rect(0, 0, 59, 88)));
+
 	// Create animation out of the frames
 	Animation* animation = Animation::createWithSpriteFrames(animFrames, 0.1f);
 	Animate* animateJump = Animate::create(animation);
 	
 	// Run Animation
 	mainSprite->runAction(animateJump);
-	shieldSprite->setRotation(0);
-
-	// Set Direction to the opposite side after jumping
-	eDir = (eDir > 0) ? eLeft : eRight;
 
 	// Function callback to stop Character jumping animation
 	auto callbackRun = CallFunc::create([]()

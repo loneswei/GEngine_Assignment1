@@ -12,6 +12,15 @@ using namespace cocos2d;
 class HelloWorld : public cocos2d::Scene
 {
 public:
+	// For cleaning auto-spawner function
+	enum ESpawner {
+		eNone,
+		eSamuraiEnemy,
+		eCoin,
+		eMagnet,
+		eShield,
+	};
+
 	static cocos2d::Scene* createScene();
 
 	virtual bool init();
@@ -37,7 +46,7 @@ public:
 	void GameObjectsInit();
 	void LabelInit();
 	void LabelUpdate();
-	void AutoSpawner(float delta);
+	void AutoSpawner(float delta, float &timer, float timing, ESpawner _eSpawn);
 	void WallUpdate(float delta);
 	void TrapUpdate(float delta);
 	void ItemUpdate(float delta);
