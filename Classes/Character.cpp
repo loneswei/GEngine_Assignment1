@@ -49,12 +49,16 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 	invulActive = false;
 	invulTimer = 0.0f;
 	invulDuration = INVUL_DURATION;
+	dead = false;
 }
 
 void GameChar::Update(float delta)
 {
-	if (lifeCount < 0)
+	if (lifeCount <= 0)
+	{
+		dead = true;
 		return;
+	}
 
 	fScore += 1;
 	fDistance += 1;

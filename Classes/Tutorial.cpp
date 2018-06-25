@@ -1,6 +1,6 @@
-#include "MainMenu.h"
-#include "SimpleAudioEngine.h"
 #include "Tutorial.h"
+#include "SimpleAudioEngine.h"
+#include "MainMenu.h"
 //#include "Character.h"
 #include "HelloWorldScene.h"
 USING_NS_CC;
@@ -10,10 +10,10 @@ USING_NS_CC;
 #define PLAY_POSITION 0.5
 #define HIGHSCORE_POSITION 0.35
 #define TUTORIAL_POSITION 0.2
-Scene* MainMenu::createScene()
+Scene* Tutorial::createScene()
 {
 	// return scene
-	return MainMenu::create();
+	return Tutorial::create();
 }
 
 // Print useful error message instead of segfaulting when files are not there.
@@ -24,7 +24,7 @@ static void problemLoading(const char* filename)
 }
 
 // on "init" you need to initialize your instance
-bool MainMenu::init()
+bool Tutorial::init()
 {
 	//////////////////////////////
 	// 1. super init first
@@ -39,54 +39,114 @@ bool MainMenu::init()
 	playingSize = Size(visibleSize.width, visibleSize.height);
 
 	//Create the walls that player runs on
- 
+	//wallObjects = Node::create();
+	//wallObjects->setName("WallObjects");
+
+	//auto wallSprite_LEFT = Sprite::create("woodwall.jpg");
+	//auto wallSprite_LEFT02 = Sprite::createWithTexture(wallSprite_LEFT->getTexture());
+	//auto wallSprite_RIGHT = Sprite::createWithTexture(wallSprite_LEFT->getTexture());
+	//auto wallSprite_RIGHT02 = Sprite::createWithTexture(wallSprite_LEFT->getTexture());
+
+	//wallSprite_LEFT->setContentSize(Size(WALL_CONTENTSIZE_X, playingSize.height));
+	//wallSprite_LEFT02->setContentSize(Size(WALL_CONTENTSIZE_X, playingSize.height + playingSize.height * 0.25f));
+	//wallSprite_RIGHT->setContentSize(Size(WALL_CONTENTSIZE_X, playingSize.height));
+	//wallSprite_RIGHT02->setContentSize(Size(WALL_CONTENTSIZE_X, playingSize.height + playingSize.height * 0.25f));
+
+	//wallSprite_LEFT->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	//wallSprite_LEFT->setPosition(Vec2(0.f, playingSize.height * 0.5f));
+
+	//wallSprite_LEFT02->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	//wallSprite_LEFT02->setPosition(Vec2(0, (playingSize.height * 0.5f) + playingSize.height));
+
+	//wallSprite_RIGHT->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	//wallSprite_RIGHT->setPosition(Vec2(playingSize.width, playingSize.height * 0.5f));
+
+	//wallSprite_RIGHT02->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	//wallSprite_RIGHT02->setPosition(Vec2(playingSize.width, (playingSize.height * 0.5f) + playingSize.height));
+
+	//wallObjects->addChild(wallSprite_LEFT, 0);
+	//wallObjects->addChild(wallSprite_LEFT02, 0);
+	//wallObjects->addChild(wallSprite_RIGHT, 0);
+	//wallObjects->addChild(wallSprite_RIGHT02, 0);
+	//this->addChild(wallObjects, 1);
+
+	/*wallSprite_LEFT->runAction(RepeatForever::create(MoveTo::create(8, Vec2(0, -playingSize.height))));
+	wallSprite_LEFT02->runAction(RepeatForever::create(MoveTo::create(14, Vec2(0, -playingSize.height))));*/
+	/*wallSprite_RIGHT->runAction(wallMovementRight);
+	wallSprite_RIGHT02->runAction(wallMovementRight);*/
+
+	//wallObjects->runAction(wallMovement);
 
 	/*
 	***********************
 	***** Player Init *****
 	***********************
 	*/
+ 
+     ninja = Sprite::create("run_right_01.png");
+	 ninja->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	 ninja->setPosition(Vec2(playingSize.width * 0.05f, playingSize.height * 0.8f));
+	 this->addChild(ninja, 1);
 
-	background = Sprite::create("mainmenubackground.jpg");
-	background->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
-	background->setPosition(Vec2(playingSize.width * 0.35f, playingSize.height * 0.5f));
-	this->addChild(background, 1);
+	 Samurai = Sprite::create("samurai_run_right_01.png");
+	 Samurai->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	 Samurai->setPosition(Vec2(playingSize.width * 0.05f, playingSize.height * 0.6f));
+	 this->addChild(Samurai, 1);
 
-	GameTitle = Label::createWithTTF("HELLOTHERE", "fonts/Marker Felt.ttf", 50);
-	GameTitle->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
-	GameTitle->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 10));
-	this->addChild(GameTitle, 1);
+	 Trap = Sprite::create("spiketrap.png");
+	 Trap->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	 Trap->setPosition(Vec2(playingSize.width * 0.15f, playingSize.height * 0.6f));
+	 this->addChild(Trap, 1);
 
-    Play = Label::createWithTTF("PLAY", "fonts/Marker Felt.ttf", 24);
-	Play->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 7));
-	this->addChild(Play, 1);
+	 shuriken = Sprite::create("shuriken.png");
+	 shuriken->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	 shuriken->setPosition(Vec2(playingSize.width * 0.1f, playingSize.height * 0.6f));
+	 this->addChild(shuriken, 1);
 
-	 
-
-	Tutorial = Label::createWithTTF("TUTORIAL", "fonts/Marker Felt.ttf", 24);
-	Tutorial->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 3));
-	this->addChild(Tutorial, 1);
-
-	//auto playerObject = Node::create();
-	//playerObject->setName("PlayerObject");
-
-	//auto playerSprite = Sprite::create("run_right_01.png");
-
-	//mainChar.init("run_right_01.png", Vec2::ANCHOR_MIDDLE_BOTTOM, (playingSize.width - (WALL_CONTENTSIZE_X * 0.5f)), (playerSprite->getContentSize().width * 2), "Player");
-	//playerObject->addChild(mainChar.getSprite(), 1);
-	//this->addChild(playerObject, 1);
-
-	//scoreLabel = Label::createWithTTF("Score: " + std::to_string(mainChar.getScore()), "fonts/Marker Felt.ttf", 24);
-	//scoreLabel->setPosition(Vec2(playingSize.width * 0.5f, 0 + scoreLabel->getContentSize().height));
-	//this->addChild(scoreLabel, 1);
+	 Shield = Sprite::create("shield.png");
+	 Shield->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	 Shield->setPosition(Vec2(playingSize.width * 0.05f, playingSize.height * 0.45f));
+	 this->addChild(Shield, 1);
 
 
-	////auto PlayerHealthNode = Node::create();
+	 Magnet = Sprite::create("magnet.png");
+	 Magnet->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	 Magnet->setPosition(Vec2(playingSize.width * 0.05f, playingSize.height * 0.3f));
+	 this->addChild(Magnet, 1);
 
-	//auto PlayerHealth = Sprite::create("player_life.jpg");
-	//PlayerHealth->setPosition(Vec2(0, PlayerHealth->getContentSize().height));
-	//this->addChild(PlayerHealth, 1);
+	 Coin = Sprite::create("coin.png");
+	 Coin->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	 Coin->setPosition(Vec2(playingSize.width * 0.05f, playingSize.height * 0.15f));
+	 this->addChild(Coin, 1);
 
+	 goback = Label::createWithTTF("Press Backspace to return", "fonts/Marker Felt.ttf", 24);
+	 goback->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height * 0.05f));
+	 this->addChild(goback, 1);
+
+
+	 Title = Label::createWithTTF("TUTORIAL", "fonts/Marker Felt.ttf", 64);
+	 Title->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height * 0.95f));
+	 this->addChild(Title, 1);
+
+	 shielddes = Label::createWithTTF("Grants you invulnerability for 10 seconds", "fonts/Marker Felt.ttf", 24);
+	 shielddes->setPosition(Vec2(playingSize.width * 0.35f, playingSize.height * 0.45f));
+	 this->addChild(shielddes, 1);
+
+	 Magnetdes = Label::createWithTTF("Automatically absorbs coins for 15 seconds!", "fonts/Marker Felt.ttf", 24);
+	 Magnetdes ->setPosition(Vec2(playingSize.width * 0.35f, playingSize.height * 0.3f));
+	 this->addChild(Magnetdes, 1);
+
+	 Coindes = Label::createWithTTF("Gives you extra points!", "fonts/Marker Felt.ttf", 24);
+	 Coindes->setPosition(Vec2(playingSize.width * 0.35f, playingSize.height * 0.15f));
+	 this->addChild(Coindes, 1);
+
+	 ninjaplayer = Label::createWithTTF("This is you, you have 3 lifes. press Spacebar to jump left or right", "fonts/Marker Felt.ttf", 24);
+	 ninjaplayer->setPosition(Vec2(playingSize.width * 0.4f, playingSize.height * 0.8f));
+	 this->addChild(ninjaplayer, 1);
+
+	 Trapshruiken = Label::createWithTTF("They are dangerous. Avoid them at all cost, they make you lose a life.", "fonts/Marker Felt.ttf", 24);
+	 Trapshruiken->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height * 0.6f));
+	 this->addChild(Trapshruiken, 1);
 
 
 	//// Practical 01
@@ -112,17 +172,11 @@ bool MainMenu::init()
 	}*/
 
 	// Character
-	 
+
 	/*auto spriteNode = Node::create();
 	spriteNode->setName("ArrowChoose");*/
+	 
 
-	arrow = Sprite::create("arrow.png");
-	arrow->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
-	arrow->setPosition(Vec2(playingSize.width * 0.35f, playingSize.height * 0.5f));
-	this->addChild(arrow, 1);
-	selection = PLAY;
-	
- 
 
 	/*mainChar.init("Blue_Front1.png", Vec2::ZERO, 0, (visibleSize.height / 2) + (sprite->getContentSize().height / 2), "mainSprite");
 	spriteNode->addChild(mainChar.getSprite(), 1);
@@ -146,7 +200,7 @@ bool MainMenu::init()
 
 	//// Key Released movement
 	auto listener2 = EventListenerKeyboard::create();
-	listener2->onKeyReleased = CC_CALLBACK_2(MainMenu::onKeyReleased, this);
+	listener2->onKeyReleased = CC_CALLBACK_2(Tutorial::onKeyReleased, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener2, this);
 
 	//// Mouse button Up
@@ -272,7 +326,7 @@ bool MainMenu::init()
 }
 
 
-void MainMenu::menuCloseCallback(Ref* pSender)
+void Tutorial::menuCloseCallback(Ref* pSender)
 {
 	//Close the cocos2d-x game scene and quit the application
 	Director::getInstance()->end();
@@ -289,7 +343,7 @@ void MainMenu::menuCloseCallback(Ref* pSender)
 
 }
 
-void MainMenu::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event)
+void Tutorial::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event)
 {
 	//// Move to the right
 	//if (keyCode == EventKeyboard::KeyCode::KEY_RIGHT_ARROW)
@@ -303,7 +357,7 @@ void MainMenu::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event)
 	//}
 }
 
-void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
+void Tutorial::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 {
 	//mainChar.MoveChar(eStop);
 
@@ -312,49 +366,15 @@ void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 	{
 		Director::getInstance()->end();
 	}
-	if (keyCode == EventKeyboard::KeyCode::KEY_ENTER && selection == PLAY)
+	if (keyCode == EventKeyboard::KeyCode::KEY_BACKSPACE)
 	{
 		//jump to gameplay scene here
-		auto scene = HelloWorld::createScene();
-
-		Director::getInstance()->replaceScene(TransitionFade::create(2,scene));
-	}
-	if (keyCode == EventKeyboard::KeyCode::KEY_ENTER && selection == TUTORIAL)
-	{
-		//jump to gameplay scene here
-		auto scene = Tutorial::createScene();
+		auto scene = MainMenu::createScene();
 
 		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 	}
-	if (keyCode == EventKeyboard::KeyCode::KEY_DOWN_ARROW)
-	{
-		//move down here
-		switch (selection)
-		{
-		case PLAY:
-			arrow->setPosition(Vec2(playingSize.width * 0.35f, playingSize.height * TUTORIAL_POSITION));
-			selection = TUTORIAL;
-			break;
-		case TUTORIAL:
-			break;
-		}
 
-	}
-	if (keyCode == EventKeyboard::KeyCode::KEY_UP_ARROW)
-	{
-		//move up here & check enum
-		switch (selection)
-		{
-		case PLAY:
-			break;
 	 
-		case TUTORIAL:
-			arrow->setPosition(Vec2(playingSize.width * 0.35f, playingSize.height * TUTORIAL_POSITION));
-			selection = PLAY;
-			break;
-		}
-	}
-
 	//// Jump to the opposite side
 	//if (keyCode == EventKeyboard::KeyCode::KEY_SPACE)
 	//{
@@ -370,7 +390,7 @@ void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 	//}
 }
 
-void MainMenu::onMouseUp(Event * event)
+void Tutorial::onMouseUp(Event * event)
 {
 	//EventMouse* e = (EventMouse*)event;
 	//float x = e->getCursorX();
@@ -379,28 +399,28 @@ void MainMenu::onMouseUp(Event * event)
 	//mainChar.MoveCharByCoord(x, y);
 }
 
-void MainMenu::update(float delta)
+void Tutorial::update(float delta)
 {
 	//scoreLabel->setString("Score: " + std::to_string(mainChar.getScore()));
 	//mainChar.Update(delta);
 
-	
+
 	/*static auto wallObjectsArray = wallObjects->getChildren();
 
 	for (auto wallSprite : wallObjectsArray)
 	{
-		if (wallSprite->getPositionY() < -playingSize.height * 0.5f)
-		{
-			wallSprite->setPosition(Vec2(wallSprite->getPositionX(), (playingSize.height * 0.5f) + playingSize.height));
-		}
-		else
-		{
-			wallSprite->setPosition(Vec2(wallSprite->getPositionX(), wallSprite->getPositionY() - WALL_MOVESPEED * delta));
-		}
+	if (wallSprite->getPositionY() < -playingSize.height * 0.5f)
+	{
+	wallSprite->setPosition(Vec2(wallSprite->getPositionX(), (playingSize.height * 0.5f) + playingSize.height));
+	}
+	else
+	{
+	wallSprite->setPosition(Vec2(wallSprite->getPositionX(), wallSprite->getPositionY() - WALL_MOVESPEED * delta));
+	}
 	}*/
 }
 
-GameChar* MainMenu::getChar()
+GameChar* Tutorial::getChar()
 {
 	return &mainChar;
 }

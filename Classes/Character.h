@@ -45,7 +45,7 @@ public:
 	bool getMagnetActive(void) { return magnetActive; }
 	bool getShieldActive(void) { return shieldActive; }
 	bool getInvulActive(void) { return invulActive; }
-	
+	bool getAliveorNot(void) { return dead; }
 	int getLifeCount(void) { return lifeCount; }
 
 	// Setters
@@ -58,6 +58,7 @@ public:
 	void setInvulActive(bool _invulActive) { invulActive = _invulActive; }
 
 	void setLifeCount(int _lifeCount) { lifeCount = _lifeCount; }
+	void setAliveorNot(bool _dead) { dead = _dead; }
 
 private:
 	Sprite* mainSprite;
@@ -79,6 +80,7 @@ private:
 	bool magnetActive;
 	bool shieldActive;
 	bool invulActive;
+	bool dead;
 
 	int lifeCount;
 };

@@ -8,6 +8,13 @@
 #include "Enemy.h"
 
 using namespace cocos2d;
+enum Selection2
+{
+	RESUME = 0,
+	RESTART,
+	TUTORIAL2,
+	MAINMENU,
+};
 
 class HelloWorld : public cocos2d::Scene
 {
@@ -19,6 +26,8 @@ public:
 		eCoin,
 		eMagnet,
 		eShield,
+		eSpike,
+		eShuriken,
 	};
 
 	static cocos2d::Scene* createScene();
@@ -41,6 +50,8 @@ public:
 	void SpawnCoin();
 	void SpawnMagnet();
 	void SpawnShield();
+	void SpawnSpike();
+	void SpawnShuriken();
 
 	// Code 'Cleaning' Functions
 	void GameObjectsInit();
@@ -51,7 +62,8 @@ public:
 	void TrapUpdate(float delta);
 	void ItemUpdate(float delta);
 	void EnemyUpdate(float delta);
-
+	void PauseUI();
+	void GameOverUI();
 	//Fetchers
 	TrapObject* FetchTrapObject(TrapObject::TRAP_TYPE trapType = TrapObject::TRAP_RANDOM);
 	ItemObject* FetchItemObject(ItemObject::ITEM_TYPE itemType = ItemObject::ITEM_RANDOM);
@@ -77,12 +89,30 @@ private:
 	Label* shieldLabel;
 	Label* invulLabel;
 	Label* deadLabel;
+	Label* MainMenu;
+	Label* Restart;
+	Label* Tutorial;
+	Label* Resume;
+	Label* scoreLabel2; //for pause
+	Label* scoreLabel3; // for gameover
+	Label* instructiongameover;
 
 	float samuraiSpawnTimer;
 	float coinSpawnTimer;
 	float magnetSpawnTimer;
 	float shieldSpawnTimer;
+	float spikeSpawnTimer;
+	float shurikenSpawnTimer;
 	float characterSpriteWidth;
+
+
+	Sprite* arrow2;
+	Sprite* pausebackground;
+	Sprite* gameoverbackground;
+	Sprite* tutorialbackground;
+	Selection2 selection2;
+	bool paused;
+	 
 
 	Size playingSize;
 	std::vector<TrapObject*> trapObjectList;

@@ -1,18 +1,19 @@
 #pragma once
-#ifndef _MAINMENU_H
-#define _MAINMENU_H
+#ifndef _Tutorial_H
+#define _Tutorial_H
 
 #include "cocos2d.h"
 #include "Character.h"
 
 using namespace cocos2d;
-enum Selection
-{
-	PLAY = 0,
-	TUTORIAL,
-};
+//enum Selection
+//{
+//	PLAY = 0,
+//	HIGHSCORE,
+//	TUTORIAL,
+//};
 
-class MainMenu : public cocos2d::Scene
+class Tutorial : public cocos2d::Scene
 {
 public:
 	static cocos2d::Scene* createScene();
@@ -33,20 +34,29 @@ public:
 	GameChar* getChar();
 
 	// implement the "static create()" method manually
-	CREATE_FUNC(MainMenu);
+	CREATE_FUNC(Tutorial);
 private:
 	GameChar mainChar;
 	Node *wallObjects;
 	Size playingSize;
-	//Label* scoreLabel;
-	Label* GameTitle;
-	Label* Play;
-	Label* Highscore;
-	Label* Tutorial;
+	Label* Title;
+	Label* ninjaplayer;
+	Label* shielddes;
+	Label* Magnetdes;
+	Label* Coindes;
+	Label* Trapshruiken;
+	Label* goback;
 	Sprite* arrow;
-	Sprite* background;
-	Selection selection;
+	Sprite* ninja;
+	Sprite* Samurai;
+	Sprite* Trap;
+	Sprite* Shield;
+	Sprite* Coin;
+	Sprite* Magnet;
+	Sprite* shuriken;
+//	Selection selection;
 };
 
- 
-#endif // _MAINMENU_H
+
+#endif // _Tutorial_H
+

@@ -11,10 +11,6 @@ ItemObject::ItemObject(ITEM_TYPE itemType) :
 	isActive(true),
 	itemType(itemType)
 {
-	//if (itemType == ITEM_RANDOM)
-	//{
-	//	this->itemType = static_cast<ITEM_TYPE>(RandomHelper::random_int(0, (int)ITEM_TOTAL - 1));
-	//}
 }
 
 ItemObject::~ItemObject()

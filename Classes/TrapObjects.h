@@ -16,6 +16,11 @@ public:
 
 		TRAPS_TOTAL
 	};
+	enum TRAP_DIRECTION
+	{
+		TRAP_LEFT,
+		TRAP_RIGHT,
+	};
 
 	TrapObject();
 	TrapObject(TRAP_TYPE trapType);
@@ -24,17 +29,20 @@ public:
 	void TrapUpdate(float dt);
 
 	// Getters
-	TRAP_TYPE gettrapType(void) { return trapType; }
+	TRAP_TYPE getTrapType(void) { return trapType; }
+	TRAP_DIRECTION getTrapDirection(void) { return trapDir; }
 	bool getIsActive(void) { return isActive; }
-	Sprite* gettrapSprite(void) { return trapSprite; }
+	Sprite* getTrapSprite(void) { return trapSprite; }
 
 	// Setters
-	void settrapType(TRAP_TYPE _trapType) { trapType = _trapType; }
+	void setTrapType(TRAP_TYPE _trapType) { trapType = _trapType; }
+	void setTrapDirection(TRAP_DIRECTION _trapDir) { trapDir = _trapDir; }
 	void setIsActive(bool _isActive) { isActive = _isActive; }
-	void settrapSprite(Sprite* _trapSprite) { trapSprite = _trapSprite; }
+	void setTrapSprite(Sprite* _trapSprite) { trapSprite = _trapSprite; }
 
 private:
 	TRAP_TYPE trapType;
+	TRAP_DIRECTION trapDir;
 	bool isActive;
 	Sprite *trapSprite;
 };
