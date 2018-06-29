@@ -23,14 +23,14 @@ using std::string;
 Scene* LoadingScene::createScene()
 {
 	// return scene
-    return LoadingScene::create();
+	return LoadingScene::create();
 }
 
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
 {
-    printf("Error while loading: %s\n", filename);
-    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in LoadingSceneScene.cpp\n");
+	printf("Error while loading: %s\n", filename);
+	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in LoadingSceneScene.cpp\n");
 }
 
 // on "init" you need to initialize your instance
@@ -55,11 +55,19 @@ bool LoadingScene::init()
 
 		this->addChild(label, 1);
 	}
+
+	//Preload Audio Files
 	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	//BGM
 	audio->preloadBackgroundMusic("Audio/Bgm/Menu.mp3");
-	//audio->preloadBackgroundMusic("myMusic2.mp3");
+	audio->preloadBackgroundMusic("Audio/Bgm/GameOver.mp3");
+	audio->preloadBackgroundMusic("Audio/Bgm/GamePlay.mp3");
+	audio->preloadBackgroundMusic("Audio/Bgm/SpeedUp.mp3");
+	//Sound Effects
 	audio->preloadEffect("Audio/SoundEffect/HeroDeath.mp3");
-	//audio->preloadEffect("myEffect2.mp3");
+	audio->preloadEffect("Audio/SoundEffect/coin_pickup.wav");
+	audio->preloadEffect("Audio/SoundEffect/shield_pickup.mp3");
+	audio->preloadEffect("Audio/SoundEffect/magnet_pickup.mp3");
 
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
@@ -129,7 +137,7 @@ bool LoadingScene::init()
 	Resources[54] = "samurai_run_right_09.png";
 	Resources[55] = "samurai_run_right_10.png";
 
-		
+
 
 	numOfResources = 56;
 	curResource = 0;
@@ -160,7 +168,7 @@ bool LoadingScene::init()
 	textLabel->setPosition(Vec2(playingSize.width * 0.5f, textLabel->getContentSize().height + textLabel->getContentSize().height));
 	//textLabel->retain();
 	this->addChild(textLabel, 1);
- 
+
 
 	auto director = Director::getInstance();
 	TextureCache* textureCache = director->getTextureCache();
@@ -175,17 +183,17 @@ bool LoadingScene::init()
 
 void LoadingScene::menuCloseCallback(Ref* pSender)
 {
-    //Close the cocos2d-x game scene and quit the application
-    Director::getInstance()->end();
+	//Close the cocos2d-x game scene and quit the application
+	Director::getInstance()->end();
 
-    #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-    exit(0);
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+	exit(0);
 #endif
 
-    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() and exit(0) as given above,instead trigger a custom event created in RootViewController.mm as below*/
+	/*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() and exit(0) as given above,instead trigger a custom event created in RootViewController.mm as below*/
 
-    //EventCustom customEndEvent("game_scene_close_event");
-    //_eventDispatcher->dispatchEvent(&customEndEvent);
+	//EventCustom customEndEvent("game_scene_close_event");
+	//_eventDispatcher->dispatchEvent(&customEndEvent);
 
 
 }
@@ -255,9 +263,9 @@ void LoadingScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 	//	Director::sharedDirector()->resume();
 	//}
 
-	 
-	 
- }
+
+
+}
 
 void LoadingScene::onMouseUp(Event * event)
 {
@@ -320,7 +328,7 @@ void LoadingScene::loadingTextureFinished(Texture2D* texture)
 	if (curResource < numOfResources)
 	{
 		//load text resource
-	 
+
 		TextureCache* textureCache = director->getTextureCache();
 		textureCache->addImageAsync(Resources[curResource], CC_CALLBACK_1(LoadingScene::loadingTextureFinished, this));
 		loadingbar->setPercent(percentage);
@@ -330,11 +338,11 @@ void LoadingScene::loadingTextureFinished(Texture2D* texture)
 		auto scene = MainMenu::createScene();
 		return director->replaceScene(scene);
 	}
- }
+}
 
- 
 
-  
+
+
 //{
 //	// Score
 //	scoreLabel->setString("Score: " + std::to_string((int)mainChar.getScore()));
@@ -468,4 +476,4 @@ void LoadingScene::loadingTextureFinished(Texture2D* texture)
 //void LoadingScene::ItemUpdate(float delta)
 
 
- 
+

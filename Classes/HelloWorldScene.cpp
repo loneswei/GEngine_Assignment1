@@ -72,7 +72,7 @@ bool HelloWorld::init()
 
 	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
 	audio->playBackgroundMusic("Audio/Bgm/menu.mp3", true);
-	
+
 	//audio->playBackgroundMusic("mymusic", false);
 
 	// Key Pressed movement
@@ -194,9 +194,9 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 	}
 	if (keyCode == EventKeyboard::KeyCode::KEY_ENTER && selection2 == TUTORIAL2)
 	{
-		 
+
 		tutorialbackground->setVisible(true);
-		 
+
 	}
 
 	if (keyCode == EventKeyboard::KeyCode::KEY_ENTER && selection2 == MAINMENU)
@@ -212,8 +212,8 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 	if (keyCode == EventKeyboard::KeyCode::KEY_ENTER && mainChar.getAliveorNot() == true)
 	{
 		//go back to main menu
-		 
-		 
+
+
 		auto scene = MainMenu::createScene();
 		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 		mainChar.setAliveorNot(false);
@@ -318,19 +318,19 @@ void HelloWorld::update(float delta)
 		Resume->setVisible(false);
 		pausebackground->setVisible(false);
 		Tutorial->setVisible(false);
-//		scoreLabel2->setVisible(false);
+		//		scoreLabel2->setVisible(false);
 	}
 	if (mainChar.getAliveorNot() == true)
 	{
 		deadLabel->setVisible(true);
-	//	scoreLabel->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height * 0.5f));
+		//	scoreLabel->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height * 0.5f));
 		instructiongameover->setVisible(true);
 		gameoverbackground->setVisible(true);
 		//Director::sharedDirector()->pause();
 	}
 	else
 	{
-	//	scoreLabel->setPosition(Vec2(playingSize.width * 0.5f, scoreLabel->getContentSize().height + distanceLabel->getContentSize().height));
+		//	scoreLabel->setPosition(Vec2(playingSize.width * 0.5f, scoreLabel->getContentSize().height + distanceLabel->getContentSize().height));
 		deadLabel->setVisible(false);
 		instructiongameover->setVisible(false);
 		gameoverbackground->setVisible(false);
@@ -350,6 +350,7 @@ void HelloWorld::update(float delta)
 	// Update Enemies
 	EnemyUpdate(delta);
 
+	//Background Scrolling
 	auto theBackgroundImage = BackgroundNode->getChildByName("BackgroundSprite");
 	static auto DistanceBetweenPositions = (theBackgroundImage->getContentSize().height * theBackgroundImage->getScaleY() * 0.5f) - playingSize.height * 0.5f;
 
@@ -821,6 +822,8 @@ void HelloWorld::TrapUpdate(float delta)
 
 void HelloWorld::ItemUpdate(float delta)
 {
+	static auto AudioManager = CocosDenshion::SimpleAudioEngine::getInstance();
+
 	//Update each item in item list & collision check
 	for (auto itemObj : itemObjectList)
 	{
@@ -871,6 +874,7 @@ void HelloWorld::ItemUpdate(float delta)
 			case ItemObject::ITEM_COIN:
 			{
 				mainChar.setScore(mainChar.getScore() + itemObj->getCoinScore());
+				AudioManager->playEffect("Audio/SoundEffect/coin_pickup.wav");
 				break;
 			}
 			case ItemObject::ITEM_SHIELD:
@@ -879,13 +883,18 @@ void HelloWorld::ItemUpdate(float delta)
 				{
 					mainChar.setShieldActive(true);
 					mainChar.getShieldSprite()->setVisible(true);
+
+					AudioManager->playEffect("Audio/SoundEffect/shield_pickup.mp3", false, 1, 0, 10);
 				}
 				break;
 			}
 			case ItemObject::ITEM_MAGNET:
 			{
 				if (!mainChar.getMagnetActive())
+				{
 					mainChar.setMagnetActive(true);
+					AudioManager->playEffect("Audio/SoundEffect/magnet_pickup.mp3", false, 1, 0, 0.1f);
+				}
 				break;
 			}
 			}
@@ -1060,7 +1069,7 @@ void HelloWorld::PauseUI()
 	/*scoreLabel2 = Label::createWithTTF("Score: " + std::to_string((int)mainChar.getScore()), "fonts/Marker Felt.ttf", 24);
 	scoreLabel2->setPosition(Vec2(playingSize.width * 0.5f, scoreLabel->getContentSize().height * 20));
 	this->addChild(scoreLabel2, 1);
-*/
+	*/
 	Resume = Label::createWithTTF("RESUME", "fonts/Marker Felt.ttf", 24);
 	Resume->setPosition(Vec2(playingSize.width * 0.5f, 0 + Resume->getContentSize().height * 15));
 	Resume->setVisible(false);
