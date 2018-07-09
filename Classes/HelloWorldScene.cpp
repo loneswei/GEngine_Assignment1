@@ -163,8 +163,9 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 			mainChar.setStatus(mainChar.eJump);
 			float LTarget = WALL_CONTENTSIZE_X * 0.5f;
 			float RTarget = playingSize.width - (WALL_CONTENTSIZE_X * 0.5f);
+			float height = mainChar.getSprite()->getPosition().y * 0.75f;
 
-			mainChar.Jump(LTarget, RTarget, playingSize.height / 2);
+			mainChar.Jump(LTarget, RTarget, height);
 		}
 	}
 	//pause and resume here
