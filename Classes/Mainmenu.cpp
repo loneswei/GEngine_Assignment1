@@ -3,6 +3,7 @@
 #include "Tutorial.h"
 //#include "Character.h"
 #include "HelloWorldScene.h"
+#include "ui\CocosGUI.h"
 USING_NS_CC;
 
 //#define WALL_MOVESPEED 250
@@ -47,15 +48,75 @@ bool MainMenu::init()
 	***********************
 	*/
 
-	background = Sprite::create("mainmenubackground.jpg");
+	/*background = Sprite::create("mainmenubackground.jpg");
 	background->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
 	background->setPosition(Vec2(playingSize.width * 0.35f, playingSize.height * 0.5f));
 	this->addChild(background, 1);
-
+*/
 	GameTitle = Label::createWithTTF("HELLOTHERE", "fonts/Marker Felt.ttf", 50);
+	GameTitle->enableShadow();
+	GameTitle->enableOutline(Color4B::BLACK, 1);
+	GameTitle->enableGlow(Color4B::YELLOW);
 	GameTitle->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
 	GameTitle->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 10));
 	this->addChild(GameTitle, 1);
+
+	 //testing button here
+	auto button = ui::Button::create("Button_Normal.png", "Button_Press.png", "Button_Disable.png");
+	button->setTitleText("Button Text");
+	button->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 5));
+	button->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	{ switch (type) 
+	{ case ui::Widget::TouchEventType::BEGAN:
+		break;
+	case ui::Widget::TouchEventType::ENDED:
+		//std::cout << "Button 1 clicked" << std::endl; 
+		break; 
+	default:
+		break; 
+	} }); 
+	this->addChild(button);
+	//testing checkbox here
+	auto checkbox = ui::CheckBox::create("CheckBoxNode_Disable.png", "CheckBoxNode_Normal.png","CheckBox_Normal.png","CheckBox_Press.png","CheckBox_Disable.png");
+	 
+	checkbox->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 5));
+	 
+	checkbox->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) 
+	{ switch (type) 
+	{ case ui::Widget::TouchEventType::BEGAN:
+		break; 
+	case ui::Widget::TouchEventType::ENDED:
+		 break; 
+	default:
+		break; 
+	}});
+	this->addChild(checkbox);
+
+	auto slider = ui::Slider::create(); slider->loadBarTexture("Slider_Back.png"); 
+	slider->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 5));
+	slider->loadSlidBallTextures("SliderNode_Normal.png", "SliderNode_Press.png", "SliderNode_Disable.png");
+	slider->loadProgressBarTexture("Slider_PressBar.png"); 
+	slider->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) { 
+		switch (type) { 
+		case ui::Widget::TouchEventType::BEGAN:
+			break; 
+		case ui::Widget::TouchEventType::ENDED:
+			//std::cout << "slider moved" << std::endl;
+			break; 
+		default: 
+			break;
+		}}); 
+	this->addChild(slider);
+
+	auto textField = ui::TextField::create("", "Arial", 30); 
+	textField->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 2));
+	textField->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) { 
+		//std::cout << "editing a TextField" << std::endl; 
+	}); 
+	textField->setPasswordEnabled(true);
+	textField->setMaxLength(10);
+	this->addChild(textField);
+	 
 
     Play = Label::createWithTTF("PLAY", "fonts/Marker Felt.ttf", 24);
 	Play->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 7));
