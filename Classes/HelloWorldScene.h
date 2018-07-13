@@ -41,6 +41,7 @@ public:
 	virtual void onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event);
 	virtual void onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event);
 	virtual void onMouseUp(Event* event);
+	virtual bool onTouchBegan(Touch* touch, Event* event);
 
 	// Update funciton that cals every frame
 	virtual void update(float delta);

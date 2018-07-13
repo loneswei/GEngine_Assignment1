@@ -90,6 +90,11 @@ bool HelloWorld::init()
 	listener3->onMouseUp = CC_CALLBACK_1(HelloWorld::onMouseUp, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener3, this);
 
+	// Touch detection for Jump
+	auto touchListener = EventListenerTouchOneByOne::create();
+	touchListener->onTouchBegan = CC_CALLBACK_2(HelloWorld::onTouchBegan, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+
 	// Call Update function
 	this->scheduleUpdate();
 
@@ -161,8 +166,8 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 		if (mainChar.getStatus() == mainChar.eRun)
 		{
 			mainChar.setStatus(mainChar.eJump);
-			float LTarget = WALL_CONTENTSIZE_X * 0.5f;
-			float RTarget = playingSize.width - (WALL_CONTENTSIZE_X * 0.5f);
+			float LTarget = WALL_CONTENTSIZE_X * 1.2f;
+			float RTarget = playingSize.width - (WALL_CONTENTSIZE_X * 1.2f);
 			float height = mainChar.getSprite()->getPosition().y * 0.75f;
 
 			mainChar.Jump(LTarget, RTarget, height);
@@ -281,6 +286,22 @@ void HelloWorld::onMouseUp(Event * event)
 	//mainChar.MoveCharByCoord(x, y);
 }
 
+// Touch trigger jump
+bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
+{
+	if (mainChar.getStatus() == mainChar.eRun)
+	{
+		mainChar.setStatus(mainChar.eJump);
+		float LTarget = WALL_CONTENTSIZE_X * 1.2f;
+		float RTarget = playingSize.width - (WALL_CONTENTSIZE_X * 1.2f);
+		float height = mainChar.getSprite()->getPosition().y * 0.75f;
+
+		mainChar.Jump(LTarget, RTarget, height);
+		return true;
+	}
+	return false;
+}
+
 void HelloWorld::update(float delta)
 {
 	LabelUpdate();
@@ -365,7 +386,7 @@ void HelloWorld::SpawnSamuraiEnemy()
 {
 	Enemy* Enemy = FetchEnemyObject(Enemy::ENEMY_SAMURAI);
 	Enemy->setIsActive(true);
-	Enemy->getEnemySprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
+	Enemy->getEnemySprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
 
 	// Random choose to spawn at left side or right side
 	int random_dir = RandomHelper::random_int(0, 9);
@@ -378,10 +399,10 @@ void HelloWorld::SpawnSamuraiEnemy()
 	switch (Enemy->getEnemyDirection())
 	{
 	case Enemy::ENEMY_RIGHT:
-		Enemy->getEnemySprite()->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.4f)), playingSize.height * 2));
+		Enemy->getEnemySprite()->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 1.2f)), playingSize.height * 2));
 		break;
 	case Enemy::ENEMY_LEFT:
-		Enemy->getEnemySprite()->setPosition(Vec2(WALL_CONTENTSIZE_X * 0.4f, playingSize.height * 2));
+		Enemy->getEnemySprite()->setPosition(Vec2(WALL_CONTENTSIZE_X * 1.2f, playingSize.height * 2));
 		break;
 	}
 
@@ -648,7 +669,7 @@ void HelloWorld::GameObjectsInit()
 	auto playerObject = Node::create();
 	playerObject->setName("PlayerObject");
 	auto playerSprite = Sprite::create("run_right_01.png");
-	mainChar.init("run_right_01.png", Vec2::ANCHOR_MIDDLE_BOTTOM, (playingSize.width - (WALL_CONTENTSIZE_X * 0.5f)), (playerSprite->getContentSize().width * 2), "Player");
+	mainChar.init("run_right_01.png", Vec2::ANCHOR_MIDDLE, (playingSize.width - (WALL_CONTENTSIZE_X * 1.2f)), (playerSprite->getContentSize().width * 2), "Player");
 	playerObject->addChild(mainChar.getSprite(), 1);
 	this->addChild(playerObject, 1);
 	characterSpriteWidth = mainChar.getSprite()->getContentSize().width * mainChar.getSprite()->getScaleX();
@@ -804,12 +825,12 @@ void HelloWorld::TrapUpdate(float delta)
 			trapObj->getTrapSprite()->setVisible(false);
 		}
 		//Collision
-		if ((trapObj->getTrapSprite()->getPosition() - mainChar.getSprite()->getPosition()).length() <= spriteGameWidth + characterSpriteWidth)
+		if (mainChar.getLifeCount() > 0)
 		{
-			//Lose a life here
-			if (!mainChar.getShieldActive() && !mainChar.getInvulActive())
+			if ((trapObj->getTrapSprite()->getPosition() - mainChar.getSprite()->getPosition()).length() <= spriteGameWidth + characterSpriteWidth)
 			{
-				if (mainChar.getLifeCount() > 0)
+				//Lose a life here
+				if (!mainChar.getShieldActive() && !mainChar.getInvulActive())
 				{
 					mainChar.setLifeCount(mainChar.getLifeCount() - 1);
 					auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
@@ -839,24 +860,22 @@ void HelloWorld::ItemUpdate(float delta)
 		// Update Coin
 		if (itemObj->getItemType() == ItemObject::ITEM_COIN)
 		{
-			if (mainChar.getMagnetActive())
+			if (mainChar.getLifeCount() > 0)
 			{
-				// Magnet sucks coins to character
-				if (itemObj->getItemSprite()->isVisible() &&
-					(itemObj->getItemSprite()->getPosition() - mainChar.getSprite()->getPosition()).length() <= MAGNET_STRENGTH)
+				if (mainChar.getMagnetActive())
 				{
-					Vec2 dir = (mainChar.getSprite()->getPosition() - itemObj->getItemSprite()->getPosition()).getNormalized();
-					dir *= MAGNET_STRENGTH * delta;
+					// Magnet sucks coins to character
+					if (itemObj->getItemSprite()->isVisible() &&
+						(itemObj->getItemSprite()->getPosition() - mainChar.getSprite()->getPosition()).length() <= MAGNET_STRENGTH)
+					{
+						Vec2 dir = (mainChar.getSprite()->getPosition() - itemObj->getItemSprite()->getPosition()).getNormalized();
+						dir *= MAGNET_STRENGTH * delta;
 
-					itemObj->getItemSprite()->setPosition(itemObj->getItemSprite()->getPosition() + dir);
+						itemObj->getItemSprite()->setPosition(itemObj->getItemSprite()->getPosition() + dir);
+					}
 				}
-				else
-					itemObj->getItemSprite()->setPositionY(itemObj->getItemSprite()->getPositionY() - COIN_SPEED * delta);
 			}
-			else
-			{
-				itemObj->getItemSprite()->setPositionY(itemObj->getItemSprite()->getPositionY() - COIN_SPEED * delta);
-			}
+			itemObj->getItemSprite()->setPositionY(itemObj->getItemSprite()->getPositionY() - COIN_SPEED * delta);
 		}
 		const float spriteGameWidth = itemObj->getItemSprite()->getContentSize().width * itemObj->getItemSprite()->getScaleX();
 
@@ -868,41 +887,43 @@ void HelloWorld::ItemUpdate(float delta)
 			itemObj->getItemSprite()->setVisible(false);
 		}
 		//Player Collision
-		else if ((itemObj->getItemSprite()->getPosition() - mainChar.getSprite()->getPosition()).length() <= spriteGameWidth + characterSpriteWidth)
+		if (mainChar.getLifeCount() > 0)
 		{
-			switch (itemObj->getItemType())
+			if ((itemObj->getItemSprite()->getPosition() - mainChar.getSprite()->getPosition()).length() <= spriteGameWidth + characterSpriteWidth)
 			{
-			case ItemObject::ITEM_COIN:
-			{
-				mainChar.setScore(mainChar.getScore() + itemObj->getCoinScore());
-				AudioManager->playEffect("Audio/SoundEffect/coin_pickup.wav");
-				break;
-			}
-			case ItemObject::ITEM_SHIELD:
-			{
-				if (!mainChar.getShieldActive())
+				switch (itemObj->getItemType())
 				{
-					mainChar.setShieldActive(true);
-					mainChar.getShieldSprite()->setVisible(true);
-
-					AudioManager->playEffect("Audio/SoundEffect/shield_pickup.mp3", false, 1, 0, 10);
-				}
-				break;
-			}
-			case ItemObject::ITEM_MAGNET:
-			{
-				if (!mainChar.getMagnetActive())
+				case ItemObject::ITEM_COIN:
 				{
-					mainChar.setMagnetActive(true);
-					AudioManager->playEffect("Audio/SoundEffect/magnet_pickup.mp3", false, 1, 0, 0.1f);
+					mainChar.setScore(mainChar.getScore() + itemObj->getCoinScore());
+					AudioManager->playEffect("Audio/SoundEffect/coin_pickup.wav");
+					break;
 				}
-				break;
-			}
-			}
+				case ItemObject::ITEM_SHIELD:
+				{
+					if (!mainChar.getShieldActive())
+					{
+						mainChar.setShieldActive(true);
+						mainChar.getShieldSprite()->setVisible(true);
 
-			itemObj->setIsActive(false);
-			itemObj->getItemSprite()->pause();
-			itemObj->getItemSprite()->setVisible(false);
+						AudioManager->playEffect("Audio/SoundEffect/shield_pickup.mp3", false, 1, 0, 10);
+					}
+					break;
+				}
+				case ItemObject::ITEM_MAGNET:
+				{
+					if (!mainChar.getMagnetActive())
+					{
+						mainChar.setMagnetActive(true);
+						AudioManager->playEffect("Audio/SoundEffect/magnet_pickup.mp3", false, 1, 0, 0.1f);
+					}
+					break;
+				}
+				}
+				itemObj->setIsActive(false);
+				itemObj->getItemSprite()->pause();
+				itemObj->getItemSprite()->setVisible(false);
+			}
 		}
 	}
 }
@@ -929,12 +950,13 @@ void HelloWorld::EnemyUpdate(float delta)
 			enemy->getEnemySprite()->setVisible(false);
 		}
 		//Player Collision
-		else if ((enemy->getEnemySprite()->getPosition() - mainChar.getSprite()->getPosition()).length() <= spriteGameWidth + characterSpriteWidth)
+
+		if (mainChar.getLifeCount() > 0)
 		{
-			//Lose a life here
-			if (!mainChar.getShieldActive() && !mainChar.getInvulActive())
+			if ((enemy->getEnemySprite()->getPosition() - mainChar.getSprite()->getPosition()).length() <= spriteGameWidth + characterSpriteWidth)
 			{
-				if (mainChar.getLifeCount() > 0)
+				//Lose a life here
+				if (!mainChar.getShieldActive() && !mainChar.getInvulActive())
 				{
 					mainChar.setLifeCount(mainChar.getLifeCount() - 1);
 					mainChar.setInvulActive(true);
@@ -1048,8 +1070,6 @@ void HelloWorld::GameOverUI()
 	scoreLabel->setPosition(Vec2(playingSize.width * 0.5f, scoreLabel->getContentSize().height * 8));
 	this->addChild(scoreLabel, 1);
 	*/
-
-
 }
 
 void HelloWorld::PauseUI()
