@@ -63,7 +63,6 @@ bool HelloWorld::init()
 
 	GameOverUI();
 
-
 	tutorialbackground = Sprite::create("tutorial.png");
 	tutorialbackground->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
 	tutorialbackground->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height * 0.5f));
@@ -672,7 +671,7 @@ void HelloWorld::GameObjectsInit()
 	mainChar.init("run_right_01.png", Vec2::ANCHOR_MIDDLE, (playingSize.width - (WALL_CONTENTSIZE_X * 1.2f)), (playerSprite->getContentSize().width * 2), "Player");
 	playerObject->addChild(mainChar.getSprite(), 1);
 	this->addChild(playerObject, 1);
-	characterSpriteWidth = mainChar.getSprite()->getContentSize().width * mainChar.getSprite()->getScaleX();
+	characterSpriteWidth = mainChar.getSprite()->getContentSize().width * mainChar.getSprite()->getScaleX() * 0.5f;
 
 	// Player's Shield
 	auto playerShieldObject = Node::create();
@@ -815,7 +814,7 @@ void HelloWorld::TrapUpdate(float delta)
 		//Update trap
 		trapObj->TrapUpdate(delta);
 
-		const float spriteGameWidth = (trapObj->getTrapSprite()->getContentSize().width) * (trapObj->getTrapSprite()->getScaleX());
+		const float spriteGameWidth = (trapObj->getTrapSprite()->getContentSize().width) * (trapObj->getTrapSprite()->getScaleX()) * 0.5f;
 
 		//Disable trap if it goes below the screen
 		if (trapObj->getTrapSprite()->getPositionY() + spriteGameWidth < 0)
@@ -877,7 +876,7 @@ void HelloWorld::ItemUpdate(float delta)
 			}
 			itemObj->getItemSprite()->setPositionY(itemObj->getItemSprite()->getPositionY() - COIN_SPEED * delta);
 		}
-		const float spriteGameWidth = itemObj->getItemSprite()->getContentSize().width * itemObj->getItemSprite()->getScaleX();
+		const float spriteGameWidth = itemObj->getItemSprite()->getContentSize().width * itemObj->getItemSprite()->getScaleX() * 0.5f;
 
 		//Disable item if it goes below the screen
 		if (itemObj->getItemSprite()->getPositionY() + spriteGameWidth < 0)
@@ -940,7 +939,7 @@ void HelloWorld::EnemyUpdate(float delta)
 		//Update enemy
 		enemy->EnemyUpdate(delta);
 
-		const float spriteGameWidth = enemy->getEnemySprite()->getContentSize().width * enemy->getEnemySprite()->getScaleX();
+		const float spriteGameWidth = enemy->getEnemySprite()->getContentSize().width * enemy->getEnemySprite()->getScaleX() * 0.5f;
 
 		//Disable enemy if it goes below the screen
 		if (enemy->getEnemySprite()->getPositionY() + spriteGameWidth < 0)
