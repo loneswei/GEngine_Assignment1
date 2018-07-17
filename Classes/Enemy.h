@@ -42,6 +42,9 @@ public:
 	void setEnemySprite(Sprite* _enemySprite) { enemySprite = _enemySprite; }
 	void setEnemyDirection(ENEMY_DIRECTION _enemyDir) { enemyDir = _enemyDir; }
 
+	//Sprite Sizes
+	float SpriteWidth, halfSpriteWidth;
+
 private:
 	ENEMY_TYPE enemyType;
 	bool isActive;
