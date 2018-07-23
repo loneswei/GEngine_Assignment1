@@ -20,9 +20,6 @@ Enemy::Enemy(ENEMY_TYPE enemyType) :
 	if (this->enemyType == ENEMY_SAMURAI)
 	{
 		enemySprite = Sprite::create("samurai_run_right_01.png");
-		
-		SpriteWidth = enemySprite->getContentSize().width * enemySprite->getScaleX();
-		halfSpriteWidth = SpriteWidth * 0.5f;
 	}
 }
 

@@ -2,8 +2,6 @@
 #include "SimpleAudioEngine.h"
 #include "MainMenu.h"
 #include "Character.h"
-#include <random>
-
 USING_NS_CC;
 
 #define BACKGROUND_SCROLL_SPEED 5.f
@@ -15,11 +13,11 @@ USING_NS_CC;
 #define COIN_SPAWN_TIMING 5.0f
 #define MAGNET_SPAWN_TIMING 7.0f
 #define SHIELD_SPAWN_TIMING 7.0f
-#define SPIKE_SPAWN_TIMING 3.0f
-#define SHURIKEN_SPAWN_TIMING 5.0f
+#define SPIKE_SPAWN_TIMING 4.0f
+#define SHURIKEN_SPAWN_TIMING 6.0f
 
 #define COIN_SCORE 100.0f
-#define COIN_SPEED 200.0f
+#define FALL_SPEED 200.0f
 #define MAGNET_STRENGTH 1050.0f
 
 #define RESUME_POSITION 0.55
@@ -95,11 +93,6 @@ bool HelloWorld::init()
 	auto touchListener = EventListenerTouchOneByOne::create();
 	touchListener->onTouchBegan = CC_CALLBACK_2(HelloWorld::onTouchBegan, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
-
-	//Init Last Spawned Objects
-	LastSpawnedItem = nullptr; 
-	LastSpawnedTrap = nullptr; 
-	LastSpawnedEnemy = nullptr;
 
 	// Call Update function
 	this->scheduleUpdate();
@@ -326,6 +319,11 @@ void HelloWorld::update(float delta)
 	{
 		mainChar.getSprite()->pause();
 		mainChar.setAliveorNot(true);
+		mainChar.getSprite()->setPositionY(mainChar.getSprite()->getPositionY() - FALL_SPEED * delta);
+
+		const float spriteWidth = mainChar.getSprite()->getContentSize().width * mainChar.getSprite()->getScaleX() * 0.5f;
+		if (mainChar.getSprite()->getPositionY() + spriteWidth < 0)
+			mainChar.getSprite()->setVisible(false);
 	}
 	if (paused)
 	{
@@ -388,26 +386,35 @@ void HelloWorld::update(float delta)
 	}
 }
 
-float HelloWorld::RandomFloatRange(const float &a, const float &b)
-{
-	static std::random_device rd;
-	static std::mt19937 gen(rd());
-
-	std::uniform_real_distribution<> dis(a, b);
-
-	return dis(gen);
-}
-
-Enemy* HelloWorld::SpawnSamuraiEnemy()
+void HelloWorld::SpawnSamuraiEnemy()
 {
 	Enemy* Enemy = FetchEnemyObject(Enemy::ENEMY_SAMURAI);
 	Enemy->setIsActive(true);
 	Enemy->getEnemySprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
 
-	return Enemy;
+	// Random choose to spawn at left side or right side
+	int random_dir = RandomHelper::random_int(0, 9);
+	if (random_dir >= 5)
+		Enemy->setEnemyDirection(Enemy::ENEMY_RIGHT);
+	else
+		Enemy->setEnemyDirection(Enemy::ENEMY_LEFT);
+
+	// Set position according to Enemy direction
+	switch (Enemy->getEnemyDirection())
+	{
+	case Enemy::ENEMY_RIGHT:
+		Enemy->getEnemySprite()->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 1.2f)), playingSize.height * 2));
+		break;
+	case Enemy::ENEMY_LEFT:
+		Enemy->getEnemySprite()->setPosition(Vec2(WALL_CONTENTSIZE_X * 1.2f, playingSize.height * 2));
+		break;
+	}
+
+	// Call Run animating Function
+	Enemy->Run();
 }
 
-ItemObject* HelloWorld::SpawnCoin()
+void HelloWorld::SpawnCoin()
 {
 	// Random choose to spawn at left side or right side
 	int random_dir = RandomHelper::random_int(0, 9);
@@ -420,8 +427,6 @@ ItemObject* HelloWorld::SpawnCoin()
 	{
 		ItemObject* Coin = FetchItemObject(ItemObject::ITEM_COIN);
 		Coin->setItemSprite(Sprite::create("coin.png"));
-		Coin->SpriteWidth = Coin->getItemSprite()->getContentSize().width * Coin->getItemSprite()->getScaleX();
-		Coin->halfSpriteWidth = Coin->SpriteWidth * 0.5f;
 		Coin->setIsActive(true);
 		Coin->getItemSprite()->resume();
 		if (!Coin->getItemSprite()->isVisible())
@@ -429,14 +434,10 @@ ItemObject* HelloWorld::SpawnCoin()
 		Coin->getItemSprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
 		Coin->setCoinScore(COIN_SCORE);
 
-		if(random_dir >= 5)
-		{
+		if (random_dir >= 5)
 			Coin->setItemDirection(ItemObject::ITEM_RIGHT);
-		}
 		else
-		{
-			Coin->setItemDirection(ItemObject::ITEM_RIGHT);
-		}
+			Coin->setItemDirection(ItemObject::ITEM_LEFT);
 
 		// Set position according to Item direction
 		switch (Coin->getItemDirection())
@@ -467,81 +468,135 @@ ItemObject* HelloWorld::SpawnCoin()
 			break;
 		}
 		itemObjects->addChild(Coin->getItemSprite());
-
-		//Return the last coin spawned
-		if (random_spawnAmount - 1 == 0)
-		{
-			return Coin;
-		}
 	}
 }
 
-ItemObject* HelloWorld::SpawnMagnet()
+void HelloWorld::SpawnMagnet()
 {
 	ItemObject* Magnet = FetchItemObject(ItemObject::ITEM_MAGNET);
 	Magnet->setItemSprite(Sprite::create("magnet.png"));
-	Magnet->SpriteWidth = Magnet->getItemSprite()->getContentSize().width * Magnet->getItemSprite()->getScaleX();
-	Magnet->halfSpriteWidth = Magnet->SpriteWidth * 0.5f;
 	Magnet->setIsActive(true);
 	Magnet->getItemSprite()->resume();
 	if (!Magnet->getItemSprite()->isVisible())
 		Magnet->getItemSprite()->setVisible(true);
 	Magnet->getItemSprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
 
-	itemObjects->addChild(Magnet->getItemSprite());
+	// Random choose to spawn at left side or right side
+	int random_dir = RandomHelper::random_int(0, 9);
+	if (random_dir >= 5)
+		Magnet->setItemDirection(ItemObject::ITEM_RIGHT);
+	else
+		Magnet->setItemDirection(ItemObject::ITEM_LEFT);
 
-	return Magnet;
+	// Set position according to Item direction
+	switch (Magnet->getItemDirection())
+	{
+	case ItemObject::ITEM_RIGHT:
+		Magnet->getItemSprite()->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.4f)), playingSize.height));
+		Magnet->getItemSprite()->setRotation(-90);
+		break;
+	case ItemObject::ITEM_LEFT:
+		Magnet->getItemSprite()->setPosition(Vec2(WALL_CONTENTSIZE_X * 0.4f, playingSize.height));
+		Magnet->getItemSprite()->setRotation(90);
+		break;
+	}
+	itemObjects->addChild(Magnet->getItemSprite());
 }
 
-ItemObject* HelloWorld::SpawnShield()
+void HelloWorld::SpawnShield()
 {
 	ItemObject* Shield = FetchItemObject(ItemObject::ITEM_SHIELD);
 	Shield->setItemSprite(Sprite::create("shield.png"));
-	Shield->SpriteWidth = Shield->getItemSprite()->getContentSize().width * Shield->getItemSprite()->getScaleX();
-	Shield->halfSpriteWidth = Shield->SpriteWidth * 0.5f;
 	Shield->setIsActive(true);
 	Shield->getItemSprite()->resume();
 	if (!Shield->getItemSprite()->isVisible())
 		Shield->getItemSprite()->setVisible(true);
 	Shield->getItemSprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
 
-	itemObjects->addChild(Shield->getItemSprite());
+	// Random choose to spawn at left side or right side
+	int random_dir = RandomHelper::random_int(0, 9);
+	if (random_dir >= 5)
+		Shield->setItemDirection(ItemObject::ITEM_RIGHT);
+	else
+		Shield->setItemDirection(ItemObject::ITEM_LEFT);
 
-	return Shield;
+	// Set position according to Item direction
+	switch (Shield->getItemDirection())
+	{
+	case ItemObject::ITEM_RIGHT:
+		Shield->getItemSprite()->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.4f)), playingSize.height));
+		Shield->getItemSprite()->setRotation(-90);
+		break;
+	case ItemObject::ITEM_LEFT:
+		Shield->getItemSprite()->setPosition(Vec2(WALL_CONTENTSIZE_X * 0.4f, playingSize.height));
+		Shield->getItemSprite()->setRotation(90);
+		break;
+	}
+	itemObjects->addChild(Shield->getItemSprite());
 }
 
-TrapObject* HelloWorld::SpawnSpike()
+void HelloWorld::SpawnSpike()
 {
 	TrapObject* Spike = FetchTrapObject(TrapObject::TRAP_SPIKES);
 	Spike->setTrapSprite(Sprite::create("spiketrap.png"));
-	Spike->SpriteWidth = Spike->getTrapSprite()->getContentSize().width * Spike->getTrapSprite()->getScaleX();
-	Spike->halfSpriteWidth = Spike->SpriteWidth * 0.5f;
 	Spike->setIsActive(true);
 	Spike->getTrapSprite()->resume();
 	if (!Spike->getTrapSprite()->isVisible())
 		Spike->getTrapSprite()->setVisible(true);
 	Spike->getTrapSprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
 
-	trapObjects->addChild(Spike->getTrapSprite());
+	// Random choose to spawn at left side or right side
+	int random_dir = RandomHelper::random_int(0, 9);
+	if (random_dir >= 5)
+		Spike->setTrapDirection(TrapObject::TRAP_RIGHT);
+	else
+		Spike->setTrapDirection(TrapObject::TRAP_LEFT);
 
-	return Spike;
+	// Set position according to Trap direction
+	switch (Spike->getTrapDirection())
+	{
+	case TrapObject::TRAP_RIGHT:
+		Spike->getTrapSprite()->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.4f)), playingSize.height));
+		Spike->getTrapSprite()->setRotation(-90);
+		break;
+	case TrapObject::TRAP_LEFT:
+		Spike->getTrapSprite()->setPosition(Vec2(WALL_CONTENTSIZE_X * 0.4f, playingSize.height));
+		Spike->getTrapSprite()->setRotation(90);
+		break;
+	}
+	trapObjects->addChild(Spike->getTrapSprite());
 }
 
-TrapObject* HelloWorld::SpawnShuriken()
+void HelloWorld::SpawnShuriken()
 {
 	TrapObject* Shuriken = FetchTrapObject(TrapObject::TRAP_SHURIKEN);
 	Shuriken->setTrapSprite(Sprite::create("shuriken.png"));
-	Shuriken->SpriteWidth = Shuriken->getTrapSprite()->getContentSize().width * Shuriken->getTrapSprite()->getScaleX();
-	Shuriken->halfSpriteWidth = Shuriken->SpriteWidth * 0.5f;
 	Shuriken->setIsActive(true);
 	Shuriken->getTrapSprite()->resume();
 	if (!Shuriken->getTrapSprite()->isVisible())
 		Shuriken->getTrapSprite()->setVisible(true);
 	Shuriken->getTrapSprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
 
-	trapObjects->addChild(Shuriken->getTrapSprite());
+	// Random choose to spawn at left side or right side
+	int random_dir = RandomHelper::random_int(0, 9);
+	if (random_dir >= 5)
+		Shuriken->setTrapDirection(TrapObject::TRAP_RIGHT);
+	else
+		Shuriken->setTrapDirection(TrapObject::TRAP_LEFT);
 
-	return Shuriken;
+	// Set position according to Trap direction
+	switch (Shuriken->getTrapDirection())
+	{
+	case TrapObject::TRAP_RIGHT:
+		Shuriken->getTrapSprite()->setPosition(Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.5f)), playingSize.height));
+		Shuriken->getTrapSprite()->setRotation(-90);
+		break;
+	case TrapObject::TRAP_LEFT:
+		Shuriken->getTrapSprite()->setPosition(Vec2(WALL_CONTENTSIZE_X * 0.5f, playingSize.height));
+		Shuriken->getTrapSprite()->setRotation(90);
+		break;
+	}
+	trapObjects->addChild(Shuriken->getTrapSprite());
 }
 
 void HelloWorld::GameObjectsInit()
@@ -704,370 +759,29 @@ void HelloWorld::LabelUpdate()
 void HelloWorld::AutoSpawner(float delta, float &timer, float timing, ESpawner _eSpawn)
 {
 	timer += 1 * delta;
-
 	if (timer >= timing)
 	{
-		int random_dir = RandomHelper::random_int(0, 9);
-		
-		bool isSpawnRight;
-		Vec2 SpawnPos;
-
 		// Call related Spawn function according to passed in spawner enum
 		switch (_eSpawn)
 		{
 		case eSamuraiEnemy:
-		{
-			// Random choose to spawn at left side or right side
-			if (random_dir >= 5)
-			{
-				isSpawnRight = true;
-				SpawnPos = Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 1.2f)), playingSize.height);
-			}
-			else
-			{
-				isSpawnRight = false;
-				SpawnPos = Vec2(WALL_CONTENTSIZE_X * 1.2f, playingSize.height);
-			}
-
-			//Check against last spawned item
-			if (LastSpawnedItem)
-			{
-				//Spawned within another object
-				if (LastSpawnedItem->getItemSprite()->getPosition().getDistance(SpawnPos) < LastSpawnedItem->SpriteWidth)
-				{
-					//Delay spawning by random amount
-					timer = timing - RandomFloatRange(1.f, 3.f);
-					return;
-				}
-			}
-
-			//Check against last spawned trap
-			if (LastSpawnedTrap)
-			{
-				//Spawned within another object
-				if (LastSpawnedTrap->getTrapSprite()->getPosition().getDistance(SpawnPos) < LastSpawnedTrap->SpriteWidth ||
-					SpawnPos.y - LastSpawnedTrap->getTrapSprite()->getPositionY() < LastSpawnedTrap->SpriteWidth
-					)
-				{
-					//Delay spawning by random amount
-					timer = timing - RandomFloatRange(1.f, 3.f);
-					return;
-				}
-			}
-
-			//Check against last spawned enemy
-			if (LastSpawnedEnemy)
-			{
-				//Spawned within another object
-				if (LastSpawnedEnemy->getEnemySprite()->getPosition().getDistance(SpawnPos) < LastSpawnedEnemy->SpriteWidth ||
-					SpawnPos.y - LastSpawnedEnemy->getEnemySprite()->getPositionY() < LastSpawnedEnemy->SpriteWidth
-					)
-				{
-					//Delay spawning by random amount
-					timer = timing - RandomFloatRange(1.f, 3.f);
-					return;
-				}
-			}
-
-			//Spawn the object
-			Enemy* theEnemy = SpawnSamuraiEnemy();
-			theEnemy->getEnemySprite()->setPosition(SpawnPos);
-			theEnemy->setEnemyDirection((Enemy::ENEMY_DIRECTION)isSpawnRight);
-
-			//Becomes the last spawned
-			LastSpawnedEnemy = theEnemy;
-
-			// Call Run animating Function
-			theEnemy->Run();
-
+			SpawnSamuraiEnemy();
 			break;
-		}
 		case eCoin:
-			////Because of the way coins are spawned, the coins will not check if its in spawning in a valid pos
-			////Intead others will be the one checking against coins
-			LastSpawnedItem = SpawnCoin();
+			SpawnCoin();
 			break;
 		case eMagnet:
-		{
-			// Random choose to spawn at left side or right side
-			if (random_dir >= 5)
-			{
-				isSpawnRight = true;
-				SpawnPos = Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.4f)), playingSize.height);
-			}
-			else
-			{
-				isSpawnRight = false;
-				SpawnPos = Vec2(WALL_CONTENTSIZE_X * 0.4f, playingSize.height);
-			}
-
-			//Check against last spawned item
-			if (LastSpawnedItem)
-			{
-				//Spawned within another object
-				if (LastSpawnedItem->getItemSprite()->getPosition().getDistance(SpawnPos) < LastSpawnedItem->SpriteWidth)
-				{
-					//Delay spawning by random amount
-					timer = timing - RandomFloatRange(1.f, 3.f);
-					return;
-				}
-			}
-
-			//Check against last spawned trap
-			if (LastSpawnedTrap)
-			{
-				//Spawned within another object
-				if (LastSpawnedTrap->getTrapSprite()->getPosition().getDistance(SpawnPos) < LastSpawnedTrap->SpriteWidth)
-				{
-					//Delay spawning by random amount
-					timer = timing - RandomFloatRange(1.f, 3.f);
-					return;
-				}
-			}
-
-			//Check against last spawned enemy
-			if (LastSpawnedEnemy)
-			{
-				//Spawned within another object
-				if (LastSpawnedEnemy->getEnemySprite()->getPosition().getDistance(SpawnPos) < LastSpawnedEnemy->SpriteWidth)
-				{
-					//Delay spawning by random amount
-					timer = timing - RandomFloatRange(1.f, 3.f);
-					return;
-				}
-			}
-
-			//Spawn the object
-			ItemObject* theMagnet = SpawnMagnet();
-			theMagnet->getItemSprite()->setPosition(SpawnPos);
-			theMagnet->setItemDirection((ItemObject::ITEM_DIRECTION)isSpawnRight);
-
-			if (isSpawnRight)
-			{
-				theMagnet->getItemSprite()->setRotation(-90);
-			}
-			else
-			{
-				theMagnet->getItemSprite()->setRotation(90);
-			}
-
-			//Becomes the last spawned
-			LastSpawnedItem = theMagnet;
+			SpawnMagnet();
 			break;
-		}
 		case eShield:
-		{
-			if (random_dir >= 5)
-			{
-				isSpawnRight = true;
-				SpawnPos = Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.4f)), playingSize.height);
-			}
-			else
-			{
-				isSpawnRight = false;
-				SpawnPos = Vec2(WALL_CONTENTSIZE_X * 0.4f, playingSize.height);
-			}
-
-			//Check against last spawned item
-			if (LastSpawnedItem)
-			{
-				//Spawned within another object
-				if (LastSpawnedItem->getItemSprite()->getPosition().getDistance(SpawnPos) < LastSpawnedItem->SpriteWidth)
-				{
-					//Delay spawning by random amount
-					timer = timing - RandomFloatRange(1.f, 3.f);
-					return;
-				}
-			}
-
-			//Check against last spawned trap
-			if (LastSpawnedTrap)
-			{
-				//Spawned within another object
-				if (LastSpawnedTrap->getTrapSprite()->getPosition().getDistance(SpawnPos) < LastSpawnedTrap->SpriteWidth)
-				{
-					//Delay spawning by random amount
-					timer = timing - RandomFloatRange(1.f, 3.f);
-					return;
-				}
-			}
-
-			//Check against last spawned enemy
-			if (LastSpawnedEnemy)
-			{
-				//Spawned within another object
-				if (LastSpawnedEnemy->getEnemySprite()->getPosition().getDistance(SpawnPos) < LastSpawnedEnemy->SpriteWidth)
-				{
-					//Delay spawning by random amount
-					timer = timing - RandomFloatRange(1.f, 3.f);
-					return;
-				}
-			}
-
-			//Spawn the object
-			ItemObject* theShield = SpawnShield();;
-			theShield->getItemSprite()->setPosition(SpawnPos);
-			theShield->setItemDirection((ItemObject::ITEM_DIRECTION)isSpawnRight);
-
-			if (isSpawnRight)
-			{
-				theShield->getItemSprite()->setRotation(-90);
-			}
-			else
-			{
-				theShield->getItemSprite()->setRotation(90);
-			}
-
-			//Becomes the last spawned
-			LastSpawnedItem = theShield;
-
+			SpawnShield();
 			break;
-		}
 		case eSpike:
-		{
-			if (random_dir >= 5)
-			{
-				isSpawnRight = true;
-				SpawnPos = Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.4f)), playingSize.height);
-			}
-			else
-			{
-				isSpawnRight = false;
-				SpawnPos = Vec2(WALL_CONTENTSIZE_X * 0.4f, playingSize.height);
-			}
-
-			//Check against last spawned item
-			if (LastSpawnedItem)
-			{
-				//Spawned within another object
-				if (LastSpawnedItem->getItemSprite()->getPosition().getDistance(SpawnPos) < LastSpawnedItem->SpriteWidth)
-				{
-					//Delay spawning by random amount
-					timer = timing - RandomFloatRange(1.f, 3.f);
-					return;
-				}
-			}
-
-			//Check against last spawned trap
-			if (LastSpawnedTrap)
-			{
-				//Spawned within another object
-				if (LastSpawnedTrap->getTrapSprite()->getPosition().getDistance(SpawnPos) < LastSpawnedTrap->SpriteWidth ||
-					SpawnPos.y - LastSpawnedTrap->getTrapSprite()->getPositionY() < LastSpawnedTrap->SpriteWidth
-					)
-				{
-					//Delay spawning by random amount
-					timer = timing - RandomFloatRange(1.f, 3.f);
-					return;
-				}
-			}
-
-			//Check against last spawned enemy
-			if (LastSpawnedEnemy)
-			{
-				//Spawned within another object
-				if (LastSpawnedEnemy->getEnemySprite()->getPosition().getDistance(SpawnPos) < LastSpawnedEnemy->SpriteWidth ||
-					SpawnPos.y - LastSpawnedEnemy->getEnemySprite()->getPositionY() < LastSpawnedEnemy->SpriteWidth
-					)
-				{
-					//Delay spawning by random amount
-					timer = timing - RandomFloatRange(1.f, 3.f);
-					return;
-				}
-			}
-
-			//Spawn the object
-			TrapObject *theSpike = SpawnSpike();
-			theSpike->getTrapSprite()->setPosition(SpawnPos);
-			theSpike->setTrapDirection((TrapObject::TRAP_DIRECTION)isSpawnRight);
-
-			if (isSpawnRight)
-			{
-				theSpike->getTrapSprite()->setRotation(-90);
-			}
-			else
-			{
-				theSpike->getTrapSprite()->setRotation(90);
-			}
-
-			//Becomes the last spawned
-			LastSpawnedTrap = theSpike;
-
+			SpawnSpike();
 			break;
-		}
 		case eShuriken:
-		{
-			// Random choose to spawn at left side or right side
-			if (random_dir >= 5)
-			{
-				isSpawnRight = true;
-				SpawnPos = Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.5f)), playingSize.height);
-			}
-			else
-			{
-				isSpawnRight = false;
-				SpawnPos = Vec2(WALL_CONTENTSIZE_X * 0.5f, playingSize.height);
-			}
-
-			//Check against last spawned item
-			if (LastSpawnedItem)
-			{
-				//Spawned within another object
-				if (LastSpawnedItem->getItemSprite()->getPosition().getDistance(SpawnPos) < LastSpawnedItem->SpriteWidth)
-				{
-					//Delay spawning by random amount
-					timer = timing - RandomFloatRange(1.f, 3.f);
-					return;
-				}
-			}
-
-			//Check against last spawned trap
-			if (LastSpawnedTrap)
-			{
-				//Spawned within another object
-				if (LastSpawnedTrap->getTrapSprite()->getPosition().getDistance(SpawnPos) < LastSpawnedTrap->SpriteWidth ||
-					SpawnPos.y - LastSpawnedTrap->getTrapSprite()->getPositionY() < LastSpawnedTrap->SpriteWidth
-					)
-				{
-					//Delay spawning by random amount
-					timer = timing - RandomFloatRange(1.f, 3.f);
-					return;
-				}
-			}
-
-			//Check against last spawned enemy
-			if (LastSpawnedEnemy)
-			{
-				//Spawned within another object
-				if (LastSpawnedEnemy->getEnemySprite()->getPosition().getDistance(SpawnPos) < LastSpawnedEnemy->SpriteWidth ||
-					SpawnPos.y  - LastSpawnedEnemy->getEnemySprite()->getPositionY() < LastSpawnedEnemy->SpriteWidth
-					)
-				{
-					//Delay spawning by random amount
-					timer = timing - RandomFloatRange(1.f, 3.f);
-					return;
-				}
-			}
-
-			//Spawn the object
-			TrapObject *theShuriken = SpawnShuriken();
-			theShuriken->getTrapSprite()->setPosition(SpawnPos);
-			theShuriken->setTrapDirection((TrapObject::TRAP_DIRECTION)isSpawnRight);
-
-			if (isSpawnRight)
-			{
-				theShuriken->getTrapSprite()->setRotation(-90);
-			}
-			else
-			{
-				theShuriken->getTrapSprite()->setRotation(90);
-			}
-
-			//Becomes the last spawned
-			LastSpawnedTrap = theShuriken;
-
+			SpawnShuriken();
 			break;
-		}
 		}
 		timer = 0.0f;
 	}
@@ -1165,7 +879,7 @@ void HelloWorld::ItemUpdate(float delta)
 					}
 				}
 			}
-			itemObj->getItemSprite()->setPositionY(itemObj->getItemSprite()->getPositionY() - COIN_SPEED * delta);
+			itemObj->getItemSprite()->setPositionY(itemObj->getItemSprite()->getPositionY() - FALL_SPEED * delta);
 		}
 		const float spriteGameWidth = itemObj->getItemSprite()->getContentSize().width * itemObj->getItemSprite()->getScaleX() * 0.5f;
 
@@ -1198,6 +912,11 @@ void HelloWorld::ItemUpdate(float delta)
 
 						AudioManager->playEffect("Audio/SoundEffect/shield_pickup.mp3", false, 1, 0, 10);
 					}
+					else
+					{
+						mainChar.setShieldTimer(0.0f);
+						AudioManager->playEffect("Audio/SoundEffect/shield_pickup.mp3", false, 1, 0, 10);
+					}
 					break;
 				}
 				case ItemObject::ITEM_MAGNET:
@@ -1205,6 +924,11 @@ void HelloWorld::ItemUpdate(float delta)
 					if (!mainChar.getMagnetActive())
 					{
 						mainChar.setMagnetActive(true);
+						AudioManager->playEffect("Audio/SoundEffect/magnet_pickup.mp3", false, 1, 0, 0.1f);
+					}
+					else
+					{
+						mainChar.setMagnetTimer(0.0f);
 						AudioManager->playEffect("Audio/SoundEffect/magnet_pickup.mp3", false, 1, 0, 0.1f);
 					}
 					break;

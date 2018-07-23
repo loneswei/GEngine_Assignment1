@@ -40,9 +40,6 @@ public:
 	void setIsActive(bool _isActive) { isActive = _isActive; }
 	void setTrapSprite(Sprite* _trapSprite) { trapSprite = _trapSprite; }
 
-	//Sprite Sizes
-	float SpriteWidth, halfSpriteWidth;
-
 private:
 	TRAP_TYPE trapType;
 	TRAP_DIRECTION trapDir;

@@ -44,9 +44,6 @@ public:
 	void setItemSprite(Sprite* _itemSprite) { itemSprite = _itemSprite; }
 	void setCoinScore(float _coinScore) { coinScore = _coinScore; }
 
-	//Sprite Sizes
-	float SpriteWidth, halfSpriteWidth;
-
 private:
 	ITEM_TYPE itemType;
 	ITEM_DIRECTION itemDir;
