@@ -6,7 +6,7 @@
 
 USING_NS_CC;
 
-#define BACKGROUND_SCROLL_SPEED 5.f
+#define BACKGROUND_SCROLL_SPEED 7.f
 
 #define WALL_MOVESPEED 250.0f
 #define WALL_CONTENTSIZE_X 50.0f
@@ -19,7 +19,7 @@ USING_NS_CC;
 #define SHURIKEN_SPAWN_TIMING 5.0f
 
 #define COIN_SCORE 100.0f
-#define COIN_SPEED 200.0f
+#define FALL_SPEED 200.0f
 #define MAGNET_STRENGTH 1050.0f
 
 #define RESUME_POSITION 0.55
@@ -327,6 +327,11 @@ void HelloWorld::update(float delta)
 	{
 		mainChar.getSprite()->pause();
 		mainChar.setAliveorNot(true);
+
+		mainChar.getSprite()->setPositionY(mainChar.getSprite()->getPositionY() - FALL_SPEED * delta);
+		const float spriteGameWidth = mainChar.getSprite()->getContentSize().width * mainChar.getSprite()->getScaleX() * 0.5f;
+		if(mainChar.getSprite()->getPositionY() + spriteGameWidth < 0)
+			mainChar.getSprite()->setVisible(false);
 	}
 	if (paused)
 	{
@@ -1166,7 +1171,7 @@ void HelloWorld::ItemUpdate(float delta)
 					}
 				}
 			}
-			itemObj->getItemSprite()->setPositionY(itemObj->getItemSprite()->getPositionY() - COIN_SPEED * delta);
+			itemObj->getItemSprite()->setPositionY(itemObj->getItemSprite()->getPositionY() - FALL_SPEED * delta);
 		}
 		const float spriteGameWidth = itemObj->getItemSprite()->getContentSize().width * itemObj->getItemSprite()->getScaleX() * 0.5f;
 
@@ -1199,6 +1204,11 @@ void HelloWorld::ItemUpdate(float delta)
 
 						AudioManager->playEffect("Audio/SoundEffect/shield_pickup.mp3", false, 1, 0, 10);
 					}
+					else
+					{
+						mainChar.setShieldTimer(0.0f);
+						AudioManager->playEffect("Audio/SoundEffect/shield_pickup.mp3", false, 1, 0, 10);
+					}
 					break;
 				}
 				case ItemObject::ITEM_MAGNET:
@@ -1206,6 +1216,11 @@ void HelloWorld::ItemUpdate(float delta)
 					if (!mainChar.getMagnetActive())
 					{
 						mainChar.setMagnetActive(true);
+						AudioManager->playEffect("Audio/SoundEffect/magnet_pickup.mp3", false, 1, 0, 0.1f);
+					}
+					else
+					{
+						mainChar.setMagnetTimer(0.0f);
 						AudioManager->playEffect("Audio/SoundEffect/magnet_pickup.mp3", false, 1, 0, 0.1f);
 					}
 					break;
