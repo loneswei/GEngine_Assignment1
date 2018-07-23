@@ -54,9 +54,7 @@ public:
 	void setScore(float _score) { fScore = _score; }
 
 	void setMagnetActive(bool _magnetActive) { magnetActive = _magnetActive; }
-	void setMagnetTimer(float _magnetTimer) { magnetTimer = _magnetTimer; }
 	void setShieldActive(bool _shieldActive) { shieldActive = _shieldActive; }
-	void setShieldTimer(float _shieldTimer) { shieldTimer = _shieldTimer; }
 	void setInvulActive(bool _invulActive) { invulActive = _invulActive; }
 
 	void setLifeCount(int _lifeCount) { lifeCount = _lifeCount; }

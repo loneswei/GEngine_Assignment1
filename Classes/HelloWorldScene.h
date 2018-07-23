@@ -46,13 +46,16 @@ public:
 	// Update funciton that cals every frame
 	virtual void update(float delta);
 
+	//Float range min mx function
+	float RandomFloatRange(const float &a, const float &b);
+
 	// Spawning Functions
-	void SpawnSamuraiEnemy();
-	void SpawnCoin();
-	void SpawnMagnet();
-	void SpawnShield();
-	void SpawnSpike();
-	void SpawnShuriken();
+	Enemy* SpawnSamuraiEnemy();
+	ItemObject* SpawnCoin();
+	ItemObject* SpawnMagnet();
+	ItemObject* SpawnShield();
+	TrapObject* SpawnSpike();
+	TrapObject* SpawnShuriken();
 
 	// Code 'Cleaning' Functions
 	void GameObjectsInit();
@@ -65,10 +68,15 @@ public:
 	void EnemyUpdate(float delta);
 	void PauseUI();
 	void GameOverUI();
+	
 	//Fetchers
 	TrapObject* FetchTrapObject(TrapObject::TRAP_TYPE trapType = TrapObject::TRAP_RANDOM);
 	ItemObject* FetchItemObject(ItemObject::ITEM_TYPE itemType = ItemObject::ITEM_RANDOM);
 	Enemy* FetchEnemyObject(Enemy::ENEMY_TYPE enemyType = Enemy::ENEMY_RANDOM);
+
+	ItemObject* LastSpawnedItem;
+	TrapObject* LastSpawnedTrap;
+	Enemy* LastSpawnedEnemy;
 
 	// Get Char
 	GameChar* getChar(void) { return &mainChar; }
@@ -106,14 +114,12 @@ private:
 	float shurikenSpawnTimer;
 	float characterSpriteWidth;
 
-
 	Sprite* arrow2;
 	Sprite* pausebackground;
 	Sprite* gameoverbackground;
 	Sprite* tutorialbackground;
 	Selection2 selection2;
 	bool paused;
-	 
 
 	Size playingSize;
 	std::vector<TrapObject*> trapObjectList;
