@@ -47,6 +47,9 @@ public:
 	//Sprite Sizes
 	float SpriteWidth, halfSpriteWidth;
 
+	//Coin
+	bool CoinBeingCollected;
+
 private:
 	ITEM_TYPE itemType;
 	ITEM_DIRECTION itemDir;

@@ -1,8 +1,8 @@
 #include "HelloWorldScene.h"
 #include "Character.h"
 
-#define MAGNET_DURATION 15.0f
-#define SHIELD_DURATION 10.0f
+#define MAGNET_DURATION 7.0f
+#define SHIELD_DURATION 7.0f
 #define INVUL_DURATION 3.0f
 
 GameChar::GameChar()

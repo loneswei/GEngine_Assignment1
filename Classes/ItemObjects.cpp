@@ -3,13 +3,15 @@
 static const float ITEM_SPEED = 200;
 
 ItemObject::ItemObject() :
-	isActive(true)
+	isActive(true),
+	CoinBeingCollected(false)
 {
 }
 
 ItemObject::ItemObject(ITEM_TYPE itemType) :
 	isActive(true),
-	itemType(itemType)
+	itemType(itemType),
+	CoinBeingCollected(false)
 {
 }
 

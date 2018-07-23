@@ -11,12 +11,12 @@ USING_NS_CC;
 #define WALL_MOVESPEED 250.0f
 #define WALL_CONTENTSIZE_X 50.0f
 
-#define SAMURAI_SPAWN_TIMING 3.0f
+#define SAMURAI_SPAWN_TIMING 3.5f
 #define COIN_SPAWN_TIMING 5.0f
-#define MAGNET_SPAWN_TIMING 7.0f
-#define SHIELD_SPAWN_TIMING 7.0f
+#define MAGNET_SPAWN_TIMING 16.0f
+#define SHIELD_SPAWN_TIMING 16.0f
 #define SPIKE_SPAWN_TIMING 3.0f
-#define SHURIKEN_SPAWN_TIMING 5.0f
+#define SHURIKEN_SPAWN_TIMING 6.0f
 
 #define COIN_SCORE 100.0f
 #define FALL_SPEED 200.0f
@@ -430,6 +430,7 @@ ItemObject* HelloWorld::SpawnCoin()
 		Coin->halfSpriteWidth = Coin->SpriteWidth * 0.5f;
 		Coin->setIsActive(true);
 		Coin->getItemSprite()->resume();
+		Coin->CoinBeingCollected = false;
 		if (!Coin->getItemSprite()->isVisible())
 			Coin->getItemSprite()->setVisible(true);
 		Coin->getItemSprite()->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
@@ -1156,21 +1157,23 @@ void HelloWorld::ItemUpdate(float delta)
 		// Update Coin
 		if (itemObj->getItemType() == ItemObject::ITEM_COIN)
 		{
-			if (mainChar.getLifeCount() > 0)
+			if (itemObj->CoinBeingCollected)
 			{
-				if (mainChar.getMagnetActive())
-				{
-					// Magnet sucks coins to character
-					if (itemObj->getItemSprite()->isVisible() &&
-						(itemObj->getItemSprite()->getPosition() - mainChar.getSprite()->getPosition()).length() <= MAGNET_STRENGTH)
-					{
-						Vec2 dir = (mainChar.getSprite()->getPosition() - itemObj->getItemSprite()->getPosition()).getNormalized();
-						dir *= MAGNET_STRENGTH * delta;
+				Vec2 dir = (mainChar.getSprite()->getPosition() - itemObj->getItemSprite()->getPosition()).getNormalized();
+				dir *= MAGNET_STRENGTH * delta;
 
-						itemObj->getItemSprite()->setPosition(itemObj->getItemSprite()->getPosition() + dir);
-					}
+				itemObj->getItemSprite()->setPosition(itemObj->getItemSprite()->getPosition() + dir);
+			}
+			else if (mainChar.getLifeCount() > 0 && mainChar.getMagnetActive())
+			{
+				// Magnet sucks coins to character
+				if (itemObj->getItemSprite()->isVisible() &&
+					(itemObj->getItemSprite()->getPosition() - mainChar.getSprite()->getPosition()).length() <= MAGNET_STRENGTH)
+				{
+					itemObj->CoinBeingCollected = true;
 				}
 			}
+
 			itemObj->getItemSprite()->setPositionY(itemObj->getItemSprite()->getPositionY() - FALL_SPEED * delta);
 		}
 		const float spriteGameWidth = itemObj->getItemSprite()->getContentSize().width * itemObj->getItemSprite()->getScaleX() * 0.5f;
