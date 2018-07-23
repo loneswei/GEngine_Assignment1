@@ -225,7 +225,7 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 	{
 		//go back to main menu
 
-
+		Exit();
 		auto scene = MainMenu::createScene();
 		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 		mainChar.setAliveorNot(false);
@@ -1076,7 +1076,7 @@ void HelloWorld::AutoSpawner(float delta, float &timer, float timing, ESpawner _
 void HelloWorld::WallUpdate(float delta)
 {
 	//Get the array of walls from wallObjects node
-	static auto wallObjectsArray = wallObjects->getChildren();
+	auto wallObjectsArray = wallObjects->getChildren();
 
 	//Move each wall sprite downwards
 	for (auto wallSprite : wallObjectsArray)
@@ -1400,5 +1400,29 @@ void HelloWorld::PauseUI()
 	MainMenu->setPosition(Vec2(playingSize.width * 0.5f, 0 + MainMenu->getContentSize().height * 9));
 	MainMenu->setVisible(false);
 	this->addChild(MainMenu, 1);
+}
 
+void HelloWorld::Exit()
+{
+	for (auto go : trapObjectList)
+	{
+		delete go;
+		go = nullptr;
+	}
+
+	for (auto go : itemObjectList)
+	{
+		delete go;
+		go = nullptr;
+	}
+
+	for (auto go : enemyObjectList)
+	{
+		delete go;
+		go = nullptr;
+	}
+
+	trapObjectList.clear();
+	itemObjectList.clear();
+	enemyObjectList.clear();
 }

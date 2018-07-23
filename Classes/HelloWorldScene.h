@@ -46,6 +46,9 @@ public:
 	// Update funciton that cals every frame
 	virtual void update(float delta);
 
+	//Exit function that release all memory
+	void Exit();
+
 	//Float range min mx function
 	float RandomFloatRange(const float &a, const float &b);
 

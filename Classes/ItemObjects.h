@@ -53,7 +53,6 @@ private:
 	bool isActive;
 	Sprite *itemSprite;
 	float coinScore;
-
 };
 
 #endif // ____ItemObject_SCENE_H__
