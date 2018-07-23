@@ -214,6 +214,7 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 	if (keyCode == EventKeyboard::KeyCode::KEY_ENTER && selection2 == MAINMENU)
 	{
 		//go back to main menu
+		Exit();
 		paused = false;
 		Director::sharedDirector()->resume();
 		auto scene = MainMenu::createScene();
@@ -594,17 +595,17 @@ void HelloWorld::GameObjectsInit()
 	trapObjects = Node::create();
 	trapObjects->setName("TrapObjects");
 	this->addChild(trapObjects);
-	spikeSpawnTimer = 0.0f;
-	shurikenSpawnTimer = 0.0f;
+	spikeSpawnTimer = RandomFloatRange(0, SPIKE_SPAWN_TIMING);
+	shurikenSpawnTimer = RandomFloatRange(0, SHURIKEN_SPAWN_TIMING);
 	// ------------------ Init Traps ----------------------
 
 	// ------------------ Init Items ----------------------
 	itemObjects = Node::create();
 	itemObjects->setName("ItemObjects");
 	this->addChild(itemObjects);
-	coinSpawnTimer = 0.0f;
-	magnetSpawnTimer = 0.0f;
-	shieldSpawnTimer = 0.0f;
+	coinSpawnTimer = RandomFloatRange(0, COIN_SPAWN_TIMING);
+	magnetSpawnTimer = RandomFloatRange(0, MAGNET_SPAWN_TIMING);
+	shieldSpawnTimer = RandomFloatRange(0, SHIELD_SPAWN_TIMING);
 	// ------------------ Init Items ----------------------
 
 	// ------------------ Init Enemy ----------------------
@@ -1425,4 +1426,17 @@ void HelloWorld::Exit()
 	trapObjectList.clear();
 	itemObjectList.clear();
 	enemyObjectList.clear();
+
+	if (LastSpawnedEnemy)
+	{
+		LastSpawnedEnemy = nullptr;
+	}
+	if (LastSpawnedItem)
+	{
+		LastSpawnedItem = nullptr;
+	}
+	if (LastSpawnedTrap)
+	{
+		LastSpawnedTrap = nullptr;
+	}
 }
