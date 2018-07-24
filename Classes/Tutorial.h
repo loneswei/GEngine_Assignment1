@@ -4,6 +4,7 @@
 
 #include "cocos2d.h"
 #include "Character.h"
+#include "ui\CocosGUI.h"
 
 using namespace cocos2d;
 //enum Selection
@@ -54,6 +55,8 @@ private:
 	Sprite* Coin;
 	Sprite* Magnet;
 	Sprite* shuriken;
+
+	cocos2d::ui::Button* back;
 //	Selection selection;
 };
 

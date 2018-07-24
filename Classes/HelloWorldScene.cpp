@@ -71,6 +71,25 @@ bool HelloWorld::init()
 	tutorialbackground->setVisible(false);
 	this->addChild(tutorialbackground, 1);
 
+	backbutton = ui::Button::create("back.png");
+	backbutton->setTitleText("Button Text");
+	backbutton->setPosition(Vec2(playingSize.width * 0.9f, playingSize.height * 0.95));
+	backbutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	{ switch (type)
+	{
+	case ui::Widget::TouchEventType::BEGAN:
+		break;
+	case ui::Widget::TouchEventType::ENDED:
+		//check if character is dead here
+		tutormode = false;
+		Director::sharedDirector()->resume();
+		break;
+		/*default:
+		break; */
+	} });
+	backbutton->setVisible(false);
+	this->addChild(backbutton, 1);
+
 	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
 	audio->playBackgroundMusic("Audio/Bgm/menu.mp3", true);
 
@@ -335,23 +354,23 @@ void HelloWorld::update(float delta)
 	}
 	if (paused)
 	{
-		Tutorial->setVisible(true);
-		MainMenu->setVisible(true);
-		arrow2->setVisible(true);
-		Restart->setVisible(true);
-		Resume->setVisible(true);
+		resumebutton->setVisible(true);
+		retrybutton->setVisible(true);
+		mainmenubutton->setVisible(true);
+		tutorialbutton->setVisible(true);
 		pausebackground->setVisible(true);
-		//scoreLabel2->setVisible(true);
 		Director::sharedDirector()->pause();
+		//scoreLabel2->setVisible(true);
+	 
 	}
 	else
 	{
-		MainMenu->setVisible(false);
-		arrow2->setVisible(false);
-		Restart->setVisible(false);
-		Resume->setVisible(false);
+		resumebutton->setVisible(false);
+		retrybutton->setVisible(false);
+		mainmenubutton->setVisible(false);
+		tutorialbutton->setVisible(false);
 		pausebackground->setVisible(false);
-		Tutorial->setVisible(false);
+
 		//		scoreLabel2->setVisible(false);
 	}
 	if (mainChar.getAliveorNot() == true)
@@ -368,6 +387,18 @@ void HelloWorld::update(float delta)
 		deadLabel->setVisible(false);
 		instructiongameover->setVisible(false);
 		gameoverbackground->setVisible(false);
+	}
+
+	if (tutormode)
+	{
+		Director::sharedDirector()->pause();
+		tutorialbackground->setVisible(true);
+		backbutton->setVisible(true);
+	}
+	else
+	{
+		tutorialbackground->setVisible(false);
+		backbutton->setVisible(false);
 	}
 	// Update Character
 	mainChar.Update(delta);
@@ -1387,38 +1418,137 @@ void HelloWorld::PauseUI()
 	pausebackground->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
 	pausebackground->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height * 0.5f));
 	pausebackground->setVisible(false);
-	this->addChild(pausebackground, 1);
+	this->addChild(pausebackground, 0);
 
-	arrow2 = Sprite::create("arrow.png");
-	arrow2->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
-	arrow2->setPosition(Vec2(playingSize.width * 0.35f, playingSize.height * 0.55f));
-	arrow2->setVisible(false);
-	this->addChild(arrow2, 1);
-	selection2 = RESUME;
+	pausebutton = ui::Button::create("pause.png");
+	pausebutton->setTitleText("Button Text");
+	pausebutton->setPosition(Vec2(playingSize.width * 0.5f, 0 + distanceLabel->getContentSize().height * 35));
+	pausebutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	{ switch (type)
+	{
+	case ui::Widget::TouchEventType::BEGAN:
+		break;
+	case ui::Widget::TouchEventType::ENDED:
+		//std::cout << "Button 1 clicked" << std::endl; 
+		paused = true;
+		break;
+		/*default:
+		break; */
+	} });
+	pausebutton->setVisible(true);
+	this->addChild(pausebutton);
+
+	resumebutton = ui::Button::create("play.png");
+	resumebutton->setTitleText("Button Text");
+	resumebutton->setPosition(Vec2(playingSize.width * 0.5f, 0 + distanceLabel->getContentSize().height * 20));
+	resumebutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	{ switch (type)
+	{
+	case ui::Widget::TouchEventType::BEGAN:
+		break;
+	case ui::Widget::TouchEventType::ENDED:
+		//std::cout << "Button 1 clicked" << std::endl; 
+		paused = false;
+		Director::sharedDirector()->resume();
+		break;
+		/*default:
+		break; */
+	} });
+	resumebutton->setVisible(false);
+	this->addChild(resumebutton);
+
+	retrybutton = ui::Button::create("retry.png");
+	retrybutton->setTitleText("Button Text");
+	retrybutton->setPosition(Vec2(playingSize.width * 0.5f, 0 + distanceLabel->getContentSize().height * 15));
+	retrybutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	{ switch (type)
+	{
+	case ui::Widget::TouchEventType::BEGAN:
+		break;
+	case ui::Widget::TouchEventType::ENDED:
+		//std::cout << "Button 1 clicked" << std::endl; 
+		paused = false;
+		auto scene = HelloWorld::createScene();
+
+		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+		Director::sharedDirector()->resume();
+		break;
+		/*default:
+		break; */
+	} });
+
+	retrybutton->setVisible(false);
+	this->addChild(retrybutton);
+
+	mainmenubutton = ui::Button::create("home.png");
+	mainmenubutton->setTitleText("Button Text");
+	mainmenubutton->setPosition(Vec2(playingSize.width * 0.5f, 0 + distanceLabel->getContentSize().height * 5));
+	mainmenubutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	{ switch (type)
+	{
+	case ui::Widget::TouchEventType::BEGAN:
+		break;
+	case ui::Widget::TouchEventType::ENDED:
+		//std::cout << "Button 1 clicked" << std::endl; 
+		paused = false;
+		auto scene = MainMenu::createScene();
+
+		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+		Director::sharedDirector()->resume();
+		break;
+		/*default:
+		break; */
+	} });
+
+	mainmenubutton->setVisible(false);
+	this->addChild(mainmenubutton);
+
+
+
+	tutorialbutton = ui::Button::create("buttontutor.png");
+	tutorialbutton->setTitleText("Button Text");
+	tutorialbutton->setPosition(Vec2(playingSize.width * 0.5f, 0 + distanceLabel->getContentSize().height * 10));
+	tutorialbutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	{ switch (type)
+	{
+	case ui::Widget::TouchEventType::BEGAN:
+		break;
+	case ui::Widget::TouchEventType::ENDED:
+		//std::cout << "Button 1 clicked" << std::endl; 
+		paused = false;
+		Director::sharedDirector()->resume();
+		tutormode = true;
+		break;
+		/*default:
+		break; */
+	} });
+
+	tutorialbutton->setVisible(false);
+	this->addChild(tutorialbutton);
 
 	/*scoreLabel2 = Label::createWithTTF("Score: " + std::to_string((int)mainChar.getScore()), "fonts/Marker Felt.ttf", 24);
 	scoreLabel2->setPosition(Vec2(playingSize.width * 0.5f, scoreLabel->getContentSize().height * 20));
 	this->addChild(scoreLabel2, 1);
 	*/
-	Resume = Label::createWithTTF("RESUME", "fonts/Marker Felt.ttf", 24);
-	Resume->setPosition(Vec2(playingSize.width * 0.5f, 0 + Resume->getContentSize().height * 15));
-	Resume->setVisible(false);
-	this->addChild(Resume, 1);
+	//Resume = Label::createWithTTF("RESUME", "fonts/Marker Felt.ttf", 24);
+	//Resume->setPosition(Vec2(playingSize.width * 0.5f, 0 + Resume->getContentSize().height * 15));
+	//Resume->setVisible(false);
+	//this->addChild(Resume, 1);
 
-	Restart = Label::createWithTTF("RESTART", "fonts/Marker Felt.ttf", 24);
-	Restart->setPosition(Vec2(playingSize.width * 0.5f, 0 + Restart->getContentSize().height * 13));
-	Restart->setVisible(false);
-	this->addChild(Restart, 1);
+	//Restart = Label::createWithTTF("RESTART", "fonts/Marker Felt.ttf", 24);
+	//Restart->setPosition(Vec2(playingSize.width * 0.5f, 0 + Restart->getContentSize().height * 13));
+	//Restart->setVisible(false);
+	//this->addChild(Restart, 1);
 
-	Tutorial = Label::createWithTTF("TUTORIAL", "fonts/Marker Felt.ttf", 24);
-	Tutorial->setPosition(Vec2(playingSize.width * 0.5f, 0 + Tutorial->getContentSize().height * 11));
-	Tutorial->setVisible(false);
-	this->addChild(Tutorial, 1);
+	//Tutorial = Label::createWithTTF("TUTORIAL", "fonts/Marker Felt.ttf", 24);
+	//Tutorial->setPosition(Vec2(playingSize.width * 0.5f, 0 + Tutorial->getContentSize().height * 11));
+	//Tutorial->setVisible(false);
+	//this->addChild(Tutorial, 1);
 
-	MainMenu = Label::createWithTTF("MAINMENU", "fonts/Marker Felt.ttf", 24);
-	MainMenu->setPosition(Vec2(playingSize.width * 0.5f, 0 + MainMenu->getContentSize().height * 9));
-	MainMenu->setVisible(false);
-	this->addChild(MainMenu, 1);
+	//MainMenu = Label::createWithTTF("MAINMENU", "fonts/Marker Felt.ttf", 24);
+	//MainMenu->setPosition(Vec2(playingSize.width * 0.5f, 0 + MainMenu->getContentSize().height * 9));
+	//MainMenu->setVisible(false);
+	//this->addChild(MainMenu, 1);
 }
 
 void HelloWorld::Exit()

@@ -48,85 +48,134 @@ bool MainMenu::init()
 	***********************
 	*/
 
-	/*background = Sprite::create("mainmenubackground.jpg");
+	background = Sprite::create("mainmenubackground.jpg");
 	background->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
 	background->setPosition(Vec2(playingSize.width * 0.35f, playingSize.height * 0.5f));
-	this->addChild(background, 1);
-*/
+	background->setVisible(true);
+	this->addChild(background);
+
 	GameTitle = Label::createWithTTF("HELLOTHERE", "fonts/Marker Felt.ttf", 50);
 	GameTitle->enableShadow();
 	GameTitle->enableOutline(Color4B::BLACK, 1);
 	GameTitle->enableGlow(Color4B::YELLOW);
 	GameTitle->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
-	GameTitle->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 10));
+	GameTitle->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 15));
+	GameTitle->setVisible(true);
 	this->addChild(GameTitle, 1);
 
 	 //testing button here
-	auto button = ui::Button::create("Button_Normal.png", "Button_Press.png", "Button_Disable.png");
-	button->setTitleText("Button Text");
-	button->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 5));
-	button->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
-	{ switch (type) 
-	{ case ui::Widget::TouchEventType::BEGAN:
+	playbutton = ui::Button::create("play.png");
+	playbutton->setTitleText("Button Text");
+	playbutton->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 8));
+	playbutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	{ switch (type)
+	{
+	case ui::Widget::TouchEventType::BEGAN:
 		break;
 	case ui::Widget::TouchEventType::ENDED:
 		//std::cout << "Button 1 clicked" << std::endl; 
-		break; 
-	default:
-		break; 
-	} }); 
-	this->addChild(button);
-	//testing checkbox here
-	auto checkbox = ui::CheckBox::create("CheckBoxNode_Disable.png", "CheckBoxNode_Normal.png","CheckBox_Normal.png","CheckBox_Press.png","CheckBox_Disable.png");
-	 
-	checkbox->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 5));
-	 
-	checkbox->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) 
-	{ switch (type) 
-	{ case ui::Widget::TouchEventType::BEGAN:
-		break; 
+		auto scene = HelloWorld::createScene();
+
+		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+		break;
+		/*default:
+		break; */
+	} });
+	playbutton->setVisible(true);
+	this->addChild(playbutton);
+
+	tutorialbutton = ui::Button::create("buttontutor.png");
+	tutorialbutton->setTitleText("Button Text");
+	tutorialbutton->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 5));
+	tutorialbutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	{ switch (type)
+	{
+	case ui::Widget::TouchEventType::BEGAN:
+		break;
 	case ui::Widget::TouchEventType::ENDED:
-		 break; 
-	default:
-		break; 
-	}});
-	this->addChild(checkbox);
+		//std::cout << "Button 1 clicked" << std::endl; 
+		 
+		auto scene = Tutorial::createScene();
 
-	auto slider = ui::Slider::create(); slider->loadBarTexture("Slider_Back.png"); 
-	slider->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 5));
-	slider->loadSlidBallTextures("SliderNode_Normal.png", "SliderNode_Press.png", "SliderNode_Disable.png");
-	slider->loadProgressBarTexture("Slider_PressBar.png"); 
-	slider->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) { 
-		switch (type) { 
-		case ui::Widget::TouchEventType::BEGAN:
-			break; 
-		case ui::Widget::TouchEventType::ENDED:
-			//std::cout << "slider moved" << std::endl;
-			break; 
-		default: 
-			break;
-		}}); 
-	this->addChild(slider);
+		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+		break;
+		/*default:
+		break; */
+	} });
 
-	auto textField = ui::TextField::create("", "Arial", 30); 
-	textField->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 2));
-	textField->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) { 
-		//std::cout << "editing a TextField" << std::endl; 
-	}); 
-	textField->setPasswordEnabled(true);
-	textField->setMaxLength(10);
-	this->addChild(textField);
-	 
+	tutorialbutton->setVisible(true);
+	this->addChild(tutorialbutton);
 
-    Play = Label::createWithTTF("PLAY", "fonts/Marker Felt.ttf", 24);
-	Play->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 7));
-	this->addChild(Play, 1);
+	shopbutton = ui::Button::create("shop.png");
+	shopbutton->setTitleText("Button Text");
+	shopbutton->setPosition(Vec2(playingSize.width * 0.9f, 0 + playingSize.height * 0.94f));
+	shopbutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	{ switch (type)
+	{
+	case ui::Widget::TouchEventType::BEGAN:
+		break;
+	case ui::Widget::TouchEventType::ENDED:
+		//std::cout << "Button 1 clicked" << std::endl; 
+		shopmode = true;
 
-	 
+		break;
+		/*default:
+		break; */
+	} });
 
-	Tutorial = Label::createWithTTF("TUTORIAL", "fonts/Marker Felt.ttf", 24);
-	Tutorial->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 3));
-	this->addChild(Tutorial, 1);
+	shopbutton->setVisible(true);
+	this->addChild(shopbutton);
+	//testing checkbox here
+	//auto checkbox = ui::CheckBox::create("CheckBoxNode_Disable.png", "CheckBoxNode_Normal.png","CheckBox_Normal.png","CheckBox_Press.png","CheckBox_Disable.png");
+	// 
+	//checkbox->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 5));
+	// 
+	//checkbox->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) 
+	//{ switch (type) 
+	//{ case ui::Widget::TouchEventType::BEGAN:
+	//	break; 
+	//case ui::Widget::TouchEventType::ENDED:
+	//	 break; 
+	//default:
+	//	break; 
+	//}});
+	//this->addChild(checkbox);
+
+	//auto slider = ui::Slider::create(); slider->loadBarTexture("Slider_Back.png"); 
+	//slider->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 5));
+	//slider->loadSlidBallTextures("SliderNode_Normal.png", "SliderNode_Press.png", "SliderNode_Disable.png");
+	//slider->loadProgressBarTexture("Slider_PressBar.png"); 
+	//slider->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) { 
+	//	switch (type) { 
+	//	case ui::Widget::TouchEventType::BEGAN:
+	//		break; 
+	//	case ui::Widget::TouchEventType::ENDED:
+	//		//std::cout << "slider moved" << std::endl;
+	//		break; 
+	//	default: 
+	//		break;
+	//	}}); 
+	//this->addChild(slider);
+
+	//auto textField = ui::TextField::create("", "Arial", 30); 
+	//textField->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 2));
+	//textField->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) { 
+	//	//std::cout << "editing a TextField" << std::endl; 
+	//}); 
+	//textField->setPasswordEnabled(true);
+	//textField->setMaxLength(10);
+	//this->addChild(textField);
+	// 
+
+ //   Play = Label::createWithTTF("PLAY", "fonts/Marker Felt.ttf", 24);
+	//Play->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 7));
+	//this->addChild(Play, 1);
+
+	// 
+
+	//Tutorial = Label::createWithTTF("TUTORIAL", "fonts/Marker Felt.ttf", 24);
+	//Tutorial->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 3));
+	//this->addChild(Tutorial, 1);
 
 	//auto playerObject = Node::create();
 	//playerObject->setName("PlayerObject");
@@ -177,11 +226,11 @@ bool MainMenu::init()
 	/*auto spriteNode = Node::create();
 	spriteNode->setName("ArrowChoose");*/
 
-	arrow = Sprite::create("arrow.png");
+	/*arrow = Sprite::create("arrow.png");
 	arrow->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
 	arrow->setPosition(Vec2(playingSize.width * 0.35f, playingSize.height * 0.5f));
 	this->addChild(arrow, 1);
-	selection = PLAY;
+	selection = PLAY;*/
 	
  
 
@@ -369,52 +418,52 @@ void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 	//mainChar.MoveChar(eStop);
 
 	// Debug Code - Exit application
-	if (keyCode == EventKeyboard::KeyCode::KEY_ESCAPE)
-	{
-		Director::getInstance()->end();
-	}
-	if (keyCode == EventKeyboard::KeyCode::KEY_ENTER && selection == PLAY)
-	{
-		//jump to gameplay scene here
-		auto scene = HelloWorld::createScene();
+	//if (keyCode == EventKeyboard::KeyCode::KEY_ESCAPE)
+	//{
+	//	Director::getInstance()->end();
+	//}
+	//if (keyCode == EventKeyboard::KeyCode::KEY_ENTER && selection == PLAY)
+	//{
+	//	//jump to gameplay scene here
+	//	auto scene = HelloWorld::createScene();
 
-		Director::getInstance()->replaceScene(TransitionFade::create(2,scene));
-	}
-	if (keyCode == EventKeyboard::KeyCode::KEY_ENTER && selection == TUTORIAL)
-	{
-		//jump to gameplay scene here
-		auto scene = Tutorial::createScene();
+	//	Director::getInstance()->replaceScene(TransitionFade::create(2,scene));
+	//}
+	//if (keyCode == EventKeyboard::KeyCode::KEY_ENTER && selection == TUTORIAL)
+	//{
+	//	//jump to gameplay scene here
+	//	auto scene = Tutorial::createScene();
 
-		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
-	}
-	if (keyCode == EventKeyboard::KeyCode::KEY_DOWN_ARROW)
-	{
-		//move down here
-		switch (selection)
-		{
-		case PLAY:
-			arrow->setPosition(Vec2(playingSize.width * 0.35f, playingSize.height * TUTORIAL_POSITION));
-			selection = TUTORIAL;
-			break;
-		case TUTORIAL:
-			break;
-		}
+	//	Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+	//}
+	//if (keyCode == EventKeyboard::KeyCode::KEY_DOWN_ARROW)
+	//{
+	//	//move down here
+	//	switch (selection)
+	//	{
+	//	case PLAY:
+	//		arrow->setPosition(Vec2(playingSize.width * 0.35f, playingSize.height * TUTORIAL_POSITION));
+	//		selection = TUTORIAL;
+	//		break;
+	//	case TUTORIAL:
+	//		break;
+	//	}
 
-	}
-	if (keyCode == EventKeyboard::KeyCode::KEY_UP_ARROW)
-	{
-		//move up here & check enum
-		switch (selection)
-		{
-		case PLAY:
-			break;
-	 
-		case TUTORIAL:
-			arrow->setPosition(Vec2(playingSize.width * 0.35f, playingSize.height * TUTORIAL_POSITION));
-			selection = PLAY;
-			break;
-		}
-	}
+	//}
+	//if (keyCode == EventKeyboard::KeyCode::KEY_UP_ARROW)
+	//{
+	//	//move up here & check enum
+	//	switch (selection)
+	//	{
+	//	case PLAY:
+	//		break;
+	// 
+	//	case TUTORIAL:
+	//		arrow->setPosition(Vec2(playingSize.width * 0.35f, playingSize.height * TUTORIAL_POSITION));
+	//		selection = PLAY;
+	//		break;
+	//	}
+	//}
 
 	//// Jump to the opposite side
 	//if (keyCode == EventKeyboard::KeyCode::KEY_SPACE)
@@ -459,6 +508,23 @@ void MainMenu::update(float delta)
 			wallSprite->setPosition(Vec2(wallSprite->getPositionX(), wallSprite->getPositionY() - WALL_MOVESPEED * delta));
 		}
 	}*/
+
+	if (shopmode)
+	{
+		background->setVisible(false);
+		tutorialbutton->setVisible(false);
+		shopbutton->setVisible(false);
+		playbutton->setVisible(false);
+		GameTitle->setVisible(false);
+	}
+	else
+	{
+		background->setVisible(true);
+		tutorialbutton->setVisible(true);
+		shopbutton->setVisible(true);
+		playbutton->setVisible(true);
+		GameTitle->setVisible(true);
+	}
 }
 
 GameChar* MainMenu::getChar()

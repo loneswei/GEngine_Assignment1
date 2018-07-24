@@ -6,6 +6,7 @@
 #include "TrapObjects.h"
 #include "ItemObjects.h"
 #include "Enemy.h"
+#include "ui\CocosGUI.h"
 
 using namespace cocos2d;
 enum Selection2
@@ -123,6 +124,13 @@ private:
 	Sprite* tutorialbackground;
 	Selection2 selection2;
 	bool paused;
+	cocos2d::ui::Button* resumebutton;
+	cocos2d::ui::Button* retrybutton;
+	cocos2d::ui::Button* mainmenubutton;
+	cocos2d::ui::Button* tutorialbutton;
+	cocos2d::ui::Button* backbutton;
+	cocos2d::ui::Button* pausebutton;
+	bool tutormode;
 
 	Size playingSize;
 	std::vector<TrapObject*> trapObjectList;

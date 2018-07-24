@@ -4,6 +4,7 @@
 
 #include "cocos2d.h"
 #include "Character.h"
+#include "ui\CocosGUI.h"
 
 using namespace cocos2d;
 enum Selection
@@ -46,6 +47,11 @@ private:
 	Sprite* arrow;
 	Sprite* background;
 	Selection selection;
+
+	bool shopmode;
+	cocos2d::ui::Button* playbutton;
+	cocos2d::ui::Button* tutorialbutton;
+	cocos2d::ui::Button* shopbutton;
 };
 
  

@@ -148,6 +148,26 @@ bool Tutorial::init()
 	 Trapshruiken->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height * 0.6f));
 	 this->addChild(Trapshruiken, 1);
 
+	 back = ui::Button::create("back.png");
+	 back->setTitleText("Button Text");
+	 back->setPosition(Vec2(playingSize.width * 0.9f, playingSize.height * 0.95));
+	 back->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	 { switch (type)
+	 {
+	 case ui::Widget::TouchEventType::BEGAN:
+		 break;
+	 case ui::Widget::TouchEventType::ENDED:
+		 //check if character is dead here
+		 auto scene = MainMenu::createScene();
+
+		 Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+		 break;
+		 /*default:
+		 break; */
+	 } });
+	 back->setVisible(true);
+	 this->addChild(back, 1);
+
 
 	//// Practical 01
 	//auto sprite = Sprite::create("ZigzagGrass_Mud_Round.png");
