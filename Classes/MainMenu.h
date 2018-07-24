@@ -7,11 +7,6 @@
 #include "ui\CocosGUI.h"
 
 using namespace cocos2d;
-enum Selection
-{
-	PLAY = 0,
-	TUTORIAL,
-};
 
 class MainMenu : public cocos2d::Scene
 {
@@ -30,29 +25,24 @@ public:
 	// Update funciton that cals every frame
 	virtual void update(float delta);
 
+	void MainMenuToShop();
+	void ShopToMainMenu();
+
 	// Get Char
 	GameChar* getChar();
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(MainMenu);
 private:
-	GameChar mainChar;
-	Node *wallObjects;
+	
 	Size playingSize;
-	//Label* scoreLabel;
 	Label* GameTitle;
 	Label* Play;
-	Label* Highscore;
-	Label* Tutorial;
-	Sprite* arrow;
 	Sprite* background;
-	Selection selection;
 
-	bool shopmode;
 	cocos2d::ui::Button* playbutton;
 	cocos2d::ui::Button* tutorialbutton;
 	cocos2d::ui::Button* shopbutton;
+	cocos2d::ui::Button* backbutton;
 };
-
- 
 #endif // _MAINMENU_H

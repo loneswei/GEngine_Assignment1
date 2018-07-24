@@ -63,9 +63,26 @@ bool MainMenu::init()
 	GameTitle->setVisible(true);
 	this->addChild(GameTitle, 1);
 
+	backbutton = ui::Button::create("back.png");
+	backbutton->setPosition(Vec2(playingSize.width * 0.9f, playingSize.height * 0.95));
+	backbutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	{ switch (type)
+	{
+	case ui::Widget::TouchEventType::BEGAN:
+		break;
+	case ui::Widget::TouchEventType::ENDED:
+		//check if character is dead here
+		ShopToMainMenu();
+		Director::sharedDirector()->resume();
+		break;
+		/*default:
+		break; */
+	} });
+	backbutton->setVisible(false);
+	this->addChild(backbutton, 1);
+
 	 //testing button here
 	playbutton = ui::Button::create("play.png");
-	playbutton->setTitleText("Button Text");
 	playbutton->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 8));
 	playbutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
 	{ switch (type)
@@ -85,7 +102,6 @@ bool MainMenu::init()
 	this->addChild(playbutton);
 
 	tutorialbutton = ui::Button::create("buttontutor.png");
-	tutorialbutton->setTitleText("Button Text");
 	tutorialbutton->setPosition(Vec2(playingSize.width * 0.5f, 0 + GameTitle->getContentSize().height * 5));
 	tutorialbutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
 	{ switch (type)
@@ -107,7 +123,6 @@ bool MainMenu::init()
 	this->addChild(tutorialbutton);
 
 	shopbutton = ui::Button::create("shop.png");
-	shopbutton->setTitleText("Button Text");
 	shopbutton->setPosition(Vec2(playingSize.width * 0.9f, 0 + playingSize.height * 0.94f));
 	shopbutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
 	{ switch (type)
@@ -116,7 +131,7 @@ bool MainMenu::init()
 		break;
 	case ui::Widget::TouchEventType::ENDED:
 		//std::cout << "Button 1 clicked" << std::endl; 
-		shopmode = true;
+		MainMenuToShop();
 
 		break;
 		/*default:
@@ -415,7 +430,6 @@ void MainMenu::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event)
 
 void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 {
-	//mainChar.MoveChar(eStop);
 
 	// Debug Code - Exit application
 	//if (keyCode == EventKeyboard::KeyCode::KEY_ESCAPE)
@@ -482,52 +496,29 @@ void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 
 void MainMenu::onMouseUp(Event * event)
 {
-	//EventMouse* e = (EventMouse*)event;
-	//float x = e->getCursorX();
-	//float y = e->getCursorY();
-
-	//mainChar.MoveCharByCoord(x, y);
 }
 
 void MainMenu::update(float delta)
 {
-	//scoreLabel->setString("Score: " + std::to_string(mainChar.getScore()));
-	//mainChar.Update(delta);
-
 	
-	/*static auto wallObjectsArray = wallObjects->getChildren();
-
-	for (auto wallSprite : wallObjectsArray)
-	{
-		if (wallSprite->getPositionY() < -playingSize.height * 0.5f)
-		{
-			wallSprite->setPosition(Vec2(wallSprite->getPositionX(), (playingSize.height * 0.5f) + playingSize.height));
-		}
-		else
-		{
-			wallSprite->setPosition(Vec2(wallSprite->getPositionX(), wallSprite->getPositionY() - WALL_MOVESPEED * delta));
-		}
-	}*/
-
-	if (shopmode)
-	{
-		background->setVisible(false);
-		tutorialbutton->setVisible(false);
-		shopbutton->setVisible(false);
-		playbutton->setVisible(false);
-		GameTitle->setVisible(false);
-	}
-	else
-	{
-		background->setVisible(true);
-		tutorialbutton->setVisible(true);
-		shopbutton->setVisible(true);
-		playbutton->setVisible(true);
-		GameTitle->setVisible(true);
-	}
 }
 
-GameChar* MainMenu::getChar()
+void MainMenu::MainMenuToShop()
 {
-	return &mainChar;
+	background->setVisible(false);
+	tutorialbutton->setVisible(false);
+	shopbutton->setVisible(false);
+	playbutton->setVisible(false);
+	GameTitle->setVisible(false);
+	backbutton->setVisible(true);
+}
+
+void MainMenu::ShopToMainMenu()
+{
+	background->setVisible(true);
+	tutorialbutton->setVisible(true);
+	shopbutton->setVisible(true);
+	playbutton->setVisible(true);
+	GameTitle->setVisible(true);
+	backbutton->setVisible(false);
 }
