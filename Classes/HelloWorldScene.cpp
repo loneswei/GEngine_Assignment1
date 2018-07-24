@@ -72,7 +72,6 @@ bool HelloWorld::init()
 	this->addChild(tutorialbackground, 1);
 
 	backbutton = ui::Button::create("back.png");
-	backbutton->setTitleText("Button Text");
 	backbutton->setPosition(Vec2(playingSize.width * 0.9f, playingSize.height * 0.95));
 	backbutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
 	{ switch (type)
@@ -655,8 +654,8 @@ void HelloWorld::GameObjectsInit()
 	// ------------------ Init Player ----------------------
 	auto playerObject = Node::create();
 	playerObject->setName("PlayerObject");
-	auto playerSprite = Sprite::create("run_right_01.png");
-	mainChar.init("run_right_01.png", Vec2::ANCHOR_MIDDLE, (playingSize.width - (WALL_CONTENTSIZE_X * 1.2f)), (playerSprite->getContentSize().width * 2), "Player");
+	auto playerSprite = Sprite::create("Skins/Default/run_right_01.png");
+	mainChar.init("Skins/Default/run_right_01.png", Vec2::ANCHOR_MIDDLE, (playingSize.width - (WALL_CONTENTSIZE_X * 1.2f)), (playerSprite->getContentSize().width * 2), "Player");
 	playerObject->addChild(mainChar.getSprite(), 1);
 	this->addChild(playerObject, 1);
 	characterSpriteWidth = mainChar.getSprite()->getContentSize().width * mainChar.getSprite()->getScaleX() * 0.5f;

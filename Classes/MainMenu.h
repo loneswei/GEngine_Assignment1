@@ -3,8 +3,10 @@
 #define _MAINMENU_H
 
 #include "cocos2d.h"
-#include "Character.h"
 #include "ui\CocosGUI.h"
+
+#include "Character.h"
+#include "ShopElements.h"
 
 using namespace cocos2d;
 
@@ -14,6 +16,7 @@ public:
 	static cocos2d::Scene* createScene();
 
 	virtual bool init();
+	void InitShop();
 
 	// a selector callback
 	void menuCloseCallback(cocos2d::Ref* pSender);
@@ -28,9 +31,6 @@ public:
 	void MainMenuToShop();
 	void ShopToMainMenu();
 
-	// Get Char
-	GameChar* getChar();
-
 	// implement the "static create()" method manually
 	CREATE_FUNC(MainMenu);
 private:
@@ -44,5 +44,15 @@ private:
 	cocos2d::ui::Button* tutorialbutton;
 	cocos2d::ui::Button* shopbutton;
 	cocos2d::ui::Button* backbutton;
+
+	//Shop elements
+	void AddSkin(const std::string &Name, const std::string &SpriteFilePath, const unsigned int &Price = 0);
+	void AddPowerup(const std::string &Name, const std::string &SpriteFilePath, const unsigned int &Price = 0);
+	void ExitShop();
+	std::vector<ShopElement*> SkinElements;
+	std::vector<ShopElement*> PowerupElements;
+
+	Node *SkinNode;
+	Node *PowerupNode;
 };
 #endif // _MAINMENU_H
