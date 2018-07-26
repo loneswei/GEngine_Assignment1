@@ -33,8 +33,8 @@ public:
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(MainMenu);
+
 private:
-	
 	Size playingSize;
 	Label* GameTitle;
 	Label* Play;
@@ -44,15 +44,26 @@ private:
 	cocos2d::ui::Button* tutorialbutton;
 	cocos2d::ui::Button* shopbutton;
 	cocos2d::ui::Button* backbutton;
+	cocos2d::ui::Button* SkinTab;
+	cocos2d::ui::Button* PowerupTab;
 
-	//Shop elements
-	void AddSkin(const std::string &Name, const std::string &SpriteFilePath, const unsigned int &Price = 0);
-	void AddPowerup(const std::string &Name, const std::string &SpriteFilePath, const unsigned int &Price = 0);
-	void ExitShop();
+	bool SkinTabOpened;
+	bool PowerupTabOpened;
+
 	std::vector<ShopElement*> SkinElements;
 	std::vector<ShopElement*> PowerupElements;
 
 	Node *SkinNode;
 	Node *PowerupNode;
+
+	void InitSkin();
+	void InitPowerup();
+
+	void AddSkin(const std::string &Name, const std::string &SpriteFilePath, const unsigned int &Price = 0);
+	void AddPowerup(const std::string &Name, const std::string &SpriteFilePath, const unsigned int &Price = 0);
+
+	void ExitSkin();
+	void ExitPowerup();
+	void ExitShop();
 };
 #endif // _MAINMENU_H

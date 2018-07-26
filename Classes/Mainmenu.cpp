@@ -14,9 +14,9 @@ USING_NS_CC;
 
 //Shop elements
 #define COLUMN_NUMBER 4
-#define ELEMENT_WIDTH 10
-#define ELEMENT_HEIGHT 10
-Vec2 StartingPos;
+#define ELEMENT_WIDTH 100
+#define ELEMENT_HEIGHT 100
+Vec2 StartingPos(300.0f, 800.0f);
 
 Scene* MainMenu::createScene()
 {
@@ -147,6 +147,50 @@ bool MainMenu::init()
 	shopbutton->setVisible(true);
 	this->addChild(shopbutton);
 
+	//-------Shop tabs-------//
+	SkinTabOpened = false;
+	SkinTab = ui::Button::create("Skins/Default/jump_right_01.png");
+	SkinTab->setTitleText("SKIN");
+	SkinTab->setTitleFontSize(2.5f * SkinTab->getTitleFontSize());
+	SkinTab->getTitleLabel()->setPositionY(SkinTab->getTitleLabel()->getPositionY() + (0.6f * SkinTab->getContentSize().height));
+	SkinTab->setPosition(Vec2(playingSize.width * 0.1f, 0 + playingSize.height * 0.8f));
+	SkinTab->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	{ switch (type)
+	{
+	case ui::Widget::TouchEventType::BEGAN:
+		break;
+	case ui::Widget::TouchEventType::ENDED:
+		//Button clicked
+		ExitPowerup();
+		InitSkin();
+		break;
+	} });
+
+	SkinTab->setVisible(false);
+	this->addChild(SkinTab);
+
+	PowerupTabOpened = false;
+	PowerupTab = ui::Button::create("coin.png");
+	PowerupTab->setTitleText("POWER UP");
+	PowerupTab->setTitleFontSize(2.5f * PowerupTab->getTitleFontSize());
+	PowerupTab->getTitleLabel()->setPositionY(PowerupTab->getTitleLabel()->getPositionY() + (0.6f * PowerupTab->getContentSize().height));
+	PowerupTab->setPosition(Vec2(playingSize.width * 0.1f, 0 + playingSize.height * 0.6f));
+	PowerupTab->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	{ switch (type)
+	{
+	case ui::Widget::TouchEventType::BEGAN:
+		break;
+	case ui::Widget::TouchEventType::ENDED:
+		//Button clicked
+		ExitSkin();
+		InitPowerup();
+		break;
+	} });
+
+	PowerupTab->setVisible(false);
+	this->addChild(PowerupTab);
+	//-----------------------//
+
 	//// Key Released movement
 	auto listener2 = EventListenerKeyboard::create();
 	listener2->onKeyReleased = CC_CALLBACK_2(MainMenu::onKeyReleased, this);
@@ -164,66 +208,12 @@ void MainMenu::InitShop()
 	SkinNode = Node::create();
 	PowerupNode = Node::create();
 	
-	//-------Add the elements to shop-------//
-	
-	//Add Skins
-	AddSkin("Default", "Skins/Default/jump_right_01.png");
+	//Default tab: Skin
+	InitSkin();
 
-	//Add Powerups
-
-	//-------------------------------------//
-	
 	//Parent nodes to scene
 	this->addChild(SkinNode, 1);
 	this->addChild(PowerupNode, 1);
-
-	//Adjust skin elements positions
-	unsigned short Col = 1, Row = 0;
-
-	for (size_t i = 1; i < SkinElements.size(); ++i)
-	{
-		if (Col == 1)
-		{
-			SkinElements[i]->SetPosition(StartingPos.x - (Row * ELEMENT_HEIGHT), StartingPos.y);
-		}
-		else
-		{
-			Vec2 prevElementPos = SkinElements[i - 1]->GetPosition();
-			SkinElements[i]->SetPosition(prevElementPos.x + ELEMENT_WIDTH, prevElementPos.y);
-		}
-		
-		++Col;
-
-		if (Col == COLUMN_NUMBER)
-		{
-			Col = 1;
-			++Row;
-		}
-	}
-
-	//Adjust powerup elements positions
-	Col = 1, Row = 0;
-
-	for (size_t i = 1; i < PowerupElements.size(); ++i)
-	{
-		if (Col == 1)
-		{
-			PowerupElements[i]->SetPosition(StartingPos.x - (Row * ELEMENT_HEIGHT), StartingPos.y);
-		}
-		else
-		{
-			Vec2 prevElementPos = PowerupElements[i - 1]->GetPosition();
-			PowerupElements[i]->SetPosition(prevElementPos.x + ELEMENT_WIDTH, prevElementPos.y);
-		}
-
-		++Col;
-
-		if (Col == COLUMN_NUMBER)
-		{
-			Col = 1;
-			++Row;
-		}
-	}
 }
 
 
@@ -264,6 +254,9 @@ void MainMenu::MainMenuToShop()
 	playbutton->setVisible(false);
 	GameTitle->setVisible(false);
 	backbutton->setVisible(true);
+	//Show Tabs
+	SkinTab->setVisible(true);
+	PowerupTab->setVisible(true);
 }
 
 void MainMenu::ShopToMainMenu()
@@ -274,6 +267,85 @@ void MainMenu::ShopToMainMenu()
 	playbutton->setVisible(true);
 	GameTitle->setVisible(true);
 	backbutton->setVisible(false);
+	//Hide Tabs
+	SkinTab->setVisible(false);
+	PowerupTab->setVisible(false);
+}
+
+void MainMenu::InitSkin()
+{
+	if (!SkinTabOpened)
+	{
+		//Add Skins
+		AddSkin("Default", "Skins/Default/jump_right_01.png");
+		AddSkin("Default", "Skins/Default/jump_right_02.png");
+		AddSkin("Default", "Skins/Default/jump_right_03.png");
+		AddSkin("Default", "Skins/Default/jump_right_04.png");
+		AddSkin("Default", "Skins/Default/jump_right_05.png");
+
+		//Adjust skin elements positions
+		unsigned short Col = 1, Row = 0;
+
+		for (size_t i = 0; i < SkinElements.size(); ++i)
+		{
+			if (Col == 1)
+			{
+				SkinElements[i]->SetPosition(StartingPos.x, StartingPos.y - (Row * ELEMENT_HEIGHT));
+			}
+			else
+			{
+				Vec2 prevElementPos = SkinElements[i - 1]->GetPosition();
+				SkinElements[i]->SetPosition(prevElementPos.x + ELEMENT_WIDTH, prevElementPos.y);
+			}
+
+			++Col;
+
+			if (Col == COLUMN_NUMBER)
+			{
+				Col = 1;
+				++Row;
+			}
+		}
+		SkinTabOpened = true;
+	}
+}
+
+void MainMenu::InitPowerup()
+{
+	if (!PowerupTabOpened)
+	{
+		//Add Powerups
+		AddPowerup("Coin", "coin.png");
+		AddPowerup("Magnet", "magnet.png");
+		AddPowerup("Shield", "shield.png");
+		AddPowerup("Shuriken", "shuriken.png");
+		AddPowerup("Spike", "spiketrap.png");
+
+		//Adjust powerup elements positions
+		unsigned short Col = 1, Row = 0;
+
+		for (size_t i = 0; i < PowerupElements.size(); ++i)
+		{
+			if (Col == 1)
+			{
+				PowerupElements[i]->SetPosition(StartingPos.x, StartingPos.y - (Row * ELEMENT_HEIGHT));
+			}
+			else
+			{
+				Vec2 prevElementPos = PowerupElements[i - 1]->GetPosition();
+				PowerupElements[i]->SetPosition(prevElementPos.x + ELEMENT_WIDTH, prevElementPos.y);
+			}
+
+			++Col;
+
+			if (Col == COLUMN_NUMBER)
+			{
+				Col = 1;
+				++Row;
+			}
+		}
+		PowerupTabOpened = true;
+	}
 }
 
 void MainMenu::AddSkin(const std::string &Name, const std::string &SpriteFilePath, const unsigned int &Price)
@@ -304,24 +376,38 @@ void MainMenu::AddPowerup(const std::string & Name, const std::string &SpriteFil
 	}
 
 	//Add the skin element object into PowerupElements
-	SkinElements.push_back(powerup);
-	SkinNode->addChild(powerup->GetSprite(), 1);
+	PowerupElements.push_back(powerup);
+	PowerupNode->addChild(powerup->GetSprite(), 1);
+}
+
+void MainMenu::ExitSkin()
+{
+	for (auto skin : SkinElements)
+	{
+		// Remove from Node = Remove the sprites in game
+		SkinNode->removeChild(skin->GetSprite());
+		delete skin;
+		skin = nullptr;
+	}
+	SkinElements.clear();
+	SkinTabOpened = false;
+}
+
+void MainMenu::ExitPowerup()
+{
+	for (auto powerup : PowerupElements)
+	{
+		// Remove from Node = Remove the sprites in game
+		PowerupNode->removeChild(powerup->GetSprite());
+		delete powerup;
+		powerup = nullptr;
+	}
+	PowerupElements.clear();
+	PowerupTabOpened = false;
 }
 
 void MainMenu::ExitShop()
 {
-	for (auto skin : SkinElements)
-	{
-		delete skin;
-		skin = nullptr;
-	}
-
-	for (auto powerup : PowerupElements)
-	{
-		delete powerup;
-		powerup = nullptr;
-	}
-
-	SkinElements.clear();
-	PowerupElements.clear();
+	ExitSkin();
+	ExitPowerup();
 }
