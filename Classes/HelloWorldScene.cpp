@@ -195,6 +195,13 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 			float height = mainChar.getSprite()->getPosition().y * 0.75f;
 
 			mainChar.Jump(LTarget, RTarget, height);
+
+			if (mainChar.getInvulActive() == true)
+			{
+				auto blink = CCBlink::create(3, 15);
+				blink->initWithDuration(3, 15);
+				mainChar.getSprite()->runAction(blink);
+			}
 		}
 	}
 	//pause and resume here
@@ -1163,6 +1170,16 @@ void HelloWorld::TrapUpdate(float delta)
 					auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
 					audio->playEffect("Audio/SoundEffect/HeroDeath.mp3", false, 1.0f, 0.0f, 1.0f);
 					mainChar.setInvulActive(true);
+
+					if (mainChar.getAliveorNot() == false)
+					{
+						auto blink = CCBlink::create(3, 15);
+						blink->initWithDuration(3, 15);
+						mainChar.getSprite()->runAction(blink);
+					}
+					else
+						mainChar.Run();
+				
 				}
 			}
 		}
