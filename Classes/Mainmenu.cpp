@@ -14,8 +14,8 @@ USING_NS_CC;
 
 //Shop elements
 #define COLUMN_NUMBER 4
-#define ELEMENT_WIDTH 100
-#define ELEMENT_HEIGHT 100
+#define ELEMENT_WIDTH 200
+#define ELEMENT_HEIGHT 200
 Vec2 StartingPos(300.0f, 800.0f);
 
 Scene* MainMenu::createScene()
@@ -214,6 +214,9 @@ void MainMenu::InitShop()
 	//Parent nodes to scene
 	this->addChild(SkinNode, 1);
 	this->addChild(PowerupNode, 1);
+
+	//Init Gold
+	PlayerGold = SaveData::GetInstance().GetGold();
 }
 
 
@@ -228,8 +231,7 @@ void MainMenu::menuCloseCallback(Ref* pSender)
 }
 
 void MainMenu::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event)
-{
-	
+{	
 }
 
 void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
@@ -257,6 +259,8 @@ void MainMenu::MainMenuToShop()
 	//Show Tabs
 	SkinTab->setVisible(true);
 	PowerupTab->setVisible(true);
+
+	PlayerGold = SaveData::GetInstance().GetGold();
 }
 
 void MainMenu::ShopToMainMenu()
@@ -270,6 +274,8 @@ void MainMenu::ShopToMainMenu()
 	//Hide Tabs
 	SkinTab->setVisible(false);
 	PowerupTab->setVisible(false);
+
+	SaveData::GetInstance().SetGold(PlayerGold);
 }
 
 void MainMenu::InitSkin()
@@ -278,10 +284,10 @@ void MainMenu::InitSkin()
 	{
 		//Add Skins
 		AddSkin("Default", "Skins/Default/jump_right_01.png");
-		AddSkin("Default", "Skins/Default/jump_right_02.png");
-		AddSkin("Default", "Skins/Default/jump_right_03.png");
-		AddSkin("Default", "Skins/Default/jump_right_04.png");
-		AddSkin("Default", "Skins/Default/jump_right_05.png");
+		AddSkin("Blue", "Skins/Blue/jump_right_01.png");
+		AddSkin("Green", "Skins/Green/jump_right_01.png");
+		AddSkin("Grey", "Skins/Grey/jump_right_01.png");
+		AddSkin("Red", "Skins/Red/jump_right_01.png");
 
 		//Adjust skin elements positions
 		unsigned short Col = 1, Row = 0;
@@ -298,6 +304,15 @@ void MainMenu::InitSkin()
 				SkinElements[i]->SetPosition(prevElementPos.x + ELEMENT_WIDTH, prevElementPos.y);
 			}
 
+			//Determin if skin is equipped
+			if (SkinElements[i]->GetName() == SaveData::GetInstance().EquippedSkinName)
+			{
+				SkinElements[i]->isEquipped = true;
+			}
+
+			//Determine if skin is bought
+			SkinElements[i]->isBought = SaveData::GetInstance().BoughtSkins[SkinElements[i]->GetName()];
+
 			++Col;
 
 			if (Col == COLUMN_NUMBER)
@@ -306,6 +321,7 @@ void MainMenu::InitSkin()
 				++Row;
 			}
 		}
+
 		SkinTabOpened = true;
 	}
 }
@@ -352,6 +368,7 @@ void MainMenu::AddSkin(const std::string &Name, const std::string &SpriteFilePat
 {
 	//Create the new skin element
 	ShopElement *skin = new ShopElement(Name, SpriteFilePath, Price);
+	skin->isEquipped = false;
 	
 	//If it's the first element, assign it the starting pos
 	if (SkinElements.empty())
@@ -362,6 +379,12 @@ void MainMenu::AddSkin(const std::string &Name, const std::string &SpriteFilePat
 	//Add the skin element object into SkinElements
 	SkinElements.push_back(skin);
 	SkinNode->addChild(skin->GetSprite(), 1);
+
+	//IF skin not found in boughskins, add it into the hashmap
+	if (SaveData::GetInstance().BoughtSkins.find(Name) != SaveData::GetInstance().BoughtSkins.end())
+	{
+		SaveData::GetInstance().BoughtSkins.insert(std::pair<std::string, bool>(Name, false));
+	}
 }
 
 void MainMenu::AddPowerup(const std::string & Name, const std::string &SpriteFilePath, const unsigned int & Price)

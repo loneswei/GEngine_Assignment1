@@ -3,7 +3,8 @@
 ShopElement::ShopElement(const std::string Name, const std::string SpriteFilePath, const unsigned int Price) : 
 	Name(Name),
 	SpriteFilePath(SpriteFilePath),
-	Price(Price)
+	Price(Price),
+	isEquipped(false)
 {
 	theSprite = Sprite::create(SpriteFilePath);
 	theSprite->setName(Name);

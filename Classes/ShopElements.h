@@ -23,6 +23,7 @@ public:
 
 	float SpriteWidth, halfSpriteWidth;
 	float SpriteHeight, halfSpriteHeight;
+	bool isBought, isEquipped;
 
 private:
 	const std::string Name;

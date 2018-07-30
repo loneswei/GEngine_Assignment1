@@ -7,6 +7,7 @@
 
 #include "Character.h"
 #include "ShopElements.h"
+#include "SaveData.h"
 
 using namespace cocos2d;
 
@@ -49,6 +50,7 @@ private:
 
 	bool SkinTabOpened;
 	bool PowerupTabOpened;
+	unsigned int PlayerGold;
 
 	std::vector<ShopElement*> SkinElements;
 	std::vector<ShopElement*> PowerupElements;
