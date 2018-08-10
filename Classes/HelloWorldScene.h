@@ -109,6 +109,7 @@ private:
 	Label* scoreLabel2; //for pause
 	Label* scoreLabel3; // for gameover
 	Label* instructiongameover;
+	Label *GoldEarnedLabel;
 
 	float samuraiSpawnTimer;
 	float coinSpawnTimer;
@@ -130,6 +131,8 @@ private:
 	cocos2d::ui::Button* tutorialbutton;
 	cocos2d::ui::Button* backbutton;
 	cocos2d::ui::Button* pausebutton;
+	cocos2d::ui::Button* gameoverbackbutton;
+	cocos2d::ui::Button* gameoverrestartbutton;
 	bool tutormode;
 
 	Size playingSize;

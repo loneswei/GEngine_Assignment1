@@ -67,6 +67,13 @@ bool MainMenu::init()
 	GameTitle->setVisible(true);
 	this->addChild(GameTitle, 1);
 
+	GoldAmount =  Label::createWithTTF("Gold: " + std::to_string((int)PlayerGold), "fonts/Marker Felt.ttf", 24);
+	GoldAmount->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	GoldAmount->setPosition(Vec2(playingSize.width * 0.1f, 0 + GameTitle->getContentSize().height * 18));
+	GoldAmount->setVisible(false);
+	this->addChild(GoldAmount, 1);
+	 
+
 	backbutton = ui::Button::create("back.png");
 	backbutton->setPosition(Vec2(playingSize.width * 0.9f, playingSize.height * 0.95));
 	backbutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
@@ -196,57 +203,6 @@ bool MainMenu::init()
 	listener2->onKeyReleased = CC_CALLBACK_2(MainMenu::onKeyReleased, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener2, this);
 
-	//touchListener = EventListenerTouchOneByOne::create();
-	//touchListener->onTouchEnded = [=](Touch* touch, Event* event) {
-	//	if (SkinTabOpened)
-	//	{
-	//		for (auto *skin : SkinElements)
-	//		{
-	//			float buybuttonHalfWidth = skin->BuyButton->getContentSize().width * skin->BuyButton->getScaleX() * 0.5f, buybuttonHalfHeight = skin->BuyButton->getContentSize().height * skin->BuyButton->getScaleY() * 0.5f;
-
-	//			if (touch->getLocation().x > skin->BuyButton->getPositionX() - buybuttonHalfWidth && touch->getLocation().x < skin->BuyButton->getPositionX() + buybuttonHalfWidth &&
-	//				touch->getLocation().y > skin->BuyButton->getPositionY() - buybuttonHalfHeight && touch->getLocation().y < skin->BuyButton->getPositionY() + buybuttonHalfHeight)
-	//			{
-	//				if (skin->isEquipped)
-	//				{
-	//					break;
-	//				}
-	//				else if (skin->isBought)
-	//				{
-	//					//Uneqip previously equipped skin
-	//					for (auto *skin : SkinElements)
-	//					{
-	//						if (skin->GetName() == SaveData::GetInstance().EquippedSkinName)
-	//						{
-	//							skin->BuyButtonLabel->setString("EQUIP");
-	//						}
-	//					}
-
-	//					//Update the current equipped skin
-	//					skin->BuyButtonLabel->setString("EQUIPPED");
-	//					SaveData::GetInstance().EquippedSkinName = skin->GetName();
-
-	//					break;
-	//				}
-	//				else
-	//				{
-	//					//Update it as being bought
-	//					skin->BuyButtonLabel->setString("BOUGHT");
-	//					SaveData::GetInstance().BoughtSkins.push_back(skin->GetName());
-
-	//					//Update gold amount
-	//					PlayerGold -= skin->GetPrice();
-	//					break;
-	//				}
-
-	//			}
-	//		}
-	//	}
-
-	//	return true;
-	//};
-	//_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
-
 	// Call Update function
 	this->scheduleUpdate();
 
@@ -265,7 +221,6 @@ void MainMenu::InitShop()
 	//Parent nodes to scene
 	this->addChild(SkinNode, 1);
 	this->addChild(PowerupNode, 1);
-	//this->addChild(BuyButtonNode, 1);
 }
 
 
@@ -303,12 +258,14 @@ void MainMenu::MainMenuToShop()
 	shopbutton->setVisible(false);
 	playbutton->setVisible(false);
 	GameTitle->setVisible(false);
+	GoldAmount->setVisible(true);
 	backbutton->setVisible(true);
 	//Show Tabs
 	SkinTab->setVisible(true);
 	PowerupTab->setVisible(true);
 
 	PlayerGold = SaveData::GetInstance().GetGold();
+	GoldAmount->setString(std::to_string((int)PlayerGold));
 }
 
 void MainMenu::ShopToMainMenu()
@@ -322,7 +279,7 @@ void MainMenu::ShopToMainMenu()
 	//Hide Tabs
 	SkinTab->setVisible(false);
 	PowerupTab->setVisible(false);
-
+	GoldAmount->setVisible(false);
 	SaveData::GetInstance().SetGold(PlayerGold);
 }
 
@@ -332,10 +289,10 @@ void MainMenu::InitSkin()
 	{
 		//Add Skins
 		AddSkin("Default", "Skins/Default/jump_right_01.png");
-		AddSkin("Blue", "Skins/Blue/jump_right_01.png");
-		AddSkin("Green", "Skins/Green/jump_right_01.png");
-		AddSkin("Grey", "Skins/Grey/jump_right_01.png");
-		AddSkin("Red", "Skins/Red/jump_right_01.png");
+		AddSkin("Blue", "Skins/Blue/jump_right_01.png", 200);
+		AddSkin("Green", "Skins/Green/jump_right_01.png", 400);
+		AddSkin("Grey", "Skins/Grey/jump_right_01.png", 700);
+		AddSkin("Red", "Skins/Red/jump_right_01.png", 1000);
 
 		//Adjust skin elements positions
 		unsigned short Col = 1, Row = 0;
@@ -376,7 +333,8 @@ void MainMenu::InitSkin()
 		//Add buy button under each element
 		for (size_t i = 0; i < SkinElements.size(); ++i)
 		{
-			auto BuyButton = ui::Button::create("");
+			auto BuyButton = ui::Button::create("button_background.png");
+			BuyButton->setScale(0.2f);
 			auto *theElement = SkinElements[i];
 			
 			if (theElement->isEquipped)
@@ -389,10 +347,10 @@ void MainMenu::InitSkin()
 			}
 			else
 			{
-				BuyButton->setTitleText("BUY");
+				BuyButton->setTitleText("BUY - " + std::to_string(SkinElements[i]->GetPrice()));
 			}
 			BuyButton->setName(std::to_string(i));
-			BuyButton->setTitleFontSize(2.5f * BuyButton->getTitleFontSize());
+			BuyButton->setTitleFontSize(9.f * BuyButton->getTitleFontSize());
 			BuyButton->setPosition(Vec2(SkinElements[i]->GetPosition().x, SkinElements[i]->GetPosition().y - (ELEMENT_HEIGHT * 0.35f)));
 			BuyButton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
 			{
@@ -458,6 +416,7 @@ void MainMenu::InitSkin()
 
 						//Update gold amount
 						PlayerGold -= theElement->GetPrice();
+						GoldAmount->setString(std::to_string((int)PlayerGold));
 						break;
 					}
 
@@ -527,12 +486,6 @@ void MainMenu::AddSkin(const std::string &Name, const std::string &SpriteFilePat
 	//Add the skin element object into SkinElements
 	SkinElements.push_back(skin);
 	SkinNode->addChild(skin->GetSprite(), 1);
-
-	////IF skin not found in boughskins, add it into the hashmap
-	//if (SaveData::GetInstance().BoughtSkins.find(Name) != SaveData::GetInstance().BoughtSkins.end())
-	//{
-	//	SaveData::GetInstance().BoughtSkins.insert(std::pair<std::string, bool>(Name, false));
-	//}
 }
 
 void MainMenu::AddPowerup(const std::string & Name, const std::string &SpriteFilePath, const unsigned int & Price)

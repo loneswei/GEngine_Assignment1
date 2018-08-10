@@ -31,6 +31,7 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 
 	eDir = eRight;
 	
+	EquippedSkinName = SaveData::GetInstance().EquippedSkinName;
 	Run();
 
 	// speed for jump movement - smaller faster, bigger slower
@@ -51,7 +52,6 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 	invulDuration = INVUL_DURATION;
 	dead = false;
 
-	EquippedSkinName = SaveData::GetInstance().EquippedSkinName;
 }
 
 void GameChar::Update(float delta)

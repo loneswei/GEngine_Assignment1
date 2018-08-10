@@ -39,6 +39,7 @@ private:
 	Size playingSize;
 	Label* GameTitle;
 	Label* Play;
+	Label* GoldAmount;
 	Sprite* background;
 
 	cocos2d::ui::Button* playbutton;

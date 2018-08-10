@@ -382,10 +382,28 @@ void HelloWorld::update(float delta)
 	if (mainChar.getAliveorNot() == true)
 	{
 		deadLabel->setVisible(true);
+		gameoverrestartbutton->setVisible(true);
+		gameoverbackbutton->setVisible(true);
 		//	scoreLabel->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height * 0.5f));
 		instructiongameover->setVisible(true);
 		gameoverbackground->setVisible(true);
 		//Director::sharedDirector()->pause();
+
+		const std::string Score = std::to_string((int)mainChar.getScore());
+		int GoldEarned;
+
+		//Less than 2 digits
+		if (Score.size() < 2)
+		{
+			GoldEarned = 0;
+		}
+		else
+		{
+			GoldEarned = std::stoi(Score.substr(0, Score.size() - 2));
+		}
+
+		GoldEarnedLabel->setString("Gold Earned: " + std::to_string(GoldEarned));
+		GoldEarnedLabel->setVisible(true);
 	}
 	else
 	{
@@ -393,6 +411,8 @@ void HelloWorld::update(float delta)
 		deadLabel->setVisible(false);
 		instructiongameover->setVisible(false);
 		gameoverbackground->setVisible(false);
+		gameoverrestartbutton->setVisible(false);
+		gameoverbackbutton->setVisible(false);
 	}
 
 	if (tutormode)
@@ -706,7 +726,6 @@ void HelloWorld::LabelInit()
 	invulLabel = Label::createWithTTF("Invul: " + std::to_string((int)(mainChar.getInvulDuration() - mainChar.getInvulTimer())), "fonts/Marker Felt.ttf", 24);
 	invulLabel->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height - invulLabel->getContentSize().height));
 	this->addChild(invulLabel, 1);
-
 }
 
 void HelloWorld::LabelUpdate()
@@ -1409,7 +1428,7 @@ void HelloWorld::GameOverUI()
 	gameoverbackground->setScaleZ(2);
 	gameoverbackground->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height * 0.5f));
 	gameoverbackground->setVisible(false);
-	this->addChild(gameoverbackground, 1);
+	this->addChild(gameoverbackground);
 
 	// DEAD - Game Over
 	deadLabel = Label::createWithTTF("DEAD", "fonts/Marker Felt.ttf", 100, Size::ZERO, TextHAlignment::CENTER, TextVAlignment::CENTER);
@@ -1421,6 +1440,94 @@ void HelloWorld::GameOverUI()
 	instructiongameover->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height * 0.3f));
 	this->addChild(instructiongameover, 1);
 	instructiongameover->setVisible(false);
+
+	GoldEarnedLabel = Label::createWithTTF("", "fonts/Marker Felt.ttf", 24);
+	GoldEarnedLabel->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height * 0.35f));
+	this->addChild(GoldEarnedLabel, 1);
+	GoldEarnedLabel->setVisible(false);
+
+	gameoverrestartbutton = ui::Button::create("retry.png");
+	gameoverrestartbutton->setTitleText("Button Text");
+	gameoverrestartbutton->setScaleX(0.5f);
+	gameoverrestartbutton->setScaleY(0.5f);
+	gameoverrestartbutton->setScaleZ(0.5f);
+	gameoverrestartbutton->setPosition(Vec2(playingSize.width * 0.8f, 0 + distanceLabel->getContentSize().height * 27));
+	gameoverrestartbutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	{ switch (type)
+	{
+	case ui::Widget::TouchEventType::BEGAN:
+		break;
+	case ui::Widget::TouchEventType::ENDED:
+		
+		const std::string Score = std::to_string((int)mainChar.getScore());
+		int GoldEarned;
+
+		//Less than 2 digits
+		if (Score.size() < 2)
+		{
+			GoldEarned = 0;
+		}
+		else
+		{
+			GoldEarned = std::stoi(Score.substr(0, Score.size() - 2));
+		}
+
+		SaveData::GetInstance().SetGold(SaveData::GetInstance().GetGold() + GoldEarned);
+
+		paused = false;
+		auto scene = HelloWorld::createScene();
+
+		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+		Director::sharedDirector()->resume();
+		break;
+		/*default:
+		break; */
+	} });
+
+	gameoverrestartbutton->setVisible(false);
+	this->addChild(gameoverrestartbutton, 1);
+
+	gameoverbackbutton = ui::Button::create("home.png");
+	gameoverbackbutton->setTitleText("Button Text");
+	gameoverbackbutton->setScaleX(0.5f);
+	gameoverbackbutton->setScaleY(0.5f);
+	gameoverbackbutton->setScaleZ(0.5f);
+	gameoverbackbutton->setPosition(Vec2(playingSize.width * 0.9f, 0 + distanceLabel->getContentSize().height * 27));
+	gameoverbackbutton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	{ switch (type)
+	{
+	case ui::Widget::TouchEventType::BEGAN:
+		break;
+	case ui::Widget::TouchEventType::ENDED:
+
+		const std::string Score = std::to_string((int)mainChar.getScore());
+		int GoldEarned;
+
+		//Less than 2 digits
+		if (Score.size() < 2)
+		{
+			GoldEarned = 0;
+		}
+		else
+		{
+			GoldEarned = std::stoi(Score.substr(0, Score.size() - 2));
+		}
+
+		SaveData::GetInstance().SetGold(SaveData::GetInstance().GetGold() + GoldEarned);
+
+		paused = false;
+		auto scene = MainMenu::createScene();
+
+		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+		Director::sharedDirector()->resume();
+		break;
+		/*default:
+		break; */
+	} });
+
+	gameoverbackbutton->setVisible(false);
+	this->addChild(gameoverbackbutton,1);
+	
 
 	/*scoreLabel = Label::createWithTTF("You Scored: " + std::to_string((int)mainChar.getScore()), "fonts/Marker Felt.ttf", 24);
 	scoreLabel->setPosition(Vec2(playingSize.width * 0.5f, scoreLabel->getContentSize().height * 8));
@@ -1565,6 +1672,8 @@ void HelloWorld::PauseUI()
 	//MainMenu->setPosition(Vec2(playingSize.width * 0.5f, 0 + MainMenu->getContentSize().height * 9));
 	//MainMenu->setVisible(false);
 	//this->addChild(MainMenu, 1);
+
+
 }
 
 void HelloWorld::Exit()
