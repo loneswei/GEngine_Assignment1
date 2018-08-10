@@ -57,6 +57,7 @@ private:
 
 	Node *SkinNode;
 	Node *PowerupNode;
+	std::vector<ui::Button*> BuyButtonList;
 
 	void InitSkin();
 	void InitPowerup();

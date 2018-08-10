@@ -196,6 +196,57 @@ bool MainMenu::init()
 	listener2->onKeyReleased = CC_CALLBACK_2(MainMenu::onKeyReleased, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener2, this);
 
+	//touchListener = EventListenerTouchOneByOne::create();
+	//touchListener->onTouchEnded = [=](Touch* touch, Event* event) {
+	//	if (SkinTabOpened)
+	//	{
+	//		for (auto *skin : SkinElements)
+	//		{
+	//			float buybuttonHalfWidth = skin->BuyButton->getContentSize().width * skin->BuyButton->getScaleX() * 0.5f, buybuttonHalfHeight = skin->BuyButton->getContentSize().height * skin->BuyButton->getScaleY() * 0.5f;
+
+	//			if (touch->getLocation().x > skin->BuyButton->getPositionX() - buybuttonHalfWidth && touch->getLocation().x < skin->BuyButton->getPositionX() + buybuttonHalfWidth &&
+	//				touch->getLocation().y > skin->BuyButton->getPositionY() - buybuttonHalfHeight && touch->getLocation().y < skin->BuyButton->getPositionY() + buybuttonHalfHeight)
+	//			{
+	//				if (skin->isEquipped)
+	//				{
+	//					break;
+	//				}
+	//				else if (skin->isBought)
+	//				{
+	//					//Uneqip previously equipped skin
+	//					for (auto *skin : SkinElements)
+	//					{
+	//						if (skin->GetName() == SaveData::GetInstance().EquippedSkinName)
+	//						{
+	//							skin->BuyButtonLabel->setString("EQUIP");
+	//						}
+	//					}
+
+	//					//Update the current equipped skin
+	//					skin->BuyButtonLabel->setString("EQUIPPED");
+	//					SaveData::GetInstance().EquippedSkinName = skin->GetName();
+
+	//					break;
+	//				}
+	//				else
+	//				{
+	//					//Update it as being bought
+	//					skin->BuyButtonLabel->setString("BOUGHT");
+	//					SaveData::GetInstance().BoughtSkins.push_back(skin->GetName());
+
+	//					//Update gold amount
+	//					PlayerGold -= skin->GetPrice();
+	//					break;
+	//				}
+
+	//			}
+	//		}
+	//	}
+
+	//	return true;
+	//};
+	//_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+
 	// Call Update function
 	this->scheduleUpdate();
 
@@ -214,9 +265,7 @@ void MainMenu::InitShop()
 	//Parent nodes to scene
 	this->addChild(SkinNode, 1);
 	this->addChild(PowerupNode, 1);
-
-	//Init Gold
-	PlayerGold = SaveData::GetInstance().GetGold();
+	//this->addChild(BuyButtonNode, 1);
 }
 
 
@@ -245,7 +294,6 @@ void MainMenu::onMouseUp(Event * event)
 
 void MainMenu::update(float delta)
 {
-	
 }
 
 void MainMenu::MainMenuToShop()
@@ -292,26 +340,29 @@ void MainMenu::InitSkin()
 		//Adjust skin elements positions
 		unsigned short Col = 1, Row = 0;
 
+		//Add Skin elements to shop screen
 		for (size_t i = 0; i < SkinElements.size(); ++i)
 		{
+			auto *theSkinElement = SkinElements[i];
+
 			if (Col == 1)
 			{
-				SkinElements[i]->SetPosition(StartingPos.x, StartingPos.y - (Row * ELEMENT_HEIGHT));
+				theSkinElement->SetPosition(StartingPos.x, StartingPos.y - (Row * ELEMENT_HEIGHT));
 			}
 			else
 			{
 				Vec2 prevElementPos = SkinElements[i - 1]->GetPosition();
-				SkinElements[i]->SetPosition(prevElementPos.x + ELEMENT_WIDTH, prevElementPos.y);
+				theSkinElement->SetPosition(prevElementPos.x + ELEMENT_WIDTH, prevElementPos.y);
 			}
 
 			//Determin if skin is equipped
-			if (SkinElements[i]->GetName() == SaveData::GetInstance().EquippedSkinName)
+			if (theSkinElement->GetName() == SaveData::GetInstance().EquippedSkinName)
 			{
-				SkinElements[i]->isEquipped = true;
+				theSkinElement->isEquipped = true;
 			}
 
 			//Determine if skin is bought
-			SkinElements[i]->isBought = SaveData::GetInstance().BoughtSkins[SkinElements[i]->GetName()];
+			theSkinElement->isBought = (std::find(SaveData::GetInstance().BoughtSkins.begin(), SaveData::GetInstance().BoughtSkins.end(), theSkinElement->GetName()) != SaveData::GetInstance().BoughtSkins.end());
 
 			++Col;
 
@@ -320,6 +371,103 @@ void MainMenu::InitSkin()
 				Col = 1;
 				++Row;
 			}
+		}
+
+		//Add buy button under each element
+		for (size_t i = 0; i < SkinElements.size(); ++i)
+		{
+			auto BuyButton = ui::Button::create("");
+			auto *theElement = SkinElements[i];
+			
+			if (theElement->isEquipped)
+			{
+				BuyButton->setTitleText("EQUIPPED");
+			}
+			else if (theElement->isBought)
+			{
+				BuyButton->setTitleText("EQUIP");
+			}
+			else
+			{
+				BuyButton->setTitleText("BUY");
+			}
+			BuyButton->setName(std::to_string(i));
+			BuyButton->setTitleFontSize(2.5f * BuyButton->getTitleFontSize());
+			BuyButton->setPosition(Vec2(SkinElements[i]->GetPosition().x, SkinElements[i]->GetPosition().y - (ELEMENT_HEIGHT * 0.35f)));
+			BuyButton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+			{
+				switch (type)
+				{
+				case ui::Widget::TouchEventType::BEGAN:
+					break;
+				case ui::Widget::TouchEventType::ENDED:
+					//Button clicked
+					
+					ui::Button *BuyButton = nullptr;
+
+					for (size_t i = 0; i < BuyButtonList.size(); ++i)
+					{
+						if (BuyButtonList[i]->_ID == sender->_ID)
+						{
+							BuyButton = BuyButtonList[i];
+							break;
+						}
+					}
+					auto *theElement = SkinElements[std::stoi(BuyButton->getName())];
+
+					if (theElement->isEquipped)
+					{
+						break;
+					}
+					else if (theElement->isBought)
+					{
+						//Uneqip previously equipped skin
+						for (auto *button : BuyButtonList)
+						{
+							if (button->getTitleText() == "EQUIPPED")
+							{
+								button->setTitleText("EQUIP");
+								break;
+							}
+						}
+
+						for (auto *element : SkinElements)
+						{
+							if (element->isEquipped)
+							{
+								element->isEquipped = false;
+								break;
+							}
+						}
+
+						//Update the current button as equipped
+						BuyButton->setTitleText("EQUIPPED");
+
+						//Update the current equipped skin
+						SaveData::GetInstance().EquippedSkinName = theElement->GetName();
+						theElement->isEquipped = true;
+
+						break;
+					}
+					else
+					{
+						//Update it as being bought
+						BuyButton->setTitleText("EQUIP");
+						SaveData::GetInstance().BoughtSkins.push_back(theElement->GetName());
+						theElement->isBought = true;
+
+						//Update gold amount
+						PlayerGold -= theElement->GetPrice();
+						break;
+					}
+
+					break;
+				}
+			});
+
+			BuyButton->setVisible(true);
+			this->addChild(BuyButton);
+			BuyButtonList.push_back(BuyButton);
 		}
 
 		SkinTabOpened = true;
@@ -380,11 +528,11 @@ void MainMenu::AddSkin(const std::string &Name, const std::string &SpriteFilePat
 	SkinElements.push_back(skin);
 	SkinNode->addChild(skin->GetSprite(), 1);
 
-	//IF skin not found in boughskins, add it into the hashmap
-	if (SaveData::GetInstance().BoughtSkins.find(Name) != SaveData::GetInstance().BoughtSkins.end())
-	{
-		SaveData::GetInstance().BoughtSkins.insert(std::pair<std::string, bool>(Name, false));
-	}
+	////IF skin not found in boughskins, add it into the hashmap
+	//if (SaveData::GetInstance().BoughtSkins.find(Name) != SaveData::GetInstance().BoughtSkins.end())
+	//{
+	//	SaveData::GetInstance().BoughtSkins.insert(std::pair<std::string, bool>(Name, false));
+	//}
 }
 
 void MainMenu::AddPowerup(const std::string & Name, const std::string &SpriteFilePath, const unsigned int & Price)
@@ -409,11 +557,21 @@ void MainMenu::ExitSkin()
 	{
 		// Remove from Node = Remove the sprites in game
 		SkinNode->removeChild(skin->GetSprite());
+		
 		delete skin;
 		skin = nullptr;
 	}
 	SkinElements.clear();
 	SkinTabOpened = false;
+
+	for (auto button : BuyButtonList)
+	{
+		// Remove from Node = Remove the sprites in game
+		this->removeChild(button);
+		button = nullptr;
+	}
+
+	BuyButtonList.clear();
 }
 
 void MainMenu::ExitPowerup()
@@ -422,15 +580,28 @@ void MainMenu::ExitPowerup()
 	{
 		// Remove from Node = Remove the sprites in game
 		PowerupNode->removeChild(powerup->GetSprite());
+
 		delete powerup;
 		powerup = nullptr;
 	}
 	PowerupElements.clear();
 	PowerupTabOpened = false;
+
+	for (auto button : BuyButtonList)
+	{
+		// Remove from Node = Remove the sprites in game
+		this->removeChild(button);
+
+		delete button;
+		button = nullptr;
+	}
+	BuyButtonList.clear();
 }
 
 void MainMenu::ExitShop()
 {
 	ExitSkin();
 	ExitPowerup();
+
+	SkinTabOpened = PowerupTabOpened = false;
 }

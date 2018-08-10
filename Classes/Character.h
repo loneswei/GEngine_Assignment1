@@ -2,6 +2,8 @@
 #define __CHAR_SCENE_H__
 
 #include "cocos2d.h"
+#include "SaveData.h"
+
 using namespace cocos2d;
 
 class GameChar
@@ -85,6 +87,7 @@ private:
 	bool dead;
 
 	int lifeCount;
+	std::string EquippedSkinName;
 };
 
 #endif // __CHAR_SCENE_H__

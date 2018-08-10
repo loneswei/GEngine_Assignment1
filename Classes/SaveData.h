@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 class SaveData
 {
@@ -16,7 +17,9 @@ public:
 	unsigned int GetGold();
 
 	std::string EquippedSkinName;
-	std::map<std::string, bool> BoughtSkins;
+	//std::map<std::string, bool> BoughtSkins;
+
+	std::vector<std::string> BoughtSkins;
 	
 private:
 	unsigned int Gold;

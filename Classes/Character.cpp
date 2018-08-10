@@ -50,6 +50,8 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 	invulTimer = 0.0f;
 	invulDuration = INVUL_DURATION;
 	dead = false;
+
+	EquippedSkinName = SaveData::GetInstance().EquippedSkinName;
 }
 
 void GameChar::Update(float delta)
@@ -121,13 +123,13 @@ void GameChar::Run()
 		mainSprite->setRotation(90);
 	}
 
-	animFrames.pushBack(SpriteFrame::create("Skins/Default/run_right_01.png", Rect(0, 0, 57, 85)));
-	animFrames.pushBack(SpriteFrame::create("Skins/Default/run_right_02.png", Rect(0, 0, 57, 85)));
-	animFrames.pushBack(SpriteFrame::create("Skins/Default/run_right_03.png", Rect(0, 0, 57, 85)));
-	animFrames.pushBack(SpriteFrame::create("Skins/Default/run_right_04.png", Rect(0, 0, 57, 85)));
-	animFrames.pushBack(SpriteFrame::create("Skins/Default/run_right_05.png", Rect(0, 0, 57, 85)));
-	animFrames.pushBack(SpriteFrame::create("Skins/Default/run_right_06.png", Rect(0, 0, 57, 85)));
-	animFrames.pushBack(SpriteFrame::create("Skins/Default/run_right_07.png", Rect(0, 0, 57, 85)));
+	animFrames.pushBack(SpriteFrame::create("Skins/" + EquippedSkinName + "/run_right_01.png", Rect(0, 0, 57, 85)));
+	animFrames.pushBack(SpriteFrame::create("Skins/" + EquippedSkinName + "/run_right_02.png", Rect(0, 0, 57, 85)));
+	animFrames.pushBack(SpriteFrame::create("Skins/" + EquippedSkinName + "/run_right_03.png", Rect(0, 0, 57, 85)));
+	animFrames.pushBack(SpriteFrame::create("Skins/" + EquippedSkinName + "/run_right_04.png", Rect(0, 0, 57, 85)));
+	animFrames.pushBack(SpriteFrame::create("Skins/" + EquippedSkinName + "/run_right_05.png", Rect(0, 0, 57, 85)));
+	animFrames.pushBack(SpriteFrame::create("Skins/" + EquippedSkinName + "/run_right_06.png", Rect(0, 0, 57, 85)));
+	animFrames.pushBack(SpriteFrame::create("Skins/" + EquippedSkinName + "/run_right_07.png", Rect(0, 0, 57, 85)));
 
 	// Create animation out of the frames
 	Animation* animation = Animation::createWithSpriteFrames(animFrames, 0.1f);
@@ -168,11 +170,11 @@ void GameChar::Jump(float LTargetX, float RTargetX, float height)
 	Vector<SpriteFrame*> animFrames;
 	animFrames.reserve(5);
 	
-	animFrames.pushBack(SpriteFrame::create("Skins/Default/jump_right_01.png", Rect(0, 0, 59, 88)));
-	animFrames.pushBack(SpriteFrame::create("Skins/Default/jump_right_02.png", Rect(0, 0, 59, 88)));
-	animFrames.pushBack(SpriteFrame::create("Skins/Default/jump_right_03.png", Rect(0, 0, 59, 88)));
-	animFrames.pushBack(SpriteFrame::create("Skins/Default/jump_right_04.png", Rect(0, 0, 59, 88)));
-	animFrames.pushBack(SpriteFrame::create("Skins/Default/jump_right_05.png", Rect(0, 0, 59, 88)));
+	animFrames.pushBack(SpriteFrame::create("Skins/" + EquippedSkinName + "/jump_right_01.png", Rect(0, 0, 59, 88)));
+	animFrames.pushBack(SpriteFrame::create("Skins/" + EquippedSkinName + "/jump_right_02.png", Rect(0, 0, 59, 88)));
+	animFrames.pushBack(SpriteFrame::create("Skins/" + EquippedSkinName + "/jump_right_03.png", Rect(0, 0, 59, 88)));
+	animFrames.pushBack(SpriteFrame::create("Skins/" + EquippedSkinName + "/jump_right_04.png", Rect(0, 0, 59, 88)));
+	animFrames.pushBack(SpriteFrame::create("Skins/" + EquippedSkinName + "/jump_right_05.png", Rect(0, 0, 59, 88)));
 
 	// Create animation out of the frames
 	Animation* animation = Animation::createWithSpriteFrames(animFrames, 0.1f);

@@ -2,6 +2,7 @@
 
 SaveData::SaveData() : Gold(5000), EquippedSkinName("Default")
 {
+	BoughtSkins.push_back("Default");
 }
 
 SaveData::~SaveData()
