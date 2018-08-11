@@ -1476,6 +1476,22 @@ void HelloWorld::GameOverUI()
 
 		paused = false;
 		auto scene = HelloWorld::createScene();
+		HelloWorld* HWScene = dynamic_cast<HelloWorld*>(scene);
+
+
+		if (std::find(SaveData::GetInstance().BoughtNEquippedPowerUps.begin(),
+			SaveData::GetInstance().BoughtNEquippedPowerUps.end(),
+			"RestartWithK") != SaveData::GetInstance().BoughtNEquippedPowerUps.end())
+		{
+			// Found Restart with thousandth Score Power Up in Bought vector
+			HWScene->getChar()->setScore(std::stof(Score.substr(0, Score.size() - 3)));
+
+			// Remove the Power Up from the vector
+			SaveData::GetInstance().BoughtNEquippedPowerUps.end() = std::remove(SaveData::GetInstance().BoughtNEquippedPowerUps.begin(),
+				SaveData::GetInstance().BoughtNEquippedPowerUps.end(),
+				"RestartWithK");
+			SaveData::GetInstance().BoughtNEquippedPowerUps.pop_back();
+		}
 
 		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 		Director::sharedDirector()->resume();
