@@ -1,6 +1,6 @@
 #include "SaveData.h"
 
-SaveData::SaveData() : Gold(5000), EquippedSkinName("Default")
+SaveData::SaveData() : Gold(8000), EquippedSkinName("Default")
 {
 	BoughtSkins.push_back("Default");
 }

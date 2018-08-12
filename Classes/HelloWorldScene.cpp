@@ -11,7 +11,7 @@ USING_NS_CC;
 #define WALL_MOVESPEED 250.0f
 #define WALL_CONTENTSIZE_X 50.0f
 
-#define SAMURAI_SPAWN_TIMING 10.f
+#define SAMURAI_SPAWN_TIMING 3.5f
 #define COIN_SPAWN_TIMING 5.0f
 #define MAGNET_SPAWN_TIMING 16.0f
 #define SHIELD_SPAWN_TIMING 16.0f
@@ -93,7 +93,6 @@ bool HelloWorld::init()
 	audio->playBackgroundMusic("Audio/Bgm/menu.mp3", true);
 
 	//audio->playBackgroundMusic("mymusic", false);
-	movespeed = WALL_MOVESPEED;
 
 	// Key Pressed movement
 	auto listener = EventListenerKeyboard::create();
@@ -114,12 +113,6 @@ bool HelloWorld::init()
 	auto touchListener = EventListenerTouchOneByOne::create();
 	touchListener->onTouchBegan = CC_CALLBACK_2(HelloWorld::onTouchBegan, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
-
-	//Touch Listener for enemy
-	auto enemytouch = EventListenerTouchOneByOne::create();
-	enemytouch->onTouchBegan = CC_CALLBACK_2(HelloWorld::onTouchBegan2, this);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(enemytouch, this);
-	
 
 	//Init Last Spawned Objects
 	LastSpawnedItem = nullptr; 
@@ -209,16 +202,6 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 				blink->initWithDuration(3, 15);
 				mainChar.getSprite()->runAction(blink);
 			}
-		}
-		if (enemyChar.getStatus() == enemyChar.eRun2)
-		{
-			enemyChar.setStatus(enemyChar.eJump2);
-			float LTarget = WALL_CONTENTSIZE_X * 1.2f;
-			float RTarget = playingSize.width - (WALL_CONTENTSIZE_X * 1.2f);
-			float height = enemyChar.getSprite()->getPosition().y * 0.75f;
-
-			enemyChar.Jump(LTarget, RTarget, height);
- 
 		}
 	}
 	//pause and resume here
@@ -338,42 +321,16 @@ void HelloWorld::onMouseUp(Event * event)
 // Touch trigger jump
 bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 {
-	Rect box = enemyChar.getSprite()->getBoundingBox();
-	if (!box.containsPoint(touch->getLocation()))
+	if (mainChar.getStatus() == mainChar.eRun)
 	{
-		if (mainChar.getStatus() == mainChar.eRun && enemyChar.getStatus() == enemyChar.eRun2)
-		{
-			mainChar.setStatus(mainChar.eJump);
-			float LTarget = WALL_CONTENTSIZE_X * 1.2f;
-			float RTarget = playingSize.width - (WALL_CONTENTSIZE_X * 1.2f);
-			float height = mainChar.getSprite()->getPosition().y * 0.75f;
+		mainChar.setStatus(mainChar.eJump);
+		float LTarget = WALL_CONTENTSIZE_X * 1.2f;
+		float RTarget = playingSize.width - (WALL_CONTENTSIZE_X * 1.2f);
+		float height = mainChar.getSprite()->getPosition().y * 0.75f;
 
-			mainChar.Jump(LTarget, RTarget, height);
-
-			enemyChar.setStatus(enemyChar.eJump2);
-			float LeTarget = WALL_CONTENTSIZE_X * 1.2f;
-			float ReTarget = playingSize.width - (WALL_CONTENTSIZE_X * 1.2f);
-			float heeight = enemyChar.getSprite()->getPosition().y * 0.75f;
-
-			enemyChar.Jump(LeTarget, ReTarget, heeight);
-			return true;
-		}
-	}
-	return false;
-}
-
-//for enemy 
-bool HelloWorld::onTouchBegan2(Touch * touch, Event * event)
-{
-	Vec2 TouchPoint = touch->getLocation();
-	Rect box = enemyChar.getSprite()->getBoundingBox();
-
-	if (box.containsPoint(TouchPoint))
-	{
-		enemyChar.setAliveorNot(true);
+		mainChar.Jump(LTarget, RTarget, height);
 		return true;
 	}
-	else
 	return false;
 }
 
@@ -390,34 +347,8 @@ void HelloWorld::update(float delta)
 	AutoSpawner(delta, shurikenSpawnTimer, SHURIKEN_SPAWN_TIMING, eShuriken);
 	// ---------- Auto Spawning ---------- 
 
-	if (enemyChar.getAliveorNot() == false)
-	{
-		enemyChar.getSprite()->setVisible(true);
-		if(movespeed > 0)
-		movespeed -= 5 * delta;
-	}
-	else
-	{
-		movespeed = WALL_MOVESPEED;
-		enemyChar.getSprite()->setVisible(false);
-	}
- 
-
-	if (enemyChar.getAliveorNot() == true)
-	{
-		int random_directnum = RandomHelper::random_int(0, 300);
-
-		if (random_directnum >= 299)
-		{
-			enemyChar.setAliveorNot(false);
-		}
-		else
-		{
-			enemyChar.setAliveorNot(true);
-		}
-	}
 	// DEAD - GAME OVER
-	if (mainChar.getLifeCount() <= 0 || movespeed <= 0)
+	if (mainChar.getLifeCount() <= 0)
 	{
 		mainChar.getSprite()->pause();
 		mainChar.setAliveorNot(true);
@@ -426,14 +357,7 @@ void HelloWorld::update(float delta)
 		const float spriteGameWidth = mainChar.getSprite()->getContentSize().width * mainChar.getSprite()->getScaleX() * 0.5f;
 		if(mainChar.getSprite()->getPositionY() + spriteGameWidth < 0)
 			mainChar.getSprite()->setVisible(false);
-
-		enemyChar.getSprite()->setPositionY(enemyChar.getSprite()->getPositionY() - FALL_SPEED * delta);
-		const float spriteGameWidth2 = enemyChar.getSprite()->getContentSize().width * enemyChar.getSprite()->getScaleX() * 0.5f;
-		if (enemyChar.getSprite()->getPositionY() + spriteGameWidth2 < 0)
-			enemyChar.getSprite()->setVisible(false);
 	}
-
-	 
 	if (paused)
 	{
 		resumebutton->setVisible(true);
@@ -491,12 +415,6 @@ void HelloWorld::update(float delta)
 		gameoverbackbutton->setVisible(false);
 	}
 
-	if (enemyChar.getAliveorNot() == true)
-	{
-		enemyChar.getSprite()->setVisible(false);
-	}
-	 
-	 
 	if (tutormode)
 	{
 		Director::sharedDirector()->pause();
@@ -522,7 +440,6 @@ void HelloWorld::update(float delta)
 
 	// Update Enemies
 	EnemyUpdate(delta);
-	enemyChar.Update(delta);
 
 	//Background Scrolling
 	auto theBackgroundImage = BackgroundNode->getChildByName("BackgroundSprite");
@@ -759,15 +676,6 @@ void HelloWorld::GameObjectsInit()
 	enemyObjects->setName("EnemyObjects");
 	this->addChild(enemyObjects);
 	samuraiSpawnTimer = 0.0f;
-
-	auto enemyobject = Node::create();
-	enemyobject->setName("enemyobject");
-	auto enemysprite = Sprite::create("samurai_run_right_01.png");
-	enemyChar.init("samurai_run_right_01.png", Vec2::ANCHOR_MIDDLE, (playingSize.width - (WALL_CONTENTSIZE_X * 1.2f)), (enemysprite->getContentSize().width * 2), "enemy");
-	enemyobject->addChild(enemyChar.getSprite(), 1);
-	this->addChild(enemyobject, 1);
-	enemyspritewidth = enemyChar.getSprite()->getContentSize().width * enemyChar.getSprite()->getScaleX() * 0.5f;
-	enemyspawntimer = 0.0f;
 	// ------------------ Init Enemy ----------------------
 
 	// ------------------ Init Player ----------------------
@@ -1232,7 +1140,7 @@ void HelloWorld::WallUpdate(float delta)
 {
 	//Get the array of walls from wallObjects node
 	auto wallObjectsArray = wallObjects->getChildren();
-	 
+
 	//Move each wall sprite downwards
 	for (auto wallSprite : wallObjectsArray)
 	{
@@ -1242,7 +1150,7 @@ void HelloWorld::WallUpdate(float delta)
 		}
 		else
 		{
-			wallSprite->setPositionY(wallSprite->getPositionY() - movespeed * delta);
+			wallSprite->setPositionY(wallSprite->getPositionY() - WALL_MOVESPEED * delta);
 		}
 	}
 }
@@ -1257,8 +1165,8 @@ void HelloWorld::TrapUpdate(float delta)
 			continue;
 		}
 
-		//Update trapa
-		trapObj->getTrapSprite()->setPositionY(trapObj->getTrapSprite()->getPositionY() - movespeed * delta);
+		//Update trap
+		trapObj->TrapUpdate(delta);
 
 		const float spriteGameWidth = (trapObj->getTrapSprite()->getContentSize().width) * (trapObj->getTrapSprite()->getScaleX()) * 0.5f;
 
@@ -1308,13 +1216,9 @@ void HelloWorld::ItemUpdate(float delta)
 		{
 			continue;
 		}
-		if (itemObj->getItemType() != ItemObject::ITEM_COIN)
-		{
-			//Update position of item
-		   itemObj->getItemSprite()->setPositionY(itemObj->getItemSprite()->getPositionY() - movespeed * delta);
-		}
+
 		//Update item
-	 
+		itemObj->ItemUpdate(delta);
 
 		// Update Coin
 		if (itemObj->getItemType() == ItemObject::ITEM_COIN)
@@ -1336,7 +1240,7 @@ void HelloWorld::ItemUpdate(float delta)
 				}
 			}
 
-			itemObj->getItemSprite()->setPositionY(itemObj->getItemSprite()->getPositionY() - movespeed * delta);
+			itemObj->getItemSprite()->setPositionY(itemObj->getItemSprite()->getPositionY() - FALL_SPEED * delta);
 		}
 		const float spriteGameWidth = itemObj->getItemSprite()->getContentSize().width * itemObj->getItemSprite()->getScaleX() * 0.5f;
 
@@ -1409,7 +1313,7 @@ void HelloWorld::EnemyUpdate(float delta)
 			continue;
 		}
 		//Update enemy
-		enemy->getEnemySprite()->setPositionY(enemy->getEnemySprite()->getPositionY() - movespeed * delta);
+		enemy->EnemyUpdate(delta);
 
 		const float spriteGameWidth = enemy->getEnemySprite()->getContentSize().width * enemy->getEnemySprite()->getScaleX() * 0.5f;
 
@@ -1572,6 +1476,22 @@ void HelloWorld::GameOverUI()
 
 		paused = false;
 		auto scene = HelloWorld::createScene();
+		HelloWorld* HWScene = dynamic_cast<HelloWorld*>(scene);
+
+
+		if (std::find(SaveData::GetInstance().BoughtNEquippedPowerUps.begin(),
+			SaveData::GetInstance().BoughtNEquippedPowerUps.end(),
+			"RestartWithK") != SaveData::GetInstance().BoughtNEquippedPowerUps.end())
+		{
+			// Found Restart with thousandth Score Power Up in Bought vector
+			HWScene->getChar()->setScore(std::stof(Score.substr(0, Score.size() - 3)));
+
+			// Remove the Power Up from the vector
+			SaveData::GetInstance().BoughtNEquippedPowerUps.end() = std::remove(SaveData::GetInstance().BoughtNEquippedPowerUps.begin(),
+				SaveData::GetInstance().BoughtNEquippedPowerUps.end(),
+				"RestartWithK");
+			SaveData::GetInstance().BoughtNEquippedPowerUps.pop_back();
+		}
 
 		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 		Director::sharedDirector()->resume();
@@ -1614,23 +1534,6 @@ void HelloWorld::GameOverUI()
 		paused = false;
 		auto scene = MainMenu::createScene();
 
-		HelloWorld* HWScene = dynamic_cast<HelloWorld*>(scene);
-
-
-		if (std::find(SaveData::GetInstance().BoughtNEquippedPowerUps.begin(),
-			SaveData::GetInstance().BoughtNEquippedPowerUps.end(),
-			"RestartWithK") != SaveData::GetInstance().BoughtNEquippedPowerUps.end())
-		{
-			// Found Restart with thousandth Score Power Up in Bought vector
-			HWScene->getChar()->setScore(std::stof(Score.substr(0, Score.size() - 3)));
-
-			// Remove the Power Up from the vector
-			SaveData::GetInstance().BoughtNEquippedPowerUps.end() = std::remove(SaveData::GetInstance().BoughtNEquippedPowerUps.begin(),
-				SaveData::GetInstance().BoughtNEquippedPowerUps.end(),
-				"RestartWithK");
-			SaveData::GetInstance().BoughtNEquippedPowerUps.pop_back();
-		}
-
 		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 		Director::sharedDirector()->resume();
 		break;
@@ -1666,10 +1569,7 @@ void HelloWorld::PauseUI()
 		break;
 	case ui::Widget::TouchEventType::ENDED:
 		//std::cout << "Button 1 clicked" << std::endl; 
-		if (mainChar.getAliveorNot() == false)
-			paused = true;
-		else
-			paused = false;
+		paused = true;
 		break;
 		/*default:
 		break; */

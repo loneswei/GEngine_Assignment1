@@ -438,26 +438,29 @@ void MainMenu::InitPowerup()
 	if (!PowerupTabOpened)
 	{
 		//Add Powerups
-		AddPowerup("Coin", "coin.png");
-		AddPowerup("Magnet", "magnet.png");
-		AddPowerup("Shield", "shield.png");
-		AddPowerup("Shuriken", "shuriken.png");
-		AddPowerup("Spike", "spiketrap.png");
+		AddPowerup("Life", "PowerUps/life.png", 1400);
+		AddPowerup("ScoreMultiplier", "PowerUps/coin.png", 1800);
+		AddPowerup("RestartWithK", "PowerUps/coinInShield.png", 2300);
 
 		//Adjust powerup elements positions
 		unsigned short Col = 1, Row = 0;
 
 		for (size_t i = 0; i < PowerupElements.size(); ++i)
 		{
+			auto *thePowerupElement = PowerupElements[i];
+
 			if (Col == 1)
 			{
-				PowerupElements[i]->SetPosition(StartingPos.x, StartingPos.y - (Row * ELEMENT_HEIGHT));
+				thePowerupElement->SetPosition(StartingPos.x, StartingPos.y - (Row * ELEMENT_HEIGHT));
 			}
 			else
 			{
 				Vec2 prevElementPos = PowerupElements[i - 1]->GetPosition();
-				PowerupElements[i]->SetPosition(prevElementPos.x + ELEMENT_WIDTH, prevElementPos.y);
+				thePowerupElement->SetPosition(prevElementPos.x + ELEMENT_WIDTH, prevElementPos.y);
 			}
+
+			//Determine if power up is bought
+			thePowerupElement->isBought = (std::find(SaveData::GetInstance().BoughtNEquippedPowerUps.begin(), SaveData::GetInstance().BoughtNEquippedPowerUps.end(), thePowerupElement->GetName()) != SaveData::GetInstance().BoughtNEquippedPowerUps.end());
 
 			++Col;
 
@@ -466,6 +469,71 @@ void MainMenu::InitPowerup()
 				Col = 1;
 				++Row;
 			}
+		}
+
+		//Add buy button under each element
+		for (size_t i = 0; i < PowerupElements.size(); ++i)
+		{
+			auto BuyButton = ui::Button::create("button_background.png");
+			BuyButton->setScale(0.2f);
+			auto *theElement = PowerupElements[i];
+
+			if (theElement->isBought)
+			{
+				BuyButton->setTitleText("EQUIPPED");
+			}
+			else
+			{
+				BuyButton->setTitleText("BUY - " + std::to_string(PowerupElements[i]->GetPrice()));
+			}
+			BuyButton->setName(std::to_string(i));
+			BuyButton->setTitleFontSize(9.f * BuyButton->getTitleFontSize());
+			BuyButton->setPosition(Vec2(PowerupElements[i]->GetPosition().x, PowerupElements[i]->GetPosition().y - (ELEMENT_HEIGHT * 0.35f)));
+			BuyButton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+			{
+				switch (type)
+				{
+				case ui::Widget::TouchEventType::BEGAN:
+					break;
+				case ui::Widget::TouchEventType::ENDED:
+					//Button clicked
+
+					ui::Button *BuyButton = nullptr;
+
+					for (size_t i = 0; i < BuyButtonList.size(); ++i)
+					{
+						if (BuyButtonList[i]->_ID == sender->_ID)
+						{
+							BuyButton = BuyButtonList[i];
+							break;
+						}
+					}
+					auto *theElement = PowerupElements[std::stoi(BuyButton->getName())];
+
+					if (theElement->isBought)
+					{
+						break;
+					}
+					else
+					{
+						//Update it as being bought
+						BuyButton->setTitleText("EQUIPPED");
+						SaveData::GetInstance().BoughtNEquippedPowerUps.push_back(theElement->GetName());
+						theElement->isBought = true;
+
+						//Update gold amount
+						PlayerGold -= theElement->GetPrice();
+						GoldAmount->setString(std::to_string((int)PlayerGold));
+						break;
+					}
+
+					break;
+				}
+			});
+
+			BuyButton->setVisible(true);
+			this->addChild(BuyButton);
+			BuyButtonList.push_back(BuyButton);
 		}
 		PowerupTabOpened = true;
 	}
@@ -544,8 +612,6 @@ void MainMenu::ExitPowerup()
 	{
 		// Remove from Node = Remove the sprites in game
 		this->removeChild(button);
-
-		delete button;
 		button = nullptr;
 	}
 	BuyButtonList.clear();

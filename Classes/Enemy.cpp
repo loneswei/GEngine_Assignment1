@@ -33,7 +33,7 @@ Enemy::~Enemy()
 void Enemy::EnemyUpdate(float dt)
 {
 	//Update position of enemy
-	//enemySprite->setPositionY(enemySprite->getPositionY() - ENEMY_SPEED * dt);
+	enemySprite->setPositionY(enemySprite->getPositionY() - ENEMY_SPEED * dt);
 }
 
 void Enemy::Run()
