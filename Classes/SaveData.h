@@ -18,7 +18,6 @@ public:
 
 	std::string EquippedSkinName;
 	std::vector<std::string> BoughtSkins;
-	std::vector<std::string> BoughtNEquippedPowerUps;
 	
 private:
 	unsigned int Gold;

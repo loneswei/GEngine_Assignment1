@@ -43,6 +43,7 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 	magnetActive = false;
 	magnetTimer = 0.0f;
 	magnetDuration = MAGNET_DURATION;
+	lifeCount = 3;
 	shieldActive = false;
 	shieldTimer = 0.0f;
 	shieldDuration = SHIELD_DURATION;
@@ -51,15 +52,6 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 	invulDuration = INVUL_DURATION;
 	dead = false;
 
-	if (std::find(SaveData::GetInstance().BoughtNEquippedPowerUps.begin(),
-		SaveData::GetInstance().BoughtNEquippedPowerUps.end(),
-		"Life") != SaveData::GetInstance().BoughtNEquippedPowerUps.end())
-	{
-		//Found Life Power Up in Bought vector
-		lifeCount = 4;
-	}
-	else
-		lifeCount = 3;
 }
 
 void GameChar::Update(float delta)
@@ -70,16 +62,7 @@ void GameChar::Update(float delta)
 		return;
 	}
 
-	if (std::find(SaveData::GetInstance().BoughtNEquippedPowerUps.begin(),
-		SaveData::GetInstance().BoughtNEquippedPowerUps.end(),
-		"ScoreMultiplier") != SaveData::GetInstance().BoughtNEquippedPowerUps.end())
-	{
-		//Found Score Multiplier Power Up in Bought vector
-		fScore += 10;
-	}
-	else
-		fScore += 1;
-
+	fScore += 1;
 	fDistance += 1;
 
 	// Update Power-ups

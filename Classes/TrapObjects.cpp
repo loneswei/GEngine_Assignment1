@@ -21,5 +21,5 @@ TrapObject::~TrapObject()
 void TrapObject::TrapUpdate(float dt)
 {
 	//Update position of trap
-	trapSprite->setPositionY(trapSprite->getPositionY() - TRAP_SPEED * dt);
+	//trapSprite->setPositionY(trapSprite->getPositionY() - TRAP_SPEED * dt);
 }

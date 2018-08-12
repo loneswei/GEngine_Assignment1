@@ -21,9 +21,5 @@ ItemObject::~ItemObject()
 
 void ItemObject::ItemUpdate(float dt)
 {
-	if (itemType != ITEM_COIN)
-	{
-		//Update position of item
-		itemSprite->setPositionY(itemSprite->getPositionY() - ITEM_SPEED * dt);
-	}
+	 
 }
