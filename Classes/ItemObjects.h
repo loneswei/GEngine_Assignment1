@@ -1,5 +1,5 @@
 #ifndef __ItemObject_SCENE_H__
-#define ____ItemObject_SCENE_H__
+#define __ItemObject_SCENE_H__
 
 #include "cocos2d.h"
 #include "Character.h"

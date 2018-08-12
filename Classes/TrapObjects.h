@@ -1,5 +1,5 @@
 #ifndef __TRAPOBJECT_SCENE_H__
-#define ____TRAPOBJECT_SCENE_H__
+#define __TRAPOBJECT_SCENE_H__
 
 #include "cocos2d.h"
 

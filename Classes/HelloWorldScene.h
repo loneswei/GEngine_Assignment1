@@ -7,6 +7,7 @@
 #include "ItemObjects.h"
 #include "Enemy.h"
 #include "ui\CocosGUI.h"
+#include "Enemy2.h"
 
 using namespace cocos2d;
 enum Selection2
@@ -43,7 +44,7 @@ public:
 	virtual void onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event);
 	virtual void onMouseUp(Event* event);
 	virtual bool onTouchBegan(Touch* touch, Event* event);
-
+	virtual bool onTouchBegan2(Touch * touch, Event * event);
 	// Update funciton that cals every frame
 	virtual void update(float delta);
 
@@ -72,7 +73,7 @@ public:
 	void EnemyUpdate(float delta);
 	void PauseUI();
 	void GameOverUI();
-	
+
 	//Fetchers
 	TrapObject* FetchTrapObject(TrapObject::TRAP_TYPE trapType = TrapObject::TRAP_RANDOM);
 	ItemObject* FetchItemObject(ItemObject::ITEM_TYPE itemType = ItemObject::ITEM_RANDOM);
@@ -84,11 +85,12 @@ public:
 
 	// Get Char
 	GameChar* getChar(void) { return &mainChar; }
-
+	GameEnemy* getEnemyChar(void) { return &enemyChar; }
 	// implement the "static create()" method manually
 	CREATE_FUNC(HelloWorld);
 private:
 	GameChar mainChar;
+	GameEnemy enemyChar;
 	Node *BackgroundNode;
 	Node *wallObjects;
 	Node *trapObjects;
@@ -117,7 +119,10 @@ private:
 	float shieldSpawnTimer;
 	float spikeSpawnTimer;
 	float shurikenSpawnTimer;
+	float enemyspawntimer;
 	float characterSpriteWidth;
+	float enemyspritewidth;
+	float movespeed;
 
 	Sprite* arrow2;
 	Sprite* pausebackground;

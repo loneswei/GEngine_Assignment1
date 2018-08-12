@@ -20,7 +20,7 @@ Enemy::Enemy(ENEMY_TYPE enemyType) :
 	if (this->enemyType == ENEMY_SAMURAI)
 	{
 		enemySprite = Sprite::create("samurai_run_right_01.png");
-		
+
 		SpriteWidth = enemySprite->getContentSize().width * enemySprite->getScaleX();
 		halfSpriteWidth = SpriteWidth * 0.5f;
 	}
@@ -33,7 +33,7 @@ Enemy::~Enemy()
 void Enemy::EnemyUpdate(float dt)
 {
 	//Update position of enemy
-	enemySprite->setPositionY(enemySprite->getPositionY() - ENEMY_SPEED * dt);
+	//enemySprite->setPositionY(enemySprite->getPositionY() - ENEMY_SPEED * dt);
 }
 
 void Enemy::Run()

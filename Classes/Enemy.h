@@ -1,5 +1,5 @@
 #ifndef __ENEMY_SCENE_H__
-#define ____ENEMY_SCENE_H__
+#define __ENEMY_SCENE_H__
 
 #include "cocos2d.h"
 

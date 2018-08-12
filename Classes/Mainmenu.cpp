@@ -41,6 +41,13 @@ bool MainMenu::init()
 		return false;
 	}
 
+#ifdef SDKBOX_ENABLED
+	if (!sdkbox::PluginFacebook::isLoggedIn())
+	{
+		sdkbox::PluginFacebook::login();
+	}
+#endif
+
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
