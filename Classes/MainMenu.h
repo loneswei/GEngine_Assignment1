@@ -3,7 +3,7 @@
 #define _MAINMENU_H
 
 #include "cocos2d.h"
-#include "ui\CocosGUI.h"
+#include "ui/CocosGUI.h"
 
 #include "Character.h"
 #include "ShopElements.h"

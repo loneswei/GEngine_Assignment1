@@ -1,6 +1,7 @@
 #include "HelloWorldScene.h"
 #include "Character.h"
 
+
 #define MAGNET_DURATION 7.0f
 #define SHIELD_DURATION 7.0f
 #define INVUL_DURATION 3.0f
@@ -26,7 +27,7 @@ void GameChar::init(const char * filename, Vec2 anchor, float x, float y, const 
 	shieldSprite->setPosition(x, y);
 	shieldSprite->setName("Player_Shield");
 	shieldSprite->setOpacity(150);
-	shieldSprite->setRotation(-90);
+	//shieldSprite->setRotation(-90);
 	shieldSprite->setVisible(false);
 
 	eDir = eRight;
@@ -96,7 +97,36 @@ void GameChar::Update(float delta)
 	if (shieldActive)
 	{
 		shieldTimer += 1 * delta;
-		shieldSprite->setPosition(mainSprite->getPosition());
+        if(CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+        {
+             shieldSprite->setPosition(mainSprite->getPosition());
+        }
+        else if(CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+        {
+            static float distanceToShift = shieldSprite->getContentSize().width * shieldSprite->getScaleX() * 0.5f;
+            if(eStat == eRun)
+            {
+                if(eDir == eRight)
+                {
+                    shieldSprite->setPosition(Vec2(mainSprite->getPositionX() - distanceToShift * 0.75f, mainSprite->getPositionY() - distanceToShift * 0.5f));
+                }
+                else if (eDir == eLeft)
+                {
+                    shieldSprite->setPosition(Vec2(mainSprite->getPositionX() + distanceToShift * 0.75f, mainSprite->getPositionY() - distanceToShift * 0.5f));
+                }
+            }
+            else if(eStat == eJump)
+            {
+                if(eDir == eRight)
+                {
+                    shieldSprite->setPosition(Vec2(mainSprite->getPositionX() - distanceToShift * 0.75f, mainSprite->getPositionY() + distanceToShift * 0.5f));
+                }
+                else if (eDir == eLeft)
+                {
+                    shieldSprite->setPosition(Vec2(mainSprite->getPositionX() + distanceToShift * 0.75f, mainSprite->getPositionY() + distanceToShift * 0.5f));
+                }
+            }
+        }
 		shieldSprite->setRotation(mainSprite->getRotation());
 		// Deactivate shield & reset its timer
 		if (shieldTimer >= shieldDuration)
@@ -172,15 +202,18 @@ void GameChar::Jump(float LTargetX, float RTargetX, float height)
 	{
 		vec.x = LTargetX;
 		mainSprite->setFlippedX(true);
+        
 		eDir = eLeft;
-	}
+    }
 	// Currently on Left side, Target Right side
 	else if(eDir == eLeft)
 	{
 		vec.x = RTargetX;
 		mainSprite->setFlippedX(false);
-		eDir = eRight;
-	}
+        
+        eDir = eRight;
+        
+        }	
 	auto jumpEvent = JumpTo::create(duration, vec, height, 1);
 
 	// Animation frames
@@ -208,7 +241,8 @@ void GameChar::Jump(float LTargetX, float RTargetX, float height)
 		if (HWScene != NULL)
 		{
 			HWScene->getChar()->Run(); // Call run function to change animation back to run
-			HWScene->getChar()->setStatus(eRun);
+            HWScene->getChar()->setStatus(eRun);
+            
 		}
 	});
 

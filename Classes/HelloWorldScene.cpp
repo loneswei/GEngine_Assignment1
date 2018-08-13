@@ -351,8 +351,30 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 		if (mainChar.getStatus() == mainChar.eRun && enemyChar.getStatus() == enemyChar.eRun2)
 		{
 			mainChar.setStatus(mainChar.eJump);
-			float LTarget = WALL_CONTENTSIZE_X * 1.2f;
-			float RTarget = playingSize.width - (WALL_CONTENTSIZE_X * 1.2f);
+            if(CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+            {
+                float LTarget = WALL_CONTENTSIZE_X * 0.5f;
+                float RTarget = playingSize.width - (WALL_CONTENTSIZE_X * 0.5f);
+                float height = mainChar.getSprite()->getPosition().y * 0.75f;
+                
+                mainChar.Jump(LTarget, RTarget, height);
+                if(mainChar.getInvulActive())
+                {
+                    auto blink = CCBlink::create(3, 15);
+                    blink->initWithDuration(3,15);
+                    mainChar.getSprite()->runAction(blink);
+                }
+                enemyChar.setStatus(enemyChar.eJump2);
+                float LeTarget = WALL_CONTENTSIZE_X * 0.5f;
+                float ReTarget = playingSize.width - (WALL_CONTENTSIZE_X * 0.5f);
+                float heeight = enemyChar.getSprite()->getPosition().y * 0.75f;
+                
+                enemyChar.Jump(LeTarget, ReTarget, heeight);
+            }
+            else if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+            {
+			float LTarget = WALL_CONTENTSIZE_X;
+			float RTarget = playingSize.width - (WALL_CONTENTSIZE_X);
 			float height = mainChar.getSprite()->getPosition().y * 0.75f;
 
 			mainChar.Jump(LTarget, RTarget, height);
@@ -364,11 +386,12 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 			}
 
 			enemyChar.setStatus(enemyChar.eJump2);
-			float LeTarget = WALL_CONTENTSIZE_X * 1.2f;
-			float ReTarget = playingSize.width - (WALL_CONTENTSIZE_X * 1.2f);
+			float LeTarget = WALL_CONTENTSIZE_X;
+			float ReTarget = playingSize.width - (WALL_CONTENTSIZE_X);
 			float heeight = enemyChar.getSprite()->getPosition().y * 0.75f;
 
 			enemyChar.Jump(LeTarget, ReTarget, heeight);
+            }
 			return true;
 		}
 	}
@@ -429,6 +452,7 @@ void HelloWorld::update(float delta)
 			enemyChar.setAliveorNot(true);
 		}
 	}
+    
 	// DEAD - GAME OVER
 	if (mainChar.getLifeCount() <= 0 || movespeed <= 0)
 	{
@@ -776,7 +800,14 @@ void HelloWorld::GameObjectsInit()
 	auto enemyobject = Node::create();
 	enemyobject->setName("enemyobject");
 	auto enemysprite = Sprite::create("samurai_run_right_01.png");
+    if(CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+    {
 	enemyChar.init("samurai_run_right_01.png", Vec2::ANCHOR_MIDDLE, (playingSize.width - (WALL_CONTENTSIZE_X * 1.2f)), (enemysprite->getContentSize().width * 2), "enemy");
+    }
+    else if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    {
+        enemyChar.init("samurai_run_right_01.png", Vec2::ANCHOR_MIDDLE, (playingSize.width - (WALL_CONTENTSIZE_X * 0.5f)), (enemysprite->getContentSize().width * 2), "enemy");
+    }
 	enemyobject->addChild(enemyChar.getSprite(), 1);
 	this->addChild(enemyobject, 1);
 	enemyspritewidth = enemyChar.getSprite()->getContentSize().width * enemyChar.getSprite()->getScaleX() * 0.5f;
@@ -787,7 +818,14 @@ void HelloWorld::GameObjectsInit()
 	auto playerObject = Node::create();
 	playerObject->setName("PlayerObject");
 	auto playerSprite = Sprite::create("Skins/Default/run_right_01.png");
+    if(CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+    {
 	mainChar.init("Skins/Default/run_right_01.png", Vec2::ANCHOR_MIDDLE, (playingSize.width - (WALL_CONTENTSIZE_X * 1.2f)), (playerSprite->getContentSize().width * 2), "Player");
+    }
+    else if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    {
+        mainChar.init("Skins/Default/run_right_01.png", Vec2::ANCHOR_MIDDLE, (playingSize.width - (WALL_CONTENTSIZE_X * 0.5f)), (playerSprite->getContentSize().width * 2), "Player");
+    }
 	playerObject->addChild(mainChar.getSprite(), 1);
 	this->addChild(playerObject, 1);
 	characterSpriteWidth = mainChar.getSprite()->getContentSize().width * mainChar.getSprite()->getScaleX() * 0.5f;
@@ -889,12 +927,26 @@ void HelloWorld::AutoSpawner(float delta, float &timer, float timing, ESpawner _
 			if (random_dir >= 5)
 			{
 				isSpawnRight = true;
-				SpawnPos = Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 1.2f)), playingSize.height);
+                if(CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+                {
+                    SpawnPos = Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 1.2f)), playingSize.height);
+                }
+                else if(CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+                {
+                    SpawnPos = Vec2((playingSize.width - (WALL_CONTENTSIZE_X * 0.5f)), playingSize.height);
+                }
 			}
 			else
 			{
 				isSpawnRight = false;
-				SpawnPos = Vec2(WALL_CONTENTSIZE_X * 1.2f, playingSize.height);
+                if(CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+                {
+                    SpawnPos = Vec2(WALL_CONTENTSIZE_X * 1.2f, playingSize.height);
+                }
+                else if(CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+                {
+                    SpawnPos = Vec2(WALL_CONTENTSIZE_X * 0.5f, playingSize.height);
+                }
 			}
 
 			//Check against last spawned item
@@ -1532,9 +1584,18 @@ void HelloWorld::GameOverUI()
 {
 	gameoverbackground = Sprite::create("gameoverbg.jpg");
 	gameoverbackground->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+    if(CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+    {
 	gameoverbackground->setScaleX(2);
 	gameoverbackground->setScaleY(2);
 	gameoverbackground->setScaleZ(2);
+    }
+    else if(CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    {
+        gameoverbackground->setScaleX(4);
+        gameoverbackground->setScaleY(4);
+        gameoverbackground->setScaleZ(4);
+    }
 	gameoverbackground->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height * 0.5f));
 	gameoverbackground->setVisible(false);
 	this->addChild(gameoverbackground);

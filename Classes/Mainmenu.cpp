@@ -1,5 +1,5 @@
 #include "SimpleAudioEngine.h"
-#include "ui\CocosGUI.h"
+#include "ui/CocosGUI.h"
 
 #include "MainMenu.h"
 #include "Tutorial.h"
@@ -61,7 +61,8 @@ bool MainMenu::init()
 
 	background = Sprite::create("mainmenubackground.jpg");
 	background->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
-	background->setPosition(Vec2(playingSize.width * 0.35f, playingSize.height * 0.5f));
+	background->setPosition(Vec2(playingSize.width * 0.5f, playingSize.height * 0.5f));
+    background->setContentSize(Size(playingSize));
 	background->setVisible(true);
 	this->addChild(background);
 
@@ -165,9 +166,16 @@ bool MainMenu::init()
 	SkinTabOpened = false;
 	SkinTab = ui::Button::create("Skins/Default/jump_right_01.png");
 	SkinTab->setTitleText("SKIN");
-	SkinTab->setTitleFontSize(2.5f * SkinTab->getTitleFontSize());
+    if(CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+    {
+        SkinTab->setTitleFontSize(2.5f * SkinTab->getTitleFontSize());
+    }
 	SkinTab->getTitleLabel()->setPositionY(SkinTab->getTitleLabel()->getPositionY() + (0.6f * SkinTab->getContentSize().height));
 	SkinTab->setPosition(Vec2(playingSize.width * 0.1f, 0 + playingSize.height * 0.8f));
+    if(CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    {
+        SkinTab->setScale(2);
+    }
 	SkinTab->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
 	{ switch (type)
 	{
@@ -175,8 +183,11 @@ bool MainMenu::init()
 		break;
 	case ui::Widget::TouchEventType::ENDED:
 		//Button clicked
-		ExitPowerup();
-		InitSkin();
+            if(!SkinTabOpened)
+            {
+                ExitPowerup();
+                InitSkin();
+            }
 		break;
 	} });
 
@@ -186,9 +197,16 @@ bool MainMenu::init()
 	PowerupTabOpened = false;
 	PowerupTab = ui::Button::create("coin.png");
 	PowerupTab->setTitleText("POWER UP");
-	PowerupTab->setTitleFontSize(2.5f * PowerupTab->getTitleFontSize());
+    if(CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+    {
+        PowerupTab->setTitleFontSize(2.5f * PowerupTab->getTitleFontSize());
+    }
 	PowerupTab->getTitleLabel()->setPositionY(PowerupTab->getTitleLabel()->getPositionY() + (0.6f * PowerupTab->getContentSize().height));
 	PowerupTab->setPosition(Vec2(playingSize.width * 0.1f, 0 + playingSize.height * 0.6f));
+    if(CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    {
+        PowerupTab->setScale(2);
+    }
 	PowerupTab->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
 	{ switch (type)
 	{
@@ -196,8 +214,11 @@ bool MainMenu::init()
 		break;
 	case ui::Widget::TouchEventType::ENDED:
 		//Button clicked
-		ExitSkin();
-		InitPowerup();
+        if(!PowerupTabOpened)
+        {
+            ExitSkin();
+            InitPowerup();
+        }
 		break;
 	} });
 
@@ -341,7 +362,14 @@ void MainMenu::InitSkin()
 		for (size_t i = 0; i < SkinElements.size(); ++i)
 		{
 			auto BuyButton = ui::Button::create("button_background.png");
-			BuyButton->setScale(0.2f);
+            if(CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+            {
+                BuyButton->setScale(0.2f);
+            }
+            else if(CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+            {
+                BuyButton->setScale(0.4f);
+            }
 			auto *theElement = SkinElements[i];
 			
 			if (theElement->isEquipped)
@@ -357,7 +385,14 @@ void MainMenu::InitSkin()
 				BuyButton->setTitleText("BUY - " + std::to_string(SkinElements[i]->GetPrice()));
 			}
 			BuyButton->setName(std::to_string(i));
-			BuyButton->setTitleFontSize(9.f * BuyButton->getTitleFontSize());
+            if(CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+            {
+                BuyButton->setTitleFontSize(9.f * BuyButton->getTitleFontSize());
+            }
+            else if(CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+            {
+                BuyButton->setTitleFontSize(4.f * BuyButton->getTitleFontSize());
+            }
 			BuyButton->setPosition(Vec2(SkinElements[i]->GetPosition().x, SkinElements[i]->GetPosition().y - (ELEMENT_HEIGHT * 0.35f)));
 			BuyButton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
 			{
@@ -482,7 +517,14 @@ void MainMenu::InitPowerup()
 		for (size_t i = 0; i < PowerupElements.size(); ++i)
 		{
 			auto BuyButton = ui::Button::create("button_background.png");
-			BuyButton->setScale(0.2f);
+            if(CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+            {
+                BuyButton->setScale(0.2f);
+            }
+            else if(CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+            {
+                BuyButton->setScale(0.4f);
+            }
 			auto *theElement = PowerupElements[i];
 
 			if (theElement->isBought)
@@ -494,7 +536,14 @@ void MainMenu::InitPowerup()
 				BuyButton->setTitleText("BUY - " + std::to_string(PowerupElements[i]->GetPrice()));
 			}
 			BuyButton->setName(std::to_string(i));
-			BuyButton->setTitleFontSize(9.f * BuyButton->getTitleFontSize());
+            if(CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+            {
+                BuyButton->setTitleFontSize(9.f * BuyButton->getTitleFontSize());
+            }
+            else if(CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+            {
+                BuyButton->setTitleFontSize(4.f * BuyButton->getTitleFontSize());
+            }
 			BuyButton->setPosition(Vec2(PowerupElements[i]->GetPosition().x, PowerupElements[i]->GetPosition().y - (ELEMENT_HEIGHT * 0.35f)));
 			BuyButton->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
 			{
@@ -551,7 +600,11 @@ void MainMenu::AddSkin(const std::string &Name, const std::string &SpriteFilePat
 	//Create the new skin element
 	ShopElement *skin = new ShopElement(Name, SpriteFilePath, Price);
 	skin->isEquipped = false;
-	
+    if(CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    {
+        skin->GetSprite()->setScale(2);
+    }
+    
 	//If it's the first element, assign it the starting pos
 	if (SkinElements.empty())
 	{
@@ -567,6 +620,10 @@ void MainMenu::AddPowerup(const std::string & Name, const std::string &SpriteFil
 {
 	//Create the new powerup element
 	ShopElement *powerup = new ShopElement(Name, SpriteFilePath, Price);
+    if(CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    {
+        powerup->GetSprite()->setScale(2);
+    }
 
 	//If it's the first element, assign it the starting pos
 	if (PowerupElements.empty())

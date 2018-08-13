@@ -3,7 +3,7 @@
 
 #include "cocos2d.h"
 #include "SaveData.h"
-
+#include "ui/CocosGUI.h"
 using namespace cocos2d;
 
 class GameChar

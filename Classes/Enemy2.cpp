@@ -60,6 +60,8 @@ void GameEnemy::Run()
 		mainSprite->setFlippedX(false);
 		// Rotate anti-clockwise by 90(For Right side)
 		mainSprite->setRotation(-90);
+        mainSprite->setFlippedY(true);
+        mainSprite->setRotation(90);
 	}
 	// Left
 	else if (eDir == eLeft2)
@@ -67,9 +69,10 @@ void GameEnemy::Run()
 		mainSprite->setFlippedX(true);
 		// Rotate clockwise by 90(For Left side)
 		mainSprite->setRotation(90);
+        mainSprite->setFlippedY(true);
+        mainSprite->setRotation(-90);
 	}
-	mainSprite->setFlippedY(true);
-	mainSprite->setRotation(90);
+
 	animFrames.pushBack(SpriteFrame::create("samurai_run_right_01.png", Rect(0, 0, 85, 96)));
 	animFrames.pushBack(SpriteFrame::create("samurai_run_right_02.png", Rect(0, 0, 85, 96)));
 	animFrames.pushBack(SpriteFrame::create("samurai_run_right_03.png", Rect(0, 0, 85, 96)));
@@ -114,6 +117,7 @@ void GameEnemy::Jump(float LTargetX, float RTargetX, float height)
 		mainSprite->setFlippedX(false);
 		eDir = eRight2;
 	}
+    mainSprite->setFlippedY(false);
 	auto jumpEvent = JumpTo::create(duration, vec, height, 1);
 
 	// Animation frames

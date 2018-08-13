@@ -3,7 +3,7 @@
 #include "Character.h"
 #include "HelloWorldScene.h"
 #include "MainMenu.h"
-#include "ui\CocosGUI.h"
+#include "ui/CocosGUI.h"
 #include <string>
 USING_NS_CC;
 using std::string;

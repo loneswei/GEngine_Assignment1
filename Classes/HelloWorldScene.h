@@ -6,7 +6,7 @@
 #include "TrapObjects.h"
 #include "ItemObjects.h"
 #include "Enemy.h"
-#include "ui\CocosGUI.h"
+#include "ui/CocosGUI.h"
 #include "Enemy2.h"
 
 using namespace cocos2d;

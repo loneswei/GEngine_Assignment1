@@ -4,7 +4,7 @@
 
 #include "cocos2d.h"
 #include "Character.h"
-#include "ui\CocosGUI.h"
+#include "ui/CocosGUI.h"
 
 using namespace cocos2d;
 //enum Selection
